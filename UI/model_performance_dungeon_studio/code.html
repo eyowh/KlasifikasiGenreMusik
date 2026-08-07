@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dungeon Studio - Model Performance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#263143",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "primary": "#3525cd",
+                        "secondary-container": "#57dffe",
+                        "primary-container": "#4f46e5",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "secondary-fixed": "#acedff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f0f3ff",
+                        "on-primary-container": "#dad7ff",
+                        "on-secondary-fixed": "#001f26",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-secondary-container": "#006172",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#777587",
+                        "on-background": "#111c2d",
+                        "tertiary": "#46494b",
+                        "on-surface": "#111c2d",
+                        "on-primary-fixed": "#0f0069",
+                        "secondary": "#00687a",
+                        "surface-container": "#e7eeff",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#cfdaf2",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-bright": "#f9f9ff",
+                        "surface-variant": "#d8e3fb",
+                        "outline-variant": "#c7c4d8",
+                        "surface-container-high": "#dee8ff",
+                        "surface-tint": "#4d44e3",
+                        "tertiary-container": "#5e6163",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "background": "#f9f9ff",
+                        "on-surface-variant": "#464555",
+                        "surface": "#f9f9ff",
+                        "on-tertiary-container": "#dadcde"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "container-max": "1280px",
+                        "sm": "1rem",
+                        "xl": "4rem",
+                        "xs": "0.5rem",
+                        "lg": "2.5rem",
+                        "md": "1.5rem",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.4);
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+        }
+        .heatmap-cell {
+            transition: all 0.2s ease;
+        }
+        .heatmap-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased selection:bg-primary selection:text-white">
+<!-- Top Navigation -->
+<nav class="bg-white/80 dark:bg-inverse-surface/80 h-16 sticky top-0 z-40 backdrop-blur-md border-b border-outline-variant/30 shadow-sm flex justify-between items-center w-full px-md ml-64 max-w-[calc(100%-16rem)] hidden md:flex">
+<div class="flex items-center gap-4 w-1/3">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full font-body-md text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search models, metrics..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<img alt="User Profile Avatar" class="w-8 h-8 rounded-full border border-outline-variant object-cover" data-alt="A small circular avatar of a user profile picture, a minimalist 3D rendering of a stylized character face in subtle pastel tones on a light gray background. The lighting is soft and studio-like, fitting a modern elegant high-tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyzPPgjQ4jZSXEV4X07Lqg6aPr5TXISaKFL7KQqwiNPfbwXXuxAC-y6VuHQB1XPm8u_daCPyMgCeUjW5pH5YK_fZTC1-EofDK8c3ZfP4S3VGpwj5hIt65a4qu7UVz0vXPM86-umE_jTpKpsPo6Tv4BTJp9QoEt3bU4Aa2_uM408vtJ_u4xKSsYWXBMUDIp7wj5FLOgK9WVH31-wMKtw_JIIUspGOUzUnuugcgGgUN40DsvP5QzcrUT"/>
+</div>
+</nav>
+<!-- Side Navigation -->
+<aside class="bg-surface dark:bg-inverse-surface h-screen w-64 fixed left-0 top-0 backdrop-blur-xl bg-white/40 dark:bg-inverse-surface/40 border-r border-outline-variant/40 shadow-sm flex flex-col h-full py-md z-50">
+<div class="px-6 pb-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold">DS</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Dungeon Studio</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AI Music Engine</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1 mt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span> Classification
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">history</span> History
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">description</span> Reports
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary dark:text-primary-fixed bg-primary-container/20 dark:bg-primary-container/10 border-r-4 border-primary font-label-md text-label-md scale-[0.98] transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">speed</span> Model Performance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span> User Management
+            </a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-label-md text-label-md py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">upload</span> Upload Track
+            </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-0 md:ml-64 p-gutter md:p-xl max-w-container-max mx-auto space-y-xl">
+<!-- Header -->
+<header>
+<h1 class="font-headline-lg text-headline-lg md:font-display-lg md:text-display-lg text-on-background mb-2">Model Performance Overview</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Detailed evaluation metrics for the current genre classification model.</p>
+</header>
+<!-- Metric Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="glass-panel p-6 rounded-xl flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary">target</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider">Accuracy</h3>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-background">75.5<span class="text-headline-md text-outline">%</span></div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-secondary-container/20 rounded-full blur-2xl group-hover:bg-secondary-container/30 transition-colors"></div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary">my_location</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider">Precision</h3>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-background">76.8<span class="text-headline-md text-outline">%</span></div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-colors"></div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary">replay</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider">Recall</h3>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-background">75.5<span class="text-headline-md text-outline">%</span></div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary-fixed/30 rounded-full blur-2xl group-hover:bg-primary-fixed/50 transition-colors"></div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary">balance</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider">F1-Score</h3>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-background">75.8<span class="text-headline-md text-outline">%</span></div>
+</div>
+</section>
+<!-- Charts Row -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Cross Validation -->
+<div class="glass-panel p-8 rounded-xl flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline-md text-headline-md text-on-background">5-Fold Cross-Validation</h2>
+<span class="font-label-md text-label-md bg-surface-container-highest px-3 py-1 rounded-full text-primary">Avg: 74.75%</span>
+</div>
+<div class="flex-1 flex items-end gap-4 h-64 mt-4">
+<!-- Bars -->
+<div class="flex-1 flex flex-col justify-end gap-2 group">
+<div class="w-full bg-gradient-to-t from-primary/80 to-secondary-container/80 rounded-t-sm h-[77.5%] relative transition-all duration-300 hover:opacity-90">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white font-label-sm text-label-sm px-2 py-1 rounded">77.5%</div>
+</div>
+<span class="text-center font-label-sm text-label-sm text-on-surface-variant">Fold 1</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-2 group">
+<div class="w-full bg-gradient-to-t from-primary/80 to-secondary-container/80 rounded-t-sm h-[73.2%] relative transition-all duration-300 hover:opacity-90">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white font-label-sm text-label-sm px-2 py-1 rounded">73.2%</div>
+</div>
+<span class="text-center font-label-sm text-label-sm text-on-surface-variant">Fold 2</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-2 group">
+<div class="w-full bg-gradient-to-t from-primary/80 to-secondary-container/80 rounded-t-sm h-[76.4%] relative transition-all duration-300 hover:opacity-90">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white font-label-sm text-label-sm px-2 py-1 rounded">76.4%</div>
+</div>
+<span class="text-center font-label-sm text-label-sm text-on-surface-variant">Fold 3</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-2 group">
+<div class="w-full bg-gradient-to-t from-primary/80 to-secondary-container/80 rounded-t-sm h-[71.6%] relative transition-all duration-300 hover:opacity-90">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white font-label-sm text-label-sm px-2 py-1 rounded">71.6%</div>
+</div>
+<span class="text-center font-label-sm text-label-sm text-on-surface-variant">Fold 4</span>
+</div>
+<div class="flex-1 flex flex-col justify-end gap-2 group">
+<div class="w-full bg-gradient-to-t from-primary/80 to-secondary-container/80 rounded-t-sm h-[75.0%] relative transition-all duration-300 hover:opacity-90">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-inverse-surface text-white font-label-sm text-label-sm px-2 py-1 rounded">75.0%</div>
+</div>
+<span class="text-center font-label-sm text-label-sm text-on-surface-variant">Fold 5</span>
+</div>
+</div>
+</div>
+<!-- Confusion Matrix -->
+<div class="glass-panel p-8 rounded-xl flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-background mb-6">Confusion Matrix</h2>
+<div class="flex-1 w-full flex items-center justify-center">
+<!-- Simplified Heatmap representation for layout purposes -->
+<div class="grid grid-cols-10 grid-rows-10 gap-0.5 w-full max-w-[400px] aspect-square text-[8px] sm:text-xs">
+<!-- row 1 -->
+<div class="bg-primary/90 heatmap-cell flex items-center justify-center text-white" title="Blues to Blues: High">18</div>
+<div class="bg-primary/10 heatmap-cell flex items-center justify-center text-on-surface" title="Blues to Classical: Low">0</div>
+<div class="bg-primary/20 heatmap-cell flex items-center justify-center text-on-surface" title="Blues to Country: Low">1</div>
+<div class="bg-primary/10 heatmap-cell flex items-center justify-center text-on-surface">0</div>
+<div class="bg-primary/10 heatmap-cell flex items-center justify-center text-on-surface">0</div>
+<div class="bg-primary/30 heatmap-cell flex items-center justify-center text-on-surface">1</div>
+<div class="bg-primary/10 heatmap-cell flex items-center justify-center text-on-surface">0</div>
+<div class="bg-primary/10 heatmap-cell flex items-center justify-center text-on-surface">0</div>
+<div class="bg-primary/10 heatmap-cell flex items-center justify-center text-on-surface">0</div>
+<div class="bg-primary/10 heatmap-cell flex items-center justify-center text-on-surface">0</div>
+<!-- random sparse data for remaining rows to illustrate pattern -->
+<div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/80 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/20 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/20 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/70 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/20 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/85 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/75 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/30 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/40 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/60 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/90 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/20 heatmap-cell"></div><div class="bg-primary/30 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/65 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/20 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/70 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div>
+<div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/30 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/10 heatmap-cell"></div><div class="bg-primary/80 heatmap-cell"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Per-Genre Table -->
+<section class="glass-panel p-8 rounded-xl overflow-x-auto">
+<h2 class="font-headline-md text-headline-md text-on-background mb-6">Detailed Per-Genre Metrics</h2>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/40">
+<th class="py-4 px-4 font-label-md text-label-md text-on-surface-variant">Genre</th>
+<th class="py-4 px-4 font-label-md text-label-md text-on-surface-variant">Precision</th>
+<th class="py-4 px-4 font-label-md text-label-md text-on-surface-variant">Recall</th>
+<th class="py-4 px-4 font-label-md text-label-md text-on-surface-variant">F1-Score</th>
+<th class="py-4 px-4 font-label-md text-label-md text-on-surface-variant text-right">Support</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md">
+<!-- Blues -->
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-4">
+<div class="inline-flex items-center gap-2 bg-blue-100 text-blue-900 px-3 py-1 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">music_note</span> Blues
+                            </div>
+</td>
+<td class="py-3 px-4">0.78</td>
+<td class="py-3 px-4">0.90</td>
+<td class="py-3 px-4">0.84</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">20</td>
+</tr>
+<!-- Classical -->
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-4">
+<div class="inline-flex items-center gap-2 bg-amber-100 text-amber-900 px-3 py-1 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">piano</span> Classical
+                            </div>
+</td>
+<td class="py-3 px-4">0.95</td>
+<td class="py-3 px-4">0.90</td>
+<td class="py-3 px-4">0.92</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">20</td>
+</tr>
+<!-- Disco -->
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-4">
+<div class="inline-flex items-center gap-2 bg-purple-100 text-purple-900 px-3 py-1 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">album</span> Disco
+                            </div>
+</td>
+<td class="py-3 px-4">0.72</td>
+<td class="py-3 px-4">0.65</td>
+<td class="py-3 px-4">0.68</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">20</td>
+</tr>
+<!-- Metal -->
+<tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+<td class="py-3 px-4">
+<div class="inline-flex items-center gap-2 bg-slate-200 text-slate-900 px-3 py-1 rounded-full font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">electric_bolt</span> Metal
+                            </div>
+</td>
+<td class="py-3 px-4">0.88</td>
+<td class="py-3 px-4">0.95</td>
+<td class="py-3 px-4">0.91</td>
+<td class="py-3 px-4 text-right text-on-surface-variant">20</td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- Footer Info -->
+<footer class="bg-surface-container p-6 rounded-xl border border-outline-variant/30 flex flex-wrap gap-6 text-on-surface-variant font-label-sm text-label-sm justify-center md:justify-start mt-xl">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">memory</span>
+<span><strong>Model:</strong> SVM (RBF Kernel)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">equalizer</span>
+<span><strong>Features:</strong> 43 Extracted</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">data_usage</span>
+<span><strong>Split:</strong> 800 Train / 200 Test</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">source</span>
+<span><strong>Dataset:</strong> GTZAN</span>
+</div>
+</footer>
+</main>
+</body></html>

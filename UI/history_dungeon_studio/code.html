@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dungeon Studio - History</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#263143",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "primary": "#3525cd",
+                        "secondary-container": "#57dffe",
+                        "primary-container": "#4f46e5",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "secondary-fixed": "#acedff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f0f3ff",
+                        "on-primary-container": "#dad7ff",
+                        "on-secondary-fixed": "#001f26",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-secondary-container": "#006172",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#777587",
+                        "on-background": "#111c2d",
+                        "tertiary": "#46494b",
+                        "on-surface": "#111c2d",
+                        "on-primary-fixed": "#0f0069",
+                        "secondary": "#00687a",
+                        "surface-container": "#e7eeff",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#cfdaf2",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-bright": "#f9f9ff",
+                        "surface-variant": "#d8e3fb",
+                        "outline-variant": "#c7c4d8",
+                        "surface-container-high": "#dee8ff",
+                        "surface-tint": "#4d44e3",
+                        "tertiary-container": "#5e6163",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "background": "#f9f9ff",
+                        "on-surface-variant": "#464555",
+                        "surface": "#f9f9ff",
+                        "on-tertiary-container": "#dadcde"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "base": "4px",
+                        "container-max": "1280px",
+                        "sm": "1rem",
+                        "xl": "4rem",
+                        "xs": "0.5rem",
+                        "lg": "2.5rem",
+                        "md": "1.5rem",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["32px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "700" }],
+                        "label-md": ["14px", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+                        "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+                        "headline-lg-mobile": ["28px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "label-sm": ["12px", { lineHeight: "1.4", fontWeight: "500" }],
+                        "display-lg": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c7c4d8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #777587;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex selection:bg-primary-container/30 selection:text-primary">
+<!-- SideNavBar -->
+<nav class="bg-surface dark:bg-inverse-surface h-screen w-64 fixed left-0 top-0 backdrop-blur-xl bg-white/40 dark:bg-inverse-surface/40 border-r border-outline-variant/40 shadow-sm z-50 flex flex-col h-full py-md">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary-container flex items-center justify-center text-white shadow-sm shadow-primary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">graphic_eq</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed tracking-tight">Dungeon Studio</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AI Music Engine</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-4 space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Classification -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Classification</span>
+</a>
+<!-- History (ACTIVE) -->
+<a class="flex items-center gap-3 px-4 py-3 text-primary dark:text-primary-fixed bg-primary-container/20 dark:bg-primary-container/10 border-r-4 border-primary rounded-lg shadow-sm shadow-primary/5 transition-transform duration-150 scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-label-md text-label-md font-bold">History</span>
+</a>
+<!-- Reports -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<!-- Model Performance -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">speed</span>
+<span class="font-label-md text-label-md">Model Performance</span>
+</a>
+<!-- User Management -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">User Management</span>
+</a>
+</div>
+<div class="px-6 mt-auto pt-6">
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-label-md text-label-md py-3 px-4 rounded-xl shadow-sm shadow-primary/20 transition-all duration-200 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+                Upload Track
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-white/80 dark:bg-inverse-surface/80 h-16 sticky top-0 z-40 backdrop-blur-md border-b border-outline-variant/30 shadow-sm flex justify-between items-center w-full px-md">
+<div class="flex-1 flex items-center">
+<!-- Search could go here based on design system, but keeping clean for History focus -->
+<div class="relative w-96 hidden md:block group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/30 rounded-full py-2 pl-10 pr-4 text-body-md font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-inner" placeholder="Search history..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-white"></span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant/40 mx-2"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<img alt="User Profile Avatar" class="w-10 h-10 rounded-full border-2 border-transparent group-hover:border-primary transition-colors shadow-sm object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmt3SSfCkwbLplSLlDts1OoS2tWr9iqEkAVizjzmwMPCg6pZShyMcx3HgWWneIoTSCw8mM2WUJhFtXEe9Njv2W_7-DrdEwlsF3aVm6bmgPVQPHlibrQGZa7Y6sKSWBJ8nGdaBhGOTlJYKqueNKzPpywvWWs3uLqKDJEeER2OaHq2EnVXaLMtmn_x-U8674Z52M4Cjg1qlS1M2XkMjh0PuGYpB6Lclj9kqFRRsWf3UU11-XiYITE9z_"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-gutter max-w-container-max mx-auto w-full flex-1 flex flex-col gap-6">
+<!-- Header & Tabs Area -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-outline-variant/20">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Processing History</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Review and manage recent AI classifications across the platform.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 text-primary font-label-md text-label-md hover:bg-surface-container rounded-lg transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+                        Clear All History
+                    </button>
+</div>
+</div>
+<!-- Context Tabs -->
+<div class="flex bg-surface-container-low p-1 rounded-xl w-fit border border-outline-variant/20 shadow-sm">
+<button class="px-6 py-2 rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">
+                    My History
+                </button>
+<button class="px-6 py-2 rounded-lg font-label-md text-label-md bg-white text-primary shadow-sm ring-1 ring-outline-variant/10 transition-all font-bold">
+                    All History
+                </button>
+</div>
+<!-- Filters Bar (Glassmorphism Card) -->
+<div class="bg-white/70 backdrop-blur-md rounded-xl border border-outline-variant/30 p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex flex-wrap gap-4 items-end">
+<div class="flex flex-col gap-1 flex-1 min-w-[200px]">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Genre Filter</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface border border-outline-variant/50 text-on-surface rounded-lg px-4 py-2.5 font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors cursor-pointer">
+<option>All Genres</option>
+<option>Synthwave</option>
+<option>Dark Electro</option>
+<option>Ambient</option>
+<option>Industrial</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-1 flex-1 min-w-[200px]">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Date Range</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">calendar_month</span>
+<input class="w-full bg-surface border border-outline-variant/50 text-on-surface rounded-lg pl-10 pr-4 py-2.5 font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors cursor-pointer" placeholder="Last 30 Days" readonly="" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-1 flex-1 min-w-[200px]">
+<label class="font-label-sm text-label-sm text-on-surface-variant">User (Admin)</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">person_search</span>
+<input class="w-full bg-surface border border-outline-variant/50 text-on-surface rounded-lg pl-10 pr-4 py-2.5 font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" placeholder="Search username..." type="text"/>
+</div>
+</div>
+<button class="bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md text-label-md px-4 py-2.5 rounded-lg border border-outline-variant/40 transition-colors flex items-center gap-2 h-[42px]">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                    More Filters
+                </button>
+</div>
+<!-- Data Table Container -->
+<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-outline-variant/30 overflow-hidden flex-1 flex flex-col mb-8 relative">
+<!-- Table Header -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 bg-surface-bright border-b border-outline-variant/20">
+<div class="col-span-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Filename</div>
+<div class="col-span-1 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Format</div>
+<div class="col-span-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Predicted Genre</div>
+<div class="col-span-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Confidence</div>
+<div class="col-span-2 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Date/Time</div>
+<div class="col-span-1 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-right">Actions</div>
+</div>
+<!-- Table Body -->
+<div class="flex-1 overflow-y-auto">
+<!-- Row 1 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant/10 items-center hover:bg-surface-container-lowest transition-colors group cursor-default">
+<div class="col-span-3 flex items-center gap-3 overflow-hidden">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">audio_file</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">neon_nights_master.wav</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">24.5 MB • user_992</span>
+</div>
+</div>
+<div class="col-span-1">
+<span class="inline-block px-2 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold">WAV</span>
+</div>
+<div class="col-span-3 flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-secondary-container/20 text-on-secondary-container border border-secondary-container/30 font-label-sm text-[11px]">Synthwave</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant border border-outline-variant/20 font-label-sm text-[11px]">Electronic</span>
+</div>
+<div class="col-span-2 flex items-center gap-3 pr-4">
+<div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary-container rounded-full" style="width: 94%;"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface w-10 text-right">94%</span>
+</div>
+<div class="col-span-2 flex flex-col justify-center">
+<span class="font-body-md text-body-md text-on-surface">Oct 24, 2023</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">14:32:05 GMT</span>
+</div>
+<div class="col-span-1 flex justify-end items-center">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant/10 items-center hover:bg-surface-container-lowest transition-colors group cursor-default">
+<div class="col-span-3 flex items-center gap-3 overflow-hidden">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">audio_file</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">factory_floor_beat.mp3</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">8.2 MB • admin_alex</span>
+</div>
+</div>
+<div class="col-span-1">
+<span class="inline-block px-2 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold">MP3</span>
+</div>
+<div class="col-span-3 flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-tertiary-container/10 text-on-surface border border-outline-variant/30 font-label-sm text-[11px]">Industrial</span>
+</div>
+<div class="col-span-2 flex items-center gap-3 pr-4">
+<div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary-container rounded-full" style="width: 88%;"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface w-10 text-right">88%</span>
+</div>
+<div class="col-span-2 flex flex-col justify-center">
+<span class="font-body-md text-body-md text-on-surface">Oct 24, 2023</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">11:15:22 GMT</span>
+</div>
+<div class="col-span-1 flex justify-end items-center">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant/10 items-center hover:bg-surface-container-lowest transition-colors group cursor-default">
+<div class="col-span-3 flex items-center gap-3 overflow-hidden">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">audio_file</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">void_stare_ambient.flac</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">45.1 MB • user_118</span>
+</div>
+</div>
+<div class="col-span-1">
+<span class="inline-block px-2 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold">FLAC</span>
+</div>
+<div class="col-span-3 flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-primary-container/10 text-primary border border-primary/20 font-label-sm text-[11px]">Dark Ambient</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant border border-outline-variant/20 font-label-sm text-[11px]">Drone</span>
+</div>
+<div class="col-span-2 flex items-center gap-3 pr-4">
+<div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary-container rounded-full" style="width: 76%;"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface w-10 text-right">76%</span>
+</div>
+<div class="col-span-2 flex flex-col justify-center">
+<span class="font-body-md text-body-md text-on-surface">Oct 23, 2023</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">22:01:45 GMT</span>
+</div>
+<div class="col-span-1 flex justify-end items-center">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-surface-container-lowest transition-colors group cursor-default">
+<div class="col-span-3 flex items-center gap-3 overflow-hidden">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">audio_file</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">cyberpunk_chase_scene.wav</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">31.0 MB • user_404</span>
+</div>
+</div>
+<div class="col-span-1">
+<span class="inline-block px-2 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold">WAV</span>
+</div>
+<div class="col-span-3 flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-secondary-container/20 text-on-secondary-container border border-secondary-container/30 font-label-sm text-[11px]">Synthwave</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant border border-outline-variant/20 font-label-sm text-[11px]">Action</span>
+</div>
+<div class="col-span-2 flex items-center gap-3 pr-4">
+<div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary-container rounded-full" style="width: 98%;"></div>
+</div>
+<span class="font-label-md text-label-md text-on-surface w-10 text-right">98%</span>
+</div>
+<div class="col-span-2 flex flex-col justify-center">
+<span class="font-body-md text-body-md text-on-surface">Oct 23, 2023</span>
+<span class="font-body-md text-[12px] text-on-surface-variant">18:44:10 GMT</span>
+</div>
+<div class="col-span-1 flex justify-end items-center">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Table Footer / Pagination Placeholder -->
+<div class="bg-surface-bright border-t border-outline-variant/20 px-6 py-3 flex items-center justify-between mt-auto">
+<span class="font-body-md text-[13px] text-on-surface-variant">Showing 1 to 4 of 248 entries</span>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded border border-outline-variant/40 flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center font-label-sm text-label-sm transition-colors">1</button>
+<button class="w-8 h-8 rounded border border-outline-variant/40 flex items-center justify-center text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm transition-colors">2</button>
+<button class="w-8 h-8 rounded border border-outline-variant/40 flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

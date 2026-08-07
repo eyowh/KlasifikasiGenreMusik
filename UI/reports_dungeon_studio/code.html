@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reports - Dungeon Studio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#263143",
+                        "on-tertiary-fixed": "#191c1e",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e0e3e5",
+                        "secondary-fixed-dim": "#4cd7f6",
+                        "primary": "#3525cd",
+                        "secondary-container": "#57dffe",
+                        "primary-container": "#4f46e5",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "secondary-fixed": "#acedff",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f0f3ff",
+                        "on-primary-container": "#dad7ff",
+                        "on-secondary-fixed": "#001f26",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#ecf1ff",
+                        "on-secondary-container": "#006172",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#777587",
+                        "on-background": "#111c2d",
+                        "tertiary": "#46494b",
+                        "on-surface": "#111c2d",
+                        "on-primary-fixed": "#0f0069",
+                        "secondary": "#00687a",
+                        "surface-container": "#e7eeff",
+                        "on-secondary-fixed-variant": "#004e5c",
+                        "surface-container-highest": "#d8e3fb",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#cfdaf2",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-bright": "#f9f9ff",
+                        "surface-variant": "#d8e3fb",
+                        "outline-variant": "#c7c4d8",
+                        "surface-container-high": "#dee8ff",
+                        "surface-tint": "#4d44e3",
+                        "tertiary-container": "#5e6163",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "background": "#f9f9ff",
+                        "on-surface-variant": "#464555",
+                        "surface": "#f9f9ff",
+                        "on-tertiary-container": "#dadcde"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "container-max": "1280px",
+                        "sm": "1rem",
+                        "xl": "4rem",
+                        "xs": "0.5rem",
+                        "lg": "2.5rem",
+                        "md": "1.5rem",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8fafc; /* Slate-50 base */
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md text-on-surface bg-background flex antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 backdrop-blur-xl bg-white/40 dark:bg-inverse-surface/40 border-r border-outline-variant/40 shadow-sm py-md z-50">
+<div class="px-6 mb-8 flex flex-col gap-1">
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Dungeon Studio</h1>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest opacity-80">AI Music Engine</span>
+</div>
+<div class="flex-1 flex flex-col gap-1 px-2 font-label-md text-label-md">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+                Classification
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">history</span>
+                History
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary dark:text-primary-fixed bg-primary-container/20 dark:bg-primary-container/10 border-r-4 border-primary rounded-lg transition-transform duration-150 scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">description</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">speed</span>
+                Model Performance
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/20 rounded-lg transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">group</span>
+                User Management
+            </a>
+</div>
+<div class="px-6 mt-auto pt-6 border-t border-outline-variant/30">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary-container hover:shadow-[0_0_15px_rgba(87,223,254,0.3)] transition-all">
+<span class="material-symbols-outlined text-[18px]">upload</span>
+                Upload Track
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="w-full md:ml-64 min-h-screen flex flex-col relative">
+<!-- TopNavBar -->
+<header class="h-16 sticky top-0 z-40 backdrop-blur-md bg-white/80 dark:bg-inverse-surface/80 border-b border-outline-variant/30 shadow-sm flex justify-between items-center w-full px-md">
+<div class="flex-1 max-w-md hidden md:flex items-center relative">
+<span class="material-symbols-outlined absolute left-3 text-outline font-light text-[20px]">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg pl-10 pr-4 py-2 text-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors" placeholder="Search reports..." type="text"/>
+</div>
+<div class="flex items-center gap-4 ml-auto">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant/30">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of an individual, high quality lighting, corporate clean background, modern high-tech aesthetic, confident expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQrIwLWcOg9rHErRJWrBCyxjxVB1KrgmlzSwGKE_0zbbnpTV7caRLVQW2VnwKvTr8VmbwlYqCQ29fHg70TNgwVAG-IQbV2TpQAVR01ZlapQv6lDhzqg3SbLYDA6EOr_D8JBT9fGBzIR2NNJ6pBHL5pGdiQiKgM5zzfRWzc-4owEdChCBE-GUW3F_u7-8cSUX3qz47M2PgTKigmJ68tQ3OuAuv1MYlxJxF_NVHnKFrUdTdXcz_E-8zA"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 p-4 md:p-8 max-w-container-max mx-auto w-full">
+<div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-2">Reports &amp; Analytics</h2>
+<p class="text-on-surface-variant">Generate comprehensive insights on model classifications and system usage.</p>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Report Generation Form (Left/Top Col) -->
+<div class="lg:col-span-5 flex flex-col gap-6">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-6 card-shadow">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">tune</span>
+                            Report Parameters
+                        </h3>
+<form class="flex flex-col gap-5">
+<!-- Date Range -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Date Range</label>
+<div class="grid grid-cols-2 gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">calendar_today</span>
+<input class="w-full bg-background border border-outline-variant/50 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors" type="date" value="2023-10-01"/>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">calendar_today</span>
+<input class="w-full bg-background border border-outline-variant/50 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors" type="date" value="2023-10-31"/>
+</div>
+</div>
+</div>
+<!-- Report Type -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Report Type</label>
+<select class="w-full bg-background border border-outline-variant/50 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none">
+<option>Classification Accuracy Summary</option>
+<option>Genre Distribution Analysis</option>
+<option>User Activity Audit</option>
+<option>System Performance Metrics</option>
+</select>
+</div>
+<!-- Genre Filter -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1">Target Genres</label>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-100 text-cyan-900 font-label-sm text-xs cursor-pointer border border-cyan-200 hover:bg-cyan-200 transition-colors">
+                                        Synthwave <span class="material-symbols-outlined text-[14px]">close</span>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-100 text-purple-900 font-label-sm text-xs cursor-pointer border border-purple-200 hover:bg-purple-200 transition-colors">
+                                        Cyberpunk <span class="material-symbols-outlined text-[14px]">close</span>
+</span>
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-xs cursor-pointer border border-outline-variant/50 hover:bg-outline-variant/30 transition-colors border-dashed">
+<span class="material-symbols-outlined text-[14px] mr-1">add</span> Add Filter
+                                    </span>
+</div>
+</div>
+<!-- User Filter (Admin) -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-1">User Segment (Admin Only)</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">group</span>
+<select class="w-full bg-background border border-outline-variant/50 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none text-on-surface">
+<option>All Users</option>
+<option>Enterprise Tier</option>
+<option>Pro Tier</option>
+<option>Free Tier</option>
+</select>
+</div>
+</div>
+<hr class="border-outline-variant/30 my-2"/>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 gap-3 mt-2">
+<button class="col-span-2 flex items-center justify-center gap-2 bg-primary text-on-primary py-2.5 rounded-lg font-label-md hover:bg-primary-container hover:shadow-[0_0_15px_rgba(87,223,254,0.3)] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+                                    Preview Data
+                                </button>
+<button class="flex items-center justify-center gap-2 bg-surface-variant text-primary py-2 rounded-lg font-label-md text-sm hover:bg-primary-fixed transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+                                    PDF
+                                </button>
+<button class="flex items-center justify-center gap-2 bg-surface-variant text-primary py-2 rounded-lg font-label-md text-sm hover:bg-primary-fixed transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">table_chart</span>
+                                    Excel
+                                </button>
+</div>
+</form>
+</div>
+<!-- Mini Stat Card -->
+<div class="bg-gradient-to-br from-primary-container to-secondary-container rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
+<div class="absolute -right-10 -top-10 opacity-10">
+<span class="material-symbols-outlined text-[120px]">insights</span>
+</div>
+<h4 class="font-label-md opacity-90 mb-1">Total Reports Generated</h4>
+<div class="font-display-lg text-4xl mb-2">1,284</div>
+<div class="text-sm opacity-80 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> +12% this month
+                        </div>
+</div>
+</div>
+<!-- Previous Reports List (Right Col) -->
+<div class="lg:col-span-7">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 card-shadow h-full flex flex-col">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Reports</h3>
+<button class="text-primary hover:text-primary-container text-sm font-label-md">View All</button>
+</div>
+<div class="flex-1 overflow-auto p-4">
+<div class="flex flex-col gap-3">
+<!-- Report Item 1 -->
+<div class="p-4 rounded-lg border border-outline-variant/30 hover:border-primary/40 hover:bg-surface-container-low transition-all group flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div>
+<div class="font-label-md text-on-surface mb-0.5">Classification Accuracy Q3</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-2">
+<span>ID: RPT-8921</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Oct 24, 2023</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="px-2.5 py-1 rounded-full bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-wider">Ready</span>
+<button class="text-outline hover:text-primary transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Report Item 2 -->
+<div class="p-4 rounded-lg border border-outline-variant/30 hover:border-primary/40 hover:bg-surface-container-low transition-all group flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">pie_chart</span>
+</div>
+<div>
+<div class="font-label-md text-on-surface mb-0.5">Genre Distribution (Synthwave focus)</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-2">
+<span>ID: RPT-8920</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Oct 22, 2023</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="px-2.5 py-1 rounded-full bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-wider">Ready</span>
+<button class="text-outline hover:text-primary transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Report Item 3 -->
+<div class="p-4 rounded-lg border border-outline-variant/30 hover:border-primary/40 hover:bg-surface-container-low transition-all group flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">group</span>
+</div>
+<div>
+<div class="font-label-md text-on-surface mb-0.5">Pro Tier Activity Audit</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-2">
+<span>ID: RPT-8915</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Oct 15, 2023</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant text-[10px] font-bold uppercase tracking-wider">Archived</span>
+<button class="text-outline hover:text-primary transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+<!-- Report Item 4 (Processing) -->
+<div class="p-4 rounded-lg border border-primary/20 bg-primary-fixed/10 transition-all flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary animate-pulse">
+<span class="material-symbols-outlined animate-spin">sync</span>
+</div>
+<div>
+<div class="font-label-md text-on-surface mb-0.5">System Perf Metrics YTD</div>
+<div class="text-xs text-on-surface-variant flex items-center gap-2">
+<span>ID: RPT-8922</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>Just now</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-800 text-[10px] font-bold uppercase tracking-wider">Generating...</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant/30 text-center">
+<span class="text-xs text-on-surface-variant">Showing 4 of 124 generated reports. Reports older than 90 days are automatically archived.</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

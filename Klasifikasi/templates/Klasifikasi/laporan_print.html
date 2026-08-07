@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Laporan Klasifikasi — Dungeon Studio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; font-size: 13px; color: #111c2d; background: #ffffff; padding: 40px; }
+
+    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #3525cd; padding-bottom: 20px; margin-bottom: 30px; }
+    .brand h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 26px; color: #3525cd; }
+    .brand p { color: #464555; font-size: 12px; margin-top: 4px; }
+    .report-meta { text-align: right; color: #464555; font-size: 12px; line-height: 1.8; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+    .summary-card { background: #f0f3ff; border: 1px solid #c7c4d8; border-radius: 8px; padding: 14px; }
+    .summary-card .label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #464555; margin-bottom: 6px; }
+    .summary-card .value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; color: #3525cd; }
+
+    .filter-info { background: #f9f9ff; border: 1px solid #e7eeff; border-radius: 6px; padding: 10px 14px; margin-bottom: 20px; font-size: 12px; color: #464555; display: flex; flex-wrap: wrap; gap: 12px; }
+    .filter-info span strong { color: #111c2d; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    thead tr { background: #3525cd; color: #ffffff; }
+    thead th { padding: 10px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-align: left; }
+    tbody tr:nth-child(even) { background: #f9f9ff; }
+    tbody tr:nth-child(odd) { background: #ffffff; }
+    tbody td { padding: 9px 14px; border-bottom: 1px solid #e7eeff; vertical-align: middle; }
+    .genre-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e2dfff; color: #3525cd; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+    .no-data { text-align: center; padding: 32px; color: #777587; font-style: italic; }
+
+    .footer { margin-top: 32px; border-top: 1px solid #c7c4d8; padding-top: 16px; display: flex; justify-content: space-between; font-size: 11px; color: #777587; }
+
+    @media print {
+      body { padding: 20px; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      <h1>Dungeon Studio</h1>
+      <p>Music Classification Engine &mdash; Laporan Resmi</p>
+    </div>
+    <div class="report-meta">
+      <div>Dibuat: {% now "d M Y, H:i" %} WIB</div>
+      <div>Pengguna: {{ user.get_full_name|default:user.username }}</div>
+      <div>Role: {{ user.profile.get_role_display }}</div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="label">Total Data</div>
+      <div class="value">{{ total_preview }}</div>
+    </div>
+    {% if date_from or date_to %}
+    <div class="summary-card">
+      <div class="label">Periode</div>
+      <div class="value" style="font-size:13px; padding-top:4px;">
+        {{ date_from|default:"—" }} s/d {{ date_to|default:"—" }}
+      </div>
+    </div>
+    {% endif %}
+    {% if genre_filter %}
+    <div class="summary-card">
+      <div class="label">Genre Filter</div>
+      <div class="value" style="font-size:18px;">{{ genre_filter|title }}</div>
+    </div>
+    {% endif %}
+    <div class="summary-card">
+      <div class="label">Model</div>
+      <div class="value" style="font-size:14px; padding-top:4px;">SVM RBF</div>
+    </div>
+  </div>
+
+  <!-- Filter Info -->
+  <div class="filter-info">
+    <span><strong>Sumber:</strong> {% if active_tab == 'semua' %}Semua Pengguna{% else %}Data Saya{% endif %}</span>
+    {% if genre_filter %}<span><strong>Genre:</strong> {{ genre_filter|title }}</span>{% endif %}
+    {% if date_from %}<span><strong>Dari:</strong> {{ date_from }}</span>{% endif %}
+    {% if date_to %}<span><strong>Sampai:</strong> {{ date_to }}</span>{% endif %}
+    {% if user_filter and active_tab == 'semua' %}<span><strong>Pengguna:</strong> {{ user_filter }}</span>{% endif %}
+  </div>
+
+  <!-- Print Button (not printed) -->
+  <div class="no-print" style="margin-bottom: 20px;">
+    <button onclick="window.print()"
+            style="display:inline-flex; align-items:center; gap:8px; background:#3525cd; color:#fff; border:none; padding:10px 24px; border-radius:8px; font-family:Inter; font-size:14px; font-weight:600; cursor:pointer;">
+      🖨️ Cetak Laporan
+    </button>
+    <a href="javascript:history.back()"
+       style="margin-left:12px; display:inline-flex; align-items:center; gap:8px; background:#f0f3ff; color:#3525cd; border:1px solid #c7c4d8; padding:10px 24px; border-radius:8px; font-family:Inter; font-size:14px; font-weight:600; text-decoration:none;">
+      ← Kembali
+    </a>
+  </div>
+
+  <!-- Data Table -->
+  <table>
+    <thead>
+      <tr>
+        <th style="width:40px;">#</th>
+        {% if active_tab == 'semua' %}<th>Pengguna</th>{% endif %}
+        <th>Nama File</th>
+        <th>Format</th>
+        <th>Genre Prediksi</th>
+        <th>Confidence</th>
+        <th>Waktu</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in preview %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        {% if active_tab == 'semua' %}<td><strong>{{ p.username }}</strong></td>{% endif %}
+        <td>{{ p.nama_file }}</td>
+        <td>{{ p.format_file }}</td>
+        <td><span class="genre-badge">{{ p.genre_prediksi }}</span></td>
+        <td>{{ p.confidence }}%</td>
+        <td>{{ p.waktu|date:"d/m/Y H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="no-data">Tidak ada data untuk dicetak.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>Dungeon Studio</span>
+    <span>Dokumen ini dicetak pada {% now "d M Y H:i" %} WIB</span>
+  </div>
+
+</body>
+</html>

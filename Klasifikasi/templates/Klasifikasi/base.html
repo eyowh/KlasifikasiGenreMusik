@@ -1,0 +1,488 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Dungeon Studio{% endblock %}</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Config (Dungeon Studio Design System) -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":                 "#3525cd",
+            "on-primary":              "#ffffff",
+            "primary-container":       "#4f46e5",
+            "on-primary-container":    "#dad7ff",
+            "primary-fixed":           "#e2dfff",
+            "primary-fixed-dim":       "#c3c0ff",
+            "on-primary-fixed":        "#0f0069",
+            "on-primary-fixed-variant":"#3323cc",
+            "inverse-primary":         "#c3c0ff",
+            "secondary":               "#00687a",
+            "on-secondary":            "#ffffff",
+            "secondary-container":     "#57dffe",
+            "on-secondary-container":  "#006172",
+            "secondary-fixed":         "#acedff",
+            "secondary-fixed-dim":     "#4cd7f6",
+            "on-secondary-fixed":      "#001f26",
+            "on-secondary-fixed-variant":"#004e5c",
+            "tertiary":                "#46494b",
+            "on-tertiary":             "#ffffff",
+            "tertiary-container":      "#5e6163",
+            "on-tertiary-container":   "#dadcde",
+            "tertiary-fixed":          "#e0e3e5",
+            "tertiary-fixed-dim":      "#c4c7c9",
+            "on-tertiary-fixed":       "#191c1e",
+            "on-tertiary-fixed-variant":"#444749",
+            "error":                   "#ba1a1a",
+            "on-error":                "#ffffff",
+            "error-container":         "#ffdad6",
+            "on-error-container":      "#93000a",
+            "background":              "#f9f9ff",
+            "on-background":           "#111c2d",
+            "surface":                 "#f9f9ff",
+            "surface-dim":             "#cfdaf2",
+            "surface-bright":          "#f9f9ff",
+            "surface-container-lowest":"#ffffff",
+            "surface-container-low":   "#f0f3ff",
+            "surface-container":       "#e7eeff",
+            "surface-container-high":  "#dee8ff",
+            "surface-container-highest":"#d8e3fb",
+            "on-surface":              "#111c2d",
+            "on-surface-variant":      "#464555",
+            "surface-variant":         "#d8e3fb",
+            "inverse-surface":         "#263143",
+            "inverse-on-surface":      "#ecf1ff",
+            "outline":                 "#777587",
+            "outline-variant":         "#c7c4d8",
+            "surface-tint":            "#4d44e3",
+          },
+          fontFamily: {
+            "sans":        ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+            "display":     ["Plus Jakarta Sans", "sans-serif"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "label-md":    ["Inter"],
+            "label-sm":    ["Inter"],
+            "body-md":     ["Inter"],
+            "body-lg":     ["Inter"],
+            "display-lg":  ["Plus Jakarta Sans"],
+          },
+          fontSize: {
+            "headline-lg": ["32px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "label-md":    ["14px", { lineHeight: "1.4", letterSpacing: "0.05em",  fontWeight: "600" }],
+            "body-md":     ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+            "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+            "headline-lg-mobile": ["28px", { lineHeight: "1.2", fontWeight: "700" }],
+            "body-lg":     ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+            "label-sm":    ["12px", { lineHeight: "1.4", fontWeight: "500" }],
+            "display-lg":  ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "800" }],
+          },
+          spacing: {
+            "base": "4px",
+            "xs":   "0.5rem",
+            "sm":   "1rem",
+            "md":   "1.5rem",
+            "lg":   "2.5rem",
+            "xl":   "4rem",
+            "gutter": "24px",
+            "container-max": "1280px",
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px",
+          },
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles -->
+  <style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Level 1 shadow */
+    .shadow-level-1 { box-shadow: 0px 4px 20px rgba(0,0,0,0.03); }
+    /* Level 2 shadow (floating/modals) */
+    .shadow-level-2 { box-shadow: 0px 12px 32px rgba(79,70,229,0.08); }
+    /* Glassmorphism sidebar */
+    .glass-sidebar {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    /* Glassmorphism card (used in kinerja.html) */
+    .glass-panel {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(199,196,216,0.4);
+      box-shadow: 0px 4px 20px rgba(0,0,0,0.03);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #c7c4d8; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #777587; }
+
+    /* Progress bar gradient */
+    .progress-fill { background: linear-gradient(90deg, #3525cd 0%, #4cd7f6 100%); }
+    /* Text gradient */
+    .gradient-text {
+      background: linear-gradient(135deg, #3525cd 0%, #57dffe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    /* Upload dashed border */
+    .upload-dashed {
+      background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23c7c4d8FF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+      border-radius: 12px;
+    }
+    /* Heatmap cell */
+    .heatmap-cell { transition: all 0.2s ease; }
+    .heatmap-cell:hover { transform: scale(1.15); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; }
+
+    /* ── Mobile card layout utility ── */
+    .mobile-card-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #777587;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+      min-width: 90px;
+    }
+    @media (min-width: 768px) {
+      .mobile-only { display: none !important; }
+    }
+    @media (max-width: 767px) {
+      .desktop-only { display: none !important; }
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-background text-on-background font-sans min-h-screen flex antialiased selection:bg-primary-container selection:text-on-primary-container">
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="h-screen w-64 fixed left-0 top-0 glass-sidebar border-r border-outline-variant/40 shadow-sm flex flex-col py-md z-50 hidden md:flex">
+
+    <!-- Brand -->
+    <div class="px-6 mb-8 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary-fixed-dim flex items-center justify-center text-white shadow-level-2 flex-shrink-0">
+        <span class="material-symbols-outlined" style="font-size:20px; font-variation-settings:'FILL' 1;">graphic_eq</span>
+      </div>
+      <div>
+        <h1 class="font-display text-headline-md font-bold text-primary leading-tight">Dungeon Studio</h1>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 flex flex-col gap-1 px-2 overflow-y-auto">
+
+      <!-- Dashboard -->
+      <a href="{% url 'Klasifikasi:home' %}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md transition-colors duration-200
+           {% if request.resolver_match.url_name == 'home' %}
+             text-primary bg-primary-container/20 border-r-4 border-primary scale-[0.98]
+           {% else %}
+             text-on-surface-variant hover:bg-surface-container hover:text-on-surface
+           {% endif %}">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'home' %}1{% else %}0{% endif %};">dashboard</span>
+        <span>Dashboard</span>
+      </a>
+
+      <!-- Klasifikasi Audio -->
+      <a href="{% url 'Klasifikasi:klasifikasi' %}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md transition-colors duration-200
+           {% if request.resolver_match.url_name == 'klasifikasi' %}
+             text-primary bg-primary-container/20 border-r-4 border-primary scale-[0.98]
+           {% else %}
+             text-on-surface-variant hover:bg-surface-container hover:text-on-surface
+           {% endif %}">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'klasifikasi' %}1{% else %}0{% endif %};">analytics</span>
+        <span>Klasifikasi Audio</span>
+      </a>
+
+      <!-- Riwayat -->
+      <a href="{% url 'Klasifikasi:riwayat' %}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md transition-colors duration-200
+           {% if request.resolver_match.url_name == 'riwayat' %}
+             text-primary bg-primary-container/20 border-r-4 border-primary scale-[0.98]
+           {% else %}
+             text-on-surface-variant hover:bg-surface-container hover:text-on-surface
+           {% endif %}">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'riwayat' %}1{% else %}0{% endif %};">history</span>
+        <span>Riwayat</span>
+      </a>
+
+      <!-- Laporan -->
+      <a href="{% url 'Klasifikasi:laporan' %}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md transition-colors duration-200
+           {% if request.resolver_match.url_name == 'laporan' %}
+             text-primary bg-primary-container/20 border-r-4 border-primary scale-[0.98]
+           {% else %}
+             text-on-surface-variant hover:bg-surface-container hover:text-on-surface
+           {% endif %}">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'laporan' %}1{% else %}0{% endif %};">description</span>
+        <span>Laporan</span>
+      </a>
+
+      <!-- Kinerja Model (admin/pengelola only) -->
+      {% if user.profile.role == 'admin' or user.profile.role == 'pengelola_studio' %}
+      <a href="{% url 'Klasifikasi:kinerja' %}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md transition-colors duration-200
+           {% if request.resolver_match.url_name == 'kinerja' %}
+             text-primary bg-primary-container/20 border-r-4 border-primary scale-[0.98]
+           {% else %}
+             text-on-surface-variant hover:bg-surface-container hover:text-on-surface
+           {% endif %}">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'kinerja' %}1{% else %}0{% endif %};">speed</span>
+        <span>Kinerja Model</span>
+      </a>
+      {% endif %}
+
+      <!-- User Management (admin only) -->
+      {% if user.profile.role == 'admin' %}
+      <a href="{% url 'Klasifikasi:user_management' %}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md transition-colors duration-200
+           {% if request.resolver_match.url_name == 'user_management' %}
+             text-primary bg-primary-container/20 border-r-4 border-primary scale-[0.98]
+           {% else %}
+             text-on-surface-variant hover:bg-surface-container hover:text-on-surface
+           {% endif %}">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'user_management' %}1{% else %}0{% endif %};">group</span>
+        <span>Manajemen Pengguna</span>
+      </a>
+      {% endif %}
+
+
+    </nav>
+
+    <!-- CTA + User Footer -->
+    <div class="px-4 mt-auto pt-4 border-t border-outline-variant/30 space-y-4">
+      <div class="flex items-center gap-3 px-1">
+        <div class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-sm flex-shrink-0">
+          {{ user.first_name|first|upper|default:user.username|first|upper }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-label-md text-label-md text-on-surface truncate">{{ user.first_name|default:user.username }}</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant truncate">{{ user.profile.get_role_display|default:"Pengguna" }}</p>
+        </div>
+        <a href="{% url 'Klasifikasi:logout' %}" class="text-outline hover:text-error transition-colors flex-shrink-0" title="Logout">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ MAIN AREA ═══════════════ -->
+  <div class="flex-1 flex flex-col min-h-screen ml-0 md:ml-64">
+
+    <!-- Mobile TOPBAR (Hidden on Desktop) -->
+    <header class="h-16 sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-outline-variant/30 shadow-sm flex md:hidden justify-between items-center w-full px-4">
+      <div class="flex items-center gap-4">
+        <button id="sidebarToggle" class="text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <span class="font-display font-bold text-primary text-lg">Dungeon Studio</span>
+      </div>
+      <div class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-sm">
+        {{ user.first_name|first|upper|default:user.username|first|upper }}
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="flex-1 p-gutter md:p-xl max-w-container-max mx-auto w-full">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"></div>
+  <aside id="mobileSidebar" class="fixed top-0 left-0 h-full w-64 bg-white z-50 flex flex-col py-md transform -translate-x-full transition-transform duration-300 md:hidden shadow-level-2">
+    <div class="px-6 mb-8 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary-fixed-dim flex items-center justify-center text-white shadow-level-2 flex-shrink-0">
+        <span class="material-symbols-outlined" style="font-size:20px; font-variation-settings:'FILL' 1;">graphic_eq</span>
+      </div>
+      <div>
+        <h1 class="font-display text-headline-md font-bold text-primary">Dungeon Studio</h1>
+      </div>
+    </div>
+    <nav class="flex-1 flex flex-col gap-1 px-2">
+      <a href="{% url 'Klasifikasi:home' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
+        <span class="material-symbols-outlined">dashboard</span> Dungeon Studio
+      </a>
+      <a href="{% url 'Klasifikasi:klasifikasi' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
+        <span class="material-symbols-outlined">analytics</span> Klasifikasi Audio
+      </a>
+      <a href="{% url 'Klasifikasi:riwayat' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
+        <span class="material-symbols-outlined">history</span> Riwayat Klasifikasi
+      </a>
+      <a href="{% url 'Klasifikasi:laporan' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
+        <span class="material-symbols-outlined">description</span> Laporan Klasifikasi
+      </a>
+      {% if user.profile.role == 'admin' or user.profile.role == 'pengelola_studio' %}
+      <a href="{% url 'Klasifikasi:kinerja' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
+        <span class="material-symbols-outlined">speed</span> Kinerja Model
+      </a>
+      {% endif %}
+      {% if user.profile.role == 'admin' %}
+      <a href="{% url 'Klasifikasi:user_management' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
+        <span class="material-symbols-outlined">group</span> Manajemen Pengguna
+      </a>
+      {% endif %}
+    </nav>
+    <div class="px-4 pt-4 border-t border-outline-variant/30">
+      <a href="{% url 'Klasifikasi:logout' %}" class="flex items-center gap-2 px-4 py-3 text-on-surface-variant hover:text-error font-label-md text-label-md">
+        <span class="material-symbols-outlined">logout</span> Keluar
+      </a>
+    </div>
+  </aside>
+  <!-- ═══════════════ GLOBAL TOAST CONTAINER ═══════════════ -->
+  <div id="toastContainer" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 z-[200] flex flex-col gap-3"></div>
+
+  <!-- Django Messages to Toast -->
+  {% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      {% for message in messages %}
+        setTimeout(() => {
+          showToast("{{ message|escapejs }}", "{% if message.tags == 'error' %}error{% else %}success{% endif %}");
+        }, {{ forloop.counter0 }} * 500); // delay so multiple toasts stack nicely
+      {% endfor %}
+    });
+  </script>
+  {% endif %}
+
+  <!-- ═══════════════ GLOBAL CONFIRM MODAL ═══════════════ -->
+  <div id="confirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[150] hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-level-2 w-full max-w-sm p-6 relative transform scale-95 transition-transform duration-200" id="confirmModalBox">
+      <div class="flex items-center gap-4 mb-4">
+        <div class="w-12 h-12 rounded-full bg-error-container text-error flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[24px]">warning</span>
+        </div>
+        <h3 class="font-display font-bold text-headline-md text-on-surface" id="confirmTitle">Konfirmasi</h3>
+      </div>
+      <p class="text-body-md text-on-surface-variant mb-8" id="confirmMessage">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+      <div class="flex justify-end gap-3">
+        <button type="button" id="btnConfirmCancel" class="px-5 py-2.5 rounded-lg text-label-md font-label-md text-on-surface hover:bg-surface-container transition-colors">Batal</button>
+        <button type="button" id="btnConfirmAction" class="px-5 py-2.5 bg-error text-white rounded-lg text-label-md font-label-md hover:bg-error/90 transition-colors shadow-sm">Ya, Lanjutkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global JS -->
+  <script>
+    // Mobile sidebar toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', () => {
+        mobileSidebar.classList.toggle('-translate-x-full');
+        sidebarOverlay.classList.toggle('hidden');
+      });
+      sidebarOverlay.addEventListener('click', () => {
+        mobileSidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+      });
+    }
+
+    // ── Global Toast System ──
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const isError = type === 'error';
+      toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl shadow-level-2 transform translate-y-4 opacity-0 transition-all duration-300 ${isError ? 'bg-error-container text-on-error-container border border-error/30' : 'bg-surface-container-highest text-on-surface border border-outline-variant/30'}`;
+      
+      const icon = isError ? 'error' : 'check_circle';
+      const iconColor = isError ? 'text-error' : 'text-primary';
+      
+      toast.innerHTML = `
+        <span class="material-symbols-outlined ${iconColor}">${icon}</span>
+        <span class="text-label-md font-label-md">${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      // Animate in
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      });
+      
+      // Remove after 3s
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // ── Global Confirm Modal ──
+    function showConfirm(title, message, confirmText, actionCallback) {
+      const modal = document.getElementById('confirmModal');
+      const box = document.getElementById('confirmModalBox');
+      const btnAction = document.getElementById('btnConfirmAction');
+      const btnCancel = document.getElementById('btnConfirmCancel');
+      
+      document.getElementById('confirmTitle').textContent = title;
+      document.getElementById('confirmMessage').textContent = message;
+      btnAction.textContent = confirmText || 'Ya, Lanjutkan';
+      
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => box.classList.remove('scale-95'), 10);
+      
+      const closeHandler = () => {
+        box.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }, 200);
+      };
+      
+      // Setup action
+      btnAction.onclick = () => {
+        closeHandler();
+        if(actionCallback) actionCallback();
+      };
+      
+      btnCancel.onclick = closeHandler;
+      modal.onclick = (e) => { if(e.target === modal) closeHandler(); };
+    }
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

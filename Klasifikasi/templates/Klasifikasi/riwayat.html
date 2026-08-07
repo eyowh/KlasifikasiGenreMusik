@@ -1,0 +1,536 @@
+{% extends "Klasifikasi/base.html" %}
+{% block title %}Riwayat Klasifikasi{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-outline-variant/20">
+    <div>
+      <h2 class="font-display font-bold text-headline-lg text-on-surface">Riwayat Klasifikasi</h2>
+      <p class="font-sans text-body-md text-on-surface-variant mt-1">Kelola dan tinjau arsip klasifikasi audio Anda.</p>
+    </div>
+    {% if riwayat_saya %}
+    <form action="{% url 'Klasifikasi:hapus_semua_riwayat' %}" method="POST" id="formDeleteAllRiwayat" class="w-full md:w-auto">
+      {% csrf_token %}
+      <button type="submit"
+              class="flex items-center justify-center gap-2 px-4 py-2 text-error font-label-md text-label-md hover:bg-error-container/30 rounded-lg transition-colors w-full md:w-auto">
+        <span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+        Hapus Semua Riwayat Saya
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  <!-- === TABS (My History vs All — admin/pengelola) === -->
+  {% if is_advanced %}
+  <div class="flex bg-surface-container-low p-1 rounded-xl w-full md:w-fit border border-outline-variant/20 shadow-sm overflow-x-auto">
+    <a href="?tab=saya"
+       class="px-4 md:px-6 py-2 rounded-lg font-label-md text-label-md transition-all whitespace-nowrap flex-1 md:flex-none text-center
+         {% if active_tab == 'saya' %}bg-white text-primary shadow-sm ring-1 ring-outline-variant/10 font-bold{% else %}text-on-surface-variant hover:text-on-surface{% endif %}">
+      Riwayat ({{ request.user.username }})
+    </a>
+    <a href="?tab=semua"
+       class="px-4 md:px-6 py-2 rounded-lg font-label-md text-label-md transition-all whitespace-nowrap flex-1 md:flex-none text-center
+         {% if active_tab == 'semua' %}bg-white text-primary shadow-sm ring-1 ring-outline-variant/10 font-bold{% else %}text-on-surface-variant hover:text-on-surface{% endif %}">
+      Semua Riwayat
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- === FILTER BAR (glassmorphism) === -->
+  <div class="bg-white/70 backdrop-blur-md rounded-xl border border-outline-variant/30 p-4 shadow-level-1">
+    <form method="GET" class="flex flex-wrap gap-4 items-end">
+      <input type="hidden" name="tab" value="{{ active_tab }}">
+
+      <!-- Genre filter -->
+      <div class="flex flex-col gap-1 flex-1 min-w-[180px]">
+        <label class="text-label-sm font-label-sm text-on-surface-variant">Filter Genre</label>
+        <div class="relative">
+          <select name="genre"
+                  onchange="this.form.submit()"
+                  class="w-full appearance-none bg-surface border border-outline-variant/50 text-on-surface rounded-lg px-4 py-2.5 text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+            <option value="">Semua Genre</option>
+            {% if active_tab == 'saya' or not is_advanced %}
+            {% for g in all_genres_saya %}
+            <option value="{{ g }}" {% if genre_filter_saya|lower == g|lower %}selected{% endif %}>{{ g|title }}</option>
+            {% endfor %}
+            {% else %}
+            {% for g in all_genres_semua %}
+            <option value="{{ g }}" {% if genre_filter_semua|lower == g|lower %}selected{% endif %}>{{ g|title }}</option>
+            {% endfor %}
+            {% endif %}
+          </select>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none">expand_more</span>
+        </div>
+      </div>
+
+      {% if active_tab == 'semua' and is_advanced %}
+      <!-- Date range -->
+      <div class="flex flex-col gap-1 flex-1 min-w-[160px]">
+        <label class="text-label-sm font-label-sm text-on-surface-variant">Dari Tanggal</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">calendar_month</span>
+          <input type="date" name="date_from" value="{{ date_from_semua }}"
+                 class="w-full bg-surface border border-outline-variant/50 text-on-surface rounded-lg pl-10 pr-4 py-2.5 text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+        </div>
+      </div>
+      <div class="flex flex-col gap-1 flex-1 min-w-[160px]">
+        <label class="text-label-sm font-label-sm text-on-surface-variant">Sampai Tanggal</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">calendar_month</span>
+          <input type="date" name="date_to" value="{{ date_to_semua }}"
+                 class="w-full bg-surface border border-outline-variant/50 text-on-surface rounded-lg pl-10 pr-4 py-2.5 text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+        </div>
+      </div>
+      <!-- User filter -->
+      <div class="flex flex-col gap-1 flex-1 min-w-[180px]">
+        <label class="text-label-sm font-label-sm text-on-surface-variant">Pengguna</label>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]">person_search</span>
+          <input type="text" name="user" value="{{ user_filter_semua }}"
+                 placeholder="Cari username..."
+                 class="w-full bg-surface border border-outline-variant/50 text-on-surface rounded-lg pl-10 pr-4 py-2.5 text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+        </div>
+      </div>
+      <button type="submit"
+              class="bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md text-label-md px-4 py-2.5 rounded-lg border border-outline-variant/40 transition-colors flex items-center gap-2 self-end">
+        <span class="material-symbols-outlined text-[18px]">filter_list</span>
+        Terapkan
+      </button>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- === DATA TABLE === -->
+  <div class="bg-white rounded-xl shadow-level-1 border border-outline-variant/30 overflow-hidden flex flex-col">
+
+    <!-- ═══ TAB SAYA ═══ -->
+    {% if active_tab == 'saya' or not is_advanced %}
+    <!-- Desktop header -->
+    <div class="desktop-only grid grid-cols-12 gap-4 px-6 py-4 bg-surface-bright border-b border-outline-variant/20">
+      <div class="col-span-4 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Nama File</div>
+      <div class="col-span-1 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Format</div>
+      <div class="col-span-3 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Genre Prediksi</div>
+      <div class="col-span-2 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Confidence</div>
+      <div class="col-span-1 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Tanggal</div>
+      <div class="col-span-1 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider text-right">Aksi</div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto">
+      {% for r in riwayat_saya %}
+
+      <!-- Mobile Card -->
+      <div class="mobile-only p-4 border-b border-outline-variant/10">
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+              <span class="material-symbols-outlined text-[18px]">audio_file</span>
+            </div>
+            <div class="min-w-0">
+              <span class="text-label-md font-label-md text-on-surface block truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+              <span class="inline-block px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold uppercase mt-1">{{ r.format_file }}</span>
+            </div>
+          </div>
+          <form action="{% url 'Klasifikasi:hapus_riwayat' r.id %}" method="POST" class="delete-riwayat-form flex-shrink-0">
+            {% csrf_token %}
+            <button type="submit" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors">
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+          </form>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="px-2.5 py-1 rounded-full bg-primary-fixed/40 text-primary border border-primary/20 font-label-sm text-[11px] uppercase">{{ r.genre_prediksi }}</span>
+          <div class="flex items-center gap-2">
+            <div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full progress-fill rounded-full" style="width: {{ r.confidence }}%;"></div>
+            </div>
+            <span class="text-label-sm font-label-sm text-on-surface">{{ r.confidence }}%</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <span class="text-[11px] text-on-surface-variant">{{ r.waktu|date:"d M Y, H:i" }}</span>
+          <button type="button"
+                  onclick="openDetailModal('{{ r.genre_prediksi }}', {{ r.confidence|default:'0' }}, '{{ r.probabilities_json|escapejs }}')"
+                  class="text-label-sm font-label-sm text-primary hover:underline flex items-center gap-1">
+            <span class="material-symbols-outlined text-[12px]">bar_chart</span>
+            Detail Genre
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop Row -->
+      <div class="desktop-only grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant/10 items-center hover:bg-surface-container-lowest/60 transition-colors group cursor-default">
+        <!-- Filename + detail button -->
+        <div class="col-span-4 flex items-center gap-3 overflow-hidden">
+          <div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-[18px]">audio_file</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-label-md font-label-md text-on-surface truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+            <button type="button"
+                    onclick="openDetailModal('{{ r.genre_prediksi }}', {{ r.confidence|default:'0' }}, '{{ r.probabilities_json|escapejs }}')"
+                    class="text-label-sm font-label-sm text-primary hover:underline text-left mt-0.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="material-symbols-outlined text-[12px]">bar_chart</span>
+              Detail Genre
+            </button>
+          </div>
+        </div>
+        <!-- Format -->
+        <div class="col-span-1">
+          <span class="inline-block px-2 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold uppercase">{{ r.format_file }}</span>
+        </div>
+        <!-- Genre -->
+        <div class="col-span-3">
+          <span class="px-2.5 py-1 rounded-full bg-primary-fixed/40 text-primary border border-primary/20 font-label-sm text-[11px] uppercase">{{ r.genre_prediksi }}</span>
+        </div>
+        <!-- Confidence -->
+        <div class="col-span-2 flex items-center gap-3 pr-4">
+          <div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+            <div class="h-full progress-fill rounded-full" style="width: {{ r.confidence }}%;"></div>
+          </div>
+          <span class="text-label-md font-label-md text-on-surface w-10 text-right">{{ r.confidence }}%</span>
+        </div>
+        <!-- Date -->
+        <div class="col-span-1 flex flex-col justify-center">
+          <span class="text-[11px] text-on-surface">{{ r.waktu|date:"d M Y" }}</span>
+          <span class="text-[10px] text-on-surface-variant">{{ r.waktu|date:"H:i" }}</span>
+        </div>
+        <!-- Delete -->
+        <div class="col-span-1 flex justify-end items-center">
+          <form action="{% url 'Klasifikasi:hapus_riwayat' r.id %}" method="POST" class="delete-riwayat-form">
+            {% csrf_token %}
+            <button type="submit"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {% empty %}
+      <div class="py-16 text-center">
+        <span class="material-symbols-outlined text-[48px] text-outline-variant block mb-3">folder_open</span>
+        <p class="text-body-md text-on-surface-variant">Belum ada riwayat klasifikasi.</p>
+        <a href="{% url 'Klasifikasi:klasifikasi' %}" class="text-label-md font-label-md text-primary hover:underline mt-2 inline-block">Upload audio pertama →</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- ═══ TAB SEMUA (admin/pengelola) ═══ -->
+    <!-- Desktop header -->
+    <div class="desktop-only grid grid-cols-12 gap-4 px-6 py-4 bg-surface-bright border-b border-outline-variant/20">
+      <div class="col-span-2 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Pengguna</div>
+      <div class="col-span-3 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Nama File</div>
+      <div class="col-span-1 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Format</div>
+      <div class="col-span-2 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Genre</div>
+      <div class="col-span-2 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Confidence</div>
+      <div class="col-span-1 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Tanggal</div>
+      <div class="col-span-1 text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider text-right">Aksi</div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto">
+      {% for r in riwayat_semua %}
+
+      <!-- Mobile Card -->
+      <div class="mobile-only p-4 border-b border-outline-variant/10">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[11px] font-bold text-primary flex-shrink-0">
+              {{ r.username|first|upper }}
+            </div>
+            <span class="text-label-md font-label-md text-on-surface truncate">{{ r.username }}</span>
+          </div>
+          <form action="{% url 'Klasifikasi:hapus_riwayat' r.id %}" method="POST" class="delete-riwayat-form flex-shrink-0">
+            {% csrf_token %}
+            <button type="submit" class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors">
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+          </form>
+        </div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="material-symbols-outlined text-[16px] text-outline flex-shrink-0">audio_file</span>
+          <span class="text-label-md font-label-md text-on-surface truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+          <span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold uppercase flex-shrink-0">{{ r.format_file }}</span>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="px-2.5 py-1 rounded-full bg-primary-fixed/40 text-primary border border-primary/20 font-label-sm text-[11px] uppercase">{{ r.genre_prediksi }}</span>
+          <div class="flex items-center gap-2">
+            <div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full progress-fill rounded-full" style="width: {{ r.confidence }}%;"></div>
+            </div>
+            <span class="text-label-sm font-label-sm text-on-surface">{{ r.confidence }}%</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <span class="text-[11px] text-on-surface-variant">{{ r.waktu|date:"d/m/Y H:i" }}</span>
+          <button type="button"
+                  onclick="openDetailModal('{{ r.genre_prediksi }}', {{ r.confidence|default:'0' }}, '{{ r.probabilities_json|escapejs }}')"
+                  class="text-label-sm font-label-sm text-primary hover:underline flex items-center gap-1">
+            <span class="material-symbols-outlined text-[12px]">bar_chart</span>
+            Detail
+          </button>
+        </div>
+      </div>
+
+      <!-- Desktop Row -->
+      <div class="desktop-only grid grid-cols-12 gap-4 px-6 py-4 border-b border-outline-variant/10 items-center hover:bg-surface-container-lowest/60 transition-colors group">
+        <!-- Username -->
+        <div class="col-span-2">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-[11px] font-bold text-primary flex-shrink-0">
+              {{ r.username|first|upper }}
+            </div>
+            <span class="text-label-md font-label-md text-on-surface truncate">{{ r.username }}</span>
+          </div>
+        </div>
+        <!-- Filename + detail -->
+        <div class="col-span-3 flex items-center gap-2 overflow-hidden">
+          <span class="material-symbols-outlined text-[16px] text-outline flex-shrink-0">audio_file</span>
+          <div class="flex flex-col min-w-0">
+            <span class="text-label-md font-label-md text-on-surface truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+            <button type="button"
+                    onclick="openDetailModal('{{ r.genre_prediksi }}', {{ r.confidence|default:'0' }}, '{{ r.probabilities_json|escapejs }}')"
+                    class="text-label-sm font-label-sm text-primary hover:underline text-left mt-0.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="material-symbols-outlined text-[12px]">bar_chart</span>
+              Detail
+            </button>
+          </div>
+        </div>
+        <!-- Format -->
+        <div class="col-span-1">
+          <span class="px-2 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-[11px] font-bold uppercase">{{ r.format_file }}</span>
+        </div>
+        <!-- Genre -->
+        <div class="col-span-2">
+          <span class="px-2.5 py-1 rounded-full bg-primary-fixed/40 text-primary border border-primary/20 font-label-sm text-[11px] uppercase">{{ r.genre_prediksi }}</span>
+        </div>
+        <!-- Confidence -->
+        <div class="col-span-2 flex items-center gap-2 pr-4">
+          <div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+            <div class="h-full progress-fill rounded-full" style="width: {{ r.confidence }}%;"></div>
+          </div>
+          <span class="text-label-sm font-label-sm w-10 text-right text-on-surface">{{ r.confidence }}%</span>
+        </div>
+        <!-- Date -->
+        <div class="col-span-1 text-[11px] text-on-surface-variant">{{ r.waktu|date:"d/m/Y H:i" }}</div>
+        <!-- Delete -->
+        <div class="col-span-1 flex justify-end">
+          <form action="{% url 'Klasifikasi:hapus_riwayat' r.id %}" method="POST" class="delete-riwayat-form">
+            {% csrf_token %}
+            <button type="submit"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-outline hover:text-error hover:bg-error-container/50 transition-colors opacity-0 group-hover:opacity-100">
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {% empty %}
+      <div class="py-16 text-center">
+        <span class="material-symbols-outlined text-[48px] text-outline-variant block mb-3">manage_search</span>
+        <p class="text-body-md text-on-surface-variant">Tidak ada data yang sesuai filter.</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+<!-- ═══════════════ DETAIL MODAL (Top-3 Genre) ═══════════════ -->
+<div id="detailModal"
+     class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-level-2 w-full max-w-md p-8 relative">
+
+    <!-- Close -->
+    <button type="button" onclick="closeDetailModal()"
+            class="absolute top-5 right-5 text-outline hover:text-on-surface transition-colors">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+
+    <!-- Genre badge -->
+    <div class="flex items-center gap-4 mb-8">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-fixed to-surface-container-high flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1;">music_note</span>
+      </div>
+      <div>
+        <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Prediksi Utama</p>
+        <h3 id="detailGenreName" class="font-display font-bold text-headline-md text-on-surface uppercase gradient-text"></h3>
+      </div>
+    </div>
+
+    <!-- Confidence bar utama -->
+    <div class="mb-8">
+      <div class="flex justify-between mb-2">
+        <span class="text-label-sm font-label-sm text-on-surface-variant">Kepercayaan Model</span>
+        <span id="detailConfidence" class="text-label-md font-label-md text-primary"></span>
+      </div>
+      <div class="h-3 bg-surface-container rounded-full overflow-hidden">
+        <div id="detailConfBar" class="h-full progress-fill rounded-full transition-all duration-700" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Top 3 Probabilitas -->
+    <div>
+      <h4 class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider mb-4">Top 3 Probabilitas Genre</h4>
+      <div id="top3List" class="flex flex-col gap-3"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 pt-4 border-t border-outline-variant/20 text-center">
+      <p class="text-label-sm font-label-sm text-outline">Hasil analisis SVM (RBF Kernel) • GTZAN Dataset</p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function openDetailModal(genreName, confidence, probabilitiesJson) {
+    let probabilities = [];
+    try {
+      probabilities = JSON.parse(probabilitiesJson);
+    } catch(e) { probabilities = []; }
+
+    // Genre name + confidence
+    document.getElementById('detailGenreName').textContent = genreName;
+    document.getElementById('detailConfidence').textContent = (confidence || 0) + '%';
+    document.getElementById('detailConfBar').style.width = (confidence || 0) + '%';
+
+    // Top 3 bars
+    const top3 = probabilities.slice(0, 3);
+    const container = document.getElementById('top3List');
+    container.innerHTML = '';
+
+    const colors = ['bg-primary', 'bg-secondary-fixed-dim', 'bg-surface-container-high'];
+    const textColors = ['text-primary', 'text-secondary', 'text-on-surface-variant'];
+
+    top3.forEach((item, idx) => {
+      const prob = typeof item.probability === 'number' ? item.probability : parseFloat(item.probability) || 0;
+      const isFirst = idx === 0;
+
+      const row = document.createElement('div');
+      row.className = 'flex flex-col gap-1';
+      row.innerHTML = `
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${isFirst ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant'}">
+              ${idx + 1}
+            </span>
+            <span class="${isFirst ? 'text-label-md font-label-md text-on-surface' : 'text-label-md font-label-md text-on-surface-variant'} capitalize">
+              ${item.genre || '—'}
+            </span>
+          </div>
+          <span class="${isFirst ? 'text-primary font-bold' : 'text-on-surface-variant'} text-label-md font-label-md">
+            ${prob.toFixed(1)}%
+          </span>
+        </div>
+        <div class="h-2 bg-surface-container rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700 delay-${idx * 100} ${isFirst ? 'progress-fill' : 'bg-outline-variant'}"
+               style="width: ${prob}%"></div>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+
+    if (top3.length === 0) {
+      container.innerHTML = '<p class="text-body-md text-on-surface-variant text-center py-4">Data probabilitas tidak tersedia.</p>';
+    }
+
+    const modal = document.getElementById('detailModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+
+  function closeDetailModal() {
+    const modal = document.getElementById('detailModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+
+  document.getElementById('detailModal').addEventListener('click', function(e) {
+    if (e.target === this) closeDetailModal();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDetailModal();
+  });
+
+  // ── AJAX Delete Handlers ──
+  // Hapus semua riwayat
+  const formDeleteAll = document.getElementById('formDeleteAllRiwayat');
+  if (formDeleteAll) {
+    formDeleteAll.addEventListener('submit', function(e) {
+      e.preventDefault();
+      showConfirm('Hapus Semua Riwayat', 'Apakah Anda yakin ingin menghapus seluruh riwayat Anda secara permanen?', 'Hapus Semua', async () => {
+        try {
+          const btn = this.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          
+          const formData = new FormData(this);
+          const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          });
+          
+          if (response.ok) {
+            showToast('Semua riwayat berhasil dihapus.');
+            // Remove all rows from DOM
+            document.querySelectorAll('.delete-riwayat-form').forEach(f => {
+              const row = f.closest('.grid');
+              if(row) row.remove();
+            });
+            // Hide delete all button
+            this.style.display = 'none';
+          }
+        } catch (err) {
+          showToast('Gagal menghapus riwayat.', 'error');
+        } finally {
+          const btn = this.querySelector('button[type="submit"]');
+          if(btn) btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  // Hapus satu baris riwayat
+  document.querySelectorAll('.delete-riwayat-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      showConfirm('Hapus Riwayat', 'Apakah Anda yakin ingin menghapus data klasifikasi ini?', 'Hapus', async () => {
+        try {
+          const row = this.closest('.grid');
+          row.classList.add('opacity-50', 'pointer-events-none');
+          
+          const formData = new FormData(this);
+          const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          });
+          
+          if (response.ok) {
+            showToast('Riwayat berhasil dihapus.');
+            // Hapus baris dari DOM dengan transisi
+            row.style.transition = 'all 0.3s';
+            row.style.height = '0px';
+            row.style.padding = '0px';
+            row.style.overflow = 'hidden';
+            setTimeout(() => row.remove(), 300);
+          } else {
+            row.classList.remove('opacity-50', 'pointer-events-none');
+            showToast('Gagal menghapus.', 'error');
+          }
+        } catch (err) {
+          showToast('Terjadi kesalahan jaringan.', 'error');
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

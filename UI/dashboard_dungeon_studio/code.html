@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dungeon Studio - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Style Guidance Custom Shadows */
+        .shadow-level-1 { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03); }
+        .shadow-level-2 { box-shadow: 0px 12px 32px rgba(79, 70, 229, 0.08); }
+        
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--theme-colors-outline-variant); border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-surface": "#263143",
+                      "on-tertiary-fixed": "#191c1e",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed": "#e0e3e5",
+                      "secondary-fixed-dim": "#4cd7f6",
+                      "primary": "#3525cd",
+                      "secondary-container": "#57dffe",
+                      "primary-container": "#4f46e5",
+                      "on-tertiary-fixed-variant": "#444749",
+                      "secondary-fixed": "#acedff",
+                      "on-error": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-container-low": "#f0f3ff",
+                      "on-primary-container": "#dad7ff",
+                      "on-secondary-fixed": "#001f26",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#ecf1ff",
+                      "on-secondary-container": "#006172",
+                      "primary-fixed": "#e2dfff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline": "#777587",
+                      "on-background": "#111c2d",
+                      "tertiary": "#46494b",
+                      "on-surface": "#111c2d",
+                      "on-primary-fixed": "#0f0069",
+                      "secondary": "#00687a",
+                      "surface-container": "#e7eeff",
+                      "on-secondary-fixed-variant": "#004e5c",
+                      "surface-container-highest": "#d8e3fb",
+                      "on-tertiary": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "surface-dim": "#cfdaf2",
+                      "error-container": "#ffdad6",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "inverse-primary": "#c3c0ff",
+                      "surface-bright": "#f9f9ff",
+                      "surface-variant": "#d8e3fb",
+                      "outline-variant": "#c7c4d8",
+                      "surface-container-high": "#dee8ff",
+                      "surface-tint": "#4d44e3",
+                      "tertiary-container": "#5e6163",
+                      "tertiary-fixed-dim": "#c4c7c9",
+                      "background": "#f9f9ff",
+                      "on-surface-variant": "#464555",
+                      "surface": "#f9f9ff",
+                      "on-tertiary-container": "#dadcde"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "container-max": "1280px",
+                      "sm": "1rem",
+                      "xl": "4rem",
+                      "xs": "0.5rem",
+                      "lg": "2.5rem",
+                      "md": "1.5rem",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "body-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "display-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen selection:bg-primary selection:text-white">
+<!-- SideNavBar (from JSON logic) -->
+<nav class="h-screen w-64 fixed left-0 top-0 backdrop-blur-xl bg-white/40 dark:bg-inverse-surface/40 border-r border-outline-variant/40 shadow-sm hidden md:flex flex-col py-md z-50">
+<!-- Header -->
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary-fixed-dim flex items-center justify-center text-white shadow-level-2">
+<span class="material-symbols-outlined">graphic_eq</span>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Dungeon Studio</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">AI Music Engine</p>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 flex flex-col mt-4">
+<!-- Active: Dashboard -->
+<a class="flex items-center gap-3 px-6 py-3 text-primary dark:text-primary-fixed bg-primary-container/20 dark:bg-primary-container/10 border-r-4 border-primary transition-transform duration-150 scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/30 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Classification</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/30 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">History</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/30 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/30 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">speed</span>
+<span class="font-label-md text-label-md">Model Performance</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-tertiary-container/30 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">User Management</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="px-6 mt-auto">
+<button class="w-full py-3 px-4 bg-primary text-white rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 hover:bg-primary-container transition-all duration-300 hover:shadow-[0_0_15px_rgba(76,215,246,0.4)] group">
+<span class="material-symbols-outlined group-hover:-translate-y-1 transition-transform">upload</span>
+                Upload Track
+            </button>
+</div>
+</nav>
+<!-- TopNavBar (from JSON logic) -->
+<header class="h-16 sticky top-0 z-40 backdrop-blur-md border-b border-outline-variant/30 shadow-sm bg-white/80 dark:bg-inverse-surface/80 flex justify-between items-center w-full px-md ml-0 md:ml-64 max-w-full md:max-w-[calc(100%-16rem)]">
+<!-- Mobile Brand & Menu -->
+<div class="flex items-center gap-4 md:hidden">
+<button class="text-on-surface">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-headline-md text-headline-md font-extrabold text-primary">Dungeon Studio</span>
+</div>
+<!-- Search Bar (on_left configuration) -->
+<div class="hidden md:flex flex-1 items-center max-w-md bg-surface-container-lowest border border-outline-variant rounded-full px-4 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-outline text-[20px]">search</span>
+<input class="w-full bg-transparent border-none focus:outline-none focus:ring-0 text-body-md font-body-md text-on-surface ml-2 placeholder:text-outline/70" placeholder="Search classifications, tags..." type="text"/>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-6 ml-auto">
+<button class="text-on-surface-variant hover:text-primary transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-secondary-fixed-dim rounded-full shadow-[0_0_8px_rgba(76,215,246,0.8)]"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all hidden sm:block">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-outline-variant/50 hidden sm:block"></div>
+<img alt="User Profile Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-surface-container hover:border-primary transition-colors cursor-pointer" data-alt="A professional, modern headshot of a music producer in a well-lit studio. Ambient cyan and indigo lighting accents the background. Clean corporate aesthetic suitable for an AI platform avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEgwyNy9zcbSFgCw8xdCbs-Nj1bv4DQ9DbxYv2qwLBcWqMEecqS3uoTMrUZkbcq6DHepX4u6FAj5jDESAyVzJ4pkZ2DnJ9_fFm0DpitO6aowNfHIC3Ma5du9qKxg8m_sPQUDj1G2AyCcLW-9HHZJ9HQbuhMOkesLbcPjloSrpbYQqVK3Cy0LIP03BtIYxnZdcLFFVUE_oiaFDYoyots0RDgDnOAkifnlOY_Vwg0YhKYRH0SyuxcNFb"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-0 md:ml-64 p-6 md:p-gutter max-w-container-max mx-auto">
+<!-- Page Header -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-1">Welcome back, Producer</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Here is the latest analysis from your audio processing queue.</p>
+</div>
+<button class="hidden sm:flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg text-primary hover:bg-surface-container transition-colors font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                Last 30 Days
+            </button>
+</div>
+<!-- Data Clusters: Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-xl">
+<!-- Card 1: Total Classifications -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[64px] text-primary">library_music</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-4">Total Classifications</h3>
+<div class="flex items-baseline gap-3 mb-2">
+<span class="font-display-lg text-display-lg text-on-surface">12,450</span>
+<span class="flex items-center text-secondary-fixed-dim font-label-sm text-label-sm bg-secondary-fixed-dim/10 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +14%
+                    </span>
+</div>
+<p class="font-label-sm text-label-sm text-outline">Since last month</p>
+</div>
+<!-- Card 2: Top Genre -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6 flex flex-col justify-between">
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-1">Top Identified Genre</h3>
+<div class="mt-4 flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-on-surface">Rock</span>
+<div class="bg-secondary-container text-on-secondary-container rounded-full px-3 py-1 font-label-sm text-label-sm font-bold border border-secondary-container/50">
+                            34% of library
+                        </div>
+</div>
+</div>
+<!-- Mini visualization -->
+<div class="mt-6 flex gap-1 h-2 w-full rounded-full overflow-hidden bg-surface-container">
+<div class="h-full bg-primary" style="width: 34%;"></div>
+<div class="h-full bg-secondary-fixed-dim" style="width: 25%;"></div>
+<div class="h-full bg-tertiary-fixed-dim" style="width: 20%;"></div>
+<div class="h-full bg-outline-variant" style="width: 21%;"></div>
+</div>
+<div class="mt-2 flex gap-4 font-label-sm text-label-sm text-outline">
+<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary"></div> Rock</div>
+<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-secondary-fixed-dim"></div> Synthwave</div>
+</div>
+</div>
+<!-- Card 3: AI Model Accuracy -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6 flex items-center gap-6">
+<!-- Circular Progress -->
+<div class="relative w-24 h-24 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="var(--theme-colors-surface-container)" stroke-width="8"></circle>
+<circle class="transition-all duration-1000 ease-out" cx="50" cy="50" fill="transparent" r="40" stroke="url(#accuracyGradient)" stroke-dasharray="251.2" stroke-dashoffset="61.54" stroke-width="8"></circle>
+<defs>
+<lineargradient id="accuracyGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="var(--theme-colors-primary)"></stop>
+<stop offset="100%" stop-color="var(--theme-colors-secondary-fixed-dim)"></stop>
+</lineargradient>
+</defs>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-headline-md text-headline-md text-on-surface">
+                        75.5<span class="text-[14px] text-outline">%</span>
+</div>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-2">Global Model Accuracy</h3>
+<p class="font-body-md text-body-md text-on-surface mb-2">Confidence scores remain high across dominant genres.</p>
+<a class="font-label-sm text-label-sm text-primary hover:underline flex items-center gap-1" href="#">View details <span class="material-symbols-outlined text-[14px]">arrow_forward</span></a>
+</div>
+</div>
+</div>
+<!-- Lower Section: Split Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Recent Activity List (Takes 2 columns) -->
+<div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-0 overflow-hidden flex flex-col">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-white/50 backdrop-blur-md">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Classifications</h3>
+<button class="text-on-surface-variant hover:text-primary p-1 rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<div class="flex-1 overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-bright border-b border-outline-variant/30">
+<th class="py-3 px-6 font-label-md text-label-md text-outline font-medium">Track Name</th>
+<th class="py-3 px-6 font-label-md text-label-md text-outline font-medium">Predicted Genre</th>
+<th class="py-3 px-6 font-label-md text-label-md text-outline font-medium">Confidence</th>
+<th class="py-3 px-6 font-label-md text-label-md text-outline font-medium text-right">Time</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="py-4 px-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">audio_file</span>
+</div>
+<span class="font-medium text-on-surface">Neon_Nights_Final_Mix.wav</span>
+</td>
+<td class="py-4 px-6">
+<span class="inline-block px-3 py-1 rounded-full bg-secondary-fixed/20 text-on-secondary-container font-label-sm text-label-sm border border-secondary-fixed/30">Synthwave</span>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed-dim" style="width: 92%;"></div>
+</div>
+<span class="text-on-surface-variant text-label-sm font-label-sm">92%</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-outline text-label-sm font-label-sm">2 min ago</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="py-4 px-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">audio_file</span>
+</div>
+<span class="font-medium text-on-surface">Garage_Jam_04.mp3</span>
+</td>
+<td class="py-4 px-6">
+<span class="inline-block px-3 py-1 rounded-full bg-error-container/40 text-on-error-container font-label-sm text-label-sm border border-error-container/50">Indie Rock</span>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 85%;"></div>
+</div>
+<span class="text-on-surface-variant text-label-sm font-label-sm">85%</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-outline text-label-sm font-label-sm">15 min ago</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="py-4 px-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">audio_file</span>
+</div>
+<span class="font-medium text-on-surface">Podcast_Intro_V2.wav</span>
+</td>
+<td class="py-4 px-6">
+<span class="inline-block px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/40">Spoken Word</span>
+</td>
+<td class="py-4 px-6">
+<div class="flex items-center gap-2">
+<div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary" style="width: 68%;"></div>
+</div>
+<span class="text-on-surface-variant text-label-sm font-label-sm">68%</span>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-outline text-label-sm font-label-sm">1 hour ago</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 bg-surface-bright text-center border-t border-outline-variant/30">
+<button class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors">View All History</button>
+</div>
+</div>
+<!-- Model Info Card (Takes 1 column) -->
+<div class="bg-gradient-to-br from-inverse-surface to-on-background rounded-xl shadow-level-2 p-1 border border-outline/30 relative overflow-hidden group h-full">
+<!-- Decorative background elements -->
+<div class="absolute -top-20 -right-20 w-64 h-64 bg-primary rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+<div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary-fixed-dim rounded-full blur-[60px] opacity-10 group-hover:opacity-30 transition-opacity duration-700"></div>
+<div class="bg-inverse-surface/90 backdrop-blur-xl w-full h-full rounded-[10px] p-6 relative z-10 flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-[32px]">memory</span>
+<h3 class="font-headline-md text-headline-md text-white">Active Engine</h3>
+</div>
+<div class="space-y-5 flex-1">
+<div>
+<p class="font-label-sm text-label-sm text-outline-variant mb-1 uppercase tracking-wider">Algorithm Kernel</p>
+<p class="font-body-lg text-body-lg text-white font-medium flex items-center gap-2">
+                                Radial Basis Function (RBF)
+                                <span class="material-symbols-outlined text-primary-fixed-dim text-[16px]" title="Optimized for non-linear pattern recognition">info</span>
+</p>
+</div>
+<div class="h-px w-full bg-outline/20"></div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="font-label-sm text-label-sm text-outline-variant mb-1 uppercase tracking-wider">Features Extracted</p>
+<p class="font-headline-md text-headline-md text-secondary-fixed-dim">43</p>
+<p class="font-label-sm text-label-sm text-tertiary-fixed-dim mt-1">MFCCs, Spectral, Tempo</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-outline-variant mb-1 uppercase tracking-wider">Supported Genres</p>
+<p class="font-headline-md text-headline-md text-secondary-fixed-dim">10</p>
+<p class="font-label-sm text-label-sm text-tertiary-fixed-dim mt-1">Expanding Q3</p>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-outline/20">
+<button class="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-label-md text-label-md transition-colors border border-white/10 flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+                            Configure Model
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

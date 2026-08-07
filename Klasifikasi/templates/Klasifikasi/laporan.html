@@ -1,0 +1,231 @@
+{% extends "Klasifikasi/base.html" %}
+{% block title %}Laporan Klasifikasi{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-6">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+      <h2 class="font-display font-bold text-headline-lg text-on-surface">Laporan Klasifikasi</h2>
+      <p class="font-sans text-body-md text-on-surface-variant">Buat laporan komprehensif dan ekspor data klasifikasi.</p>
+    </div>
+  </div>
+
+  <!-- Bento Grid Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT: Report Parameters (5 cols) -->
+    <div class="lg:col-span-5 flex flex-col gap-6">
+
+      <!-- Filter Form Card -->
+      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-6 shadow-level-1">
+        <h3 class="font-display font-bold text-headline-md text-on-surface mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">tune</span>
+          Parameter Laporan
+        </h3>
+
+        <form method="GET" class="flex flex-col gap-5" id="laporanForm">
+          <input type="hidden" name="tab" value="{{ active_tab }}">
+
+          <!-- Admin/Pengelola: tab switch -->
+          {% if is_advanced %}
+          <div>
+            <label class="block text-label-sm font-label-sm text-on-surface-variant mb-2">Sumber Data</label>
+            <div class="flex bg-surface-container-low p-1 rounded-xl border border-outline-variant/20">
+              <a href="?tab=saya" class="flex-1 text-center py-2 rounded-lg text-label-md font-label-md transition-all text-[13px] md:text-[14px]
+                {% if active_tab == 'saya' %}bg-white text-primary shadow-sm{% else %}text-on-surface-variant{% endif %}">
+                Laporan ({{ request.user.username }})
+              </a>
+              <a href="?tab=semua" class="flex-1 text-center py-2 rounded-lg text-label-md font-label-md transition-all text-[13px] md:text-[14px]
+                {% if active_tab == 'semua' %}bg-white text-primary shadow-sm{% else %}text-on-surface-variant{% endif %}">
+                Semua Laporan
+              </a>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Admin: User filter -->
+          {% if active_tab == 'semua' and is_advanced %}
+          <div>
+            <label class="block text-label-sm font-label-sm text-on-surface-variant mb-1">Pengguna (Admin)</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">group</span>
+              <input type="text" name="user" value="{{ user_filter }}"
+                     placeholder="Semua pengguna"
+                     class="w-full bg-background border border-outline-variant/50 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Date Range -->
+          <div>
+            <label class="block text-label-sm font-label-sm text-on-surface-variant mb-1">Rentang Tanggal</label>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">calendar_today</span>
+                <input type="date" name="date_from" value="{{ date_from }}"
+                       class="w-full bg-background border border-outline-variant/50 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+              </div>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">calendar_today</span>
+                <input type="date" name="date_to" value="{{ date_to }}"
+                       class="w-full bg-background border border-outline-variant/50 rounded-lg pl-9 pr-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+              </div>
+            </div>
+          </div>
+
+          <!-- Genre Filter -->
+          <div>
+            <label class="block text-label-sm font-label-sm text-on-surface-variant mb-1">Filter Genre</label>
+            <select name="genre"
+                    class="w-full bg-background border border-outline-variant/50 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none">
+              <option value="">Semua Genre</option>
+              {% for g in all_genres %}
+              <option value="{{ g }}" {% if genre_filter == g %}selected{% endif %}>{{ g|title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <hr class="border-outline-variant/30 my-2">
+
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <button type="submit"
+                    class="md:col-span-2 flex items-center justify-center gap-2 bg-primary text-on-primary py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary/90 hover:shadow-[0_0_15px_rgba(76,215,246,0.3)] transition-all">
+              <span class="material-symbols-outlined text-[18px]">visibility</span>
+              Preview Data
+            </button>
+
+            {% if sudah_filter or preview %}
+            <a href="{% url 'Klasifikasi:download_pdf' %}?tab={{ active_tab }}&user={{ user_filter }}&genre={{ genre_filter }}&date_from={{ date_from }}&date_to={{ date_to }}"
+               class="export-btn flex items-center justify-center gap-2 bg-surface-variant text-primary py-2 rounded-lg font-label-md text-sm hover:bg-primary-fixed transition-colors"
+               data-type="PDF">
+              <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+              Ekspor PDF
+            </a>
+            <a href="{% url 'Klasifikasi:download_excel' %}?tab={{ active_tab }}&user={{ user_filter }}&genre={{ genre_filter }}&date_from={{ date_from }}&date_to={{ date_to }}"
+               class="export-btn flex items-center justify-center gap-2 bg-surface-variant text-primary py-2 rounded-lg font-label-md text-sm hover:bg-primary-fixed transition-colors"
+               data-type="Excel">
+              <span class="material-symbols-outlined text-[18px]">table_chart</span>
+              Ekspor Excel
+            </a>
+            <a href="{% url 'Klasifikasi:cetak_laporan' %}?tab={{ active_tab }}&user={{ user_filter }}&genre={{ genre_filter }}&date_from={{ date_from }}&date_to={{ date_to }}"
+               target="_blank"
+               class="export-btn flex items-center justify-center gap-2 bg-surface-variant text-on-surface-variant py-2 rounded-lg font-label-md text-sm hover:bg-outline-variant/30 transition-colors"
+               data-type="Cetak">
+              <span class="material-symbols-outlined text-[18px]">print</span>
+              Cetak Laporan
+            </a>
+            {% endif %}
+
+            {% if sudah_filter %}
+            <a href="?tab={{ active_tab }}" class="md:col-span-2 text-center text-label-sm font-label-sm text-primary hover:underline">
+              Reset Filter
+            </a>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+
+      <!-- Summary Stat Card (gradient) -->
+      {% if preview %}
+      <div class="bg-gradient-to-br from-primary-container to-secondary-container rounded-xl p-6 text-white shadow-level-2 relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 opacity-10 pointer-events-none">
+          <span class="material-symbols-outlined text-[120px]">insights</span>
+        </div>
+        <h4 class="text-label-md font-label-md opacity-90 mb-1">Total Data Difilter</h4>
+        <div class="font-display font-bold text-4xl mb-2">{{ total_preview }}</div>
+        <p class="text-sm opacity-80">rekaman ditemukan</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- RIGHT: Preview Table (7 cols) -->
+    <div class="lg:col-span-7">
+      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 shadow-level-1 h-full flex flex-col">
+        <div class="p-6 border-b border-outline-variant/30 flex justify-between items-center">
+          <h3 class="font-display font-bold text-headline-md text-on-surface">
+            Preview Data
+            {% if total_preview %}<span class="text-on-surface-variant font-sans text-body-md font-normal">({{ total_preview }} rekaman)</span>{% endif %}
+          </h3>
+        </div>
+        <div class="flex-1 overflow-auto">
+          <table class="w-full text-left border-collapse text-sm min-w-[550px]">
+            <thead class="sticky top-0">
+              <tr class="bg-surface-bright border-b border-outline-variant/30">
+                <th class="py-3 px-4 text-label-sm font-label-sm text-on-surface-variant">No</th>
+                {% if active_tab == 'semua' and is_advanced %}
+                <th class="py-3 px-4 text-label-sm font-label-sm text-on-surface-variant">User</th>
+                {% endif %}
+                <th class="py-3 px-4 text-label-sm font-label-sm text-on-surface-variant">Nama File</th>
+                <th class="py-3 px-4 text-label-sm font-label-sm text-on-surface-variant">Genre</th>
+                <th class="py-3 px-4 text-label-sm font-label-sm text-on-surface-variant">Confidence</th>
+                <th class="py-3 px-4 text-label-sm font-label-sm text-on-surface-variant">Waktu</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in preview %}
+              <tr class="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors">
+                <td class="py-3 px-4 text-on-surface-variant">{{ forloop.counter }}</td>
+                {% if active_tab == 'semua' and is_advanced %}
+                <td class="py-3 px-4 text-label-md font-label-md text-on-surface">{{ p.username }}</td>
+                {% endif %}
+                <td class="py-3 px-4 max-w-[160px]">
+                  <span class="truncate block text-label-md font-label-md text-on-surface" title="{{ p.nama_file }}">{{ p.nama_file }}</span>
+                </td>
+                <td class="py-3 px-4">
+                  <span class="px-2.5 py-1 rounded-full bg-primary-fixed/40 text-primary font-label-sm text-[11px] border border-primary/20 uppercase">{{ p.genre_prediksi }}</span>
+                </td>
+                <td class="py-3 px-4 text-label-md font-label-md text-on-surface">{{ p.confidence }}%</td>
+                <td class="py-3 px-4 text-label-sm font-label-sm text-on-surface-variant">{{ p.waktu|date:"d/m/Y H:i" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="6" class="py-16 text-center">
+                  <span class="material-symbols-outlined text-[48px] text-outline-variant block mb-3">search_off</span>
+                  <p class="text-body-md text-on-surface-variant">
+                    {% if sudah_filter %}Tidak ada data sesuai filter.{% else %}Atur parameter di kiri lalu klik Preview.{% endif %}
+                  </p>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.export-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const type = this.dataset.type;
+      const originalHtml = this.innerHTML;
+      
+      // Tampilkan toast info
+      if (typeof showToast !== 'undefined') {
+        if (type === 'Cetak') {
+          showToast('Membuka halaman cetak...');
+        } else {
+          showToast(`Memproses dokumen ${type}...`);
+        }
+      }
+      
+      // Ubah state tombol sementara
+      this.classList.add('opacity-70', 'pointer-events-none');
+      this.innerHTML = `<div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div> Memproses...`;
+      
+      // Reset state tombol setelah beberapa detik (asumsi download mulai/halaman terbuka)
+      setTimeout(() => {
+        this.classList.remove('opacity-70', 'pointer-events-none');
+        this.innerHTML = originalHtml;
+      }, 2500);
+    });
+  });
+</script>
+{% endblock %}

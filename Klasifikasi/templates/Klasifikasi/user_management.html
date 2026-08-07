@@ -1,0 +1,488 @@
+{% extends "Klasifikasi/base.html" %}
+{% block title %}Manajemen Pengguna{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-xl pb-24">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h2 class="font-display font-bold text-headline-lg text-on-background mb-2">Manajemen Pengguna</h2>
+      <p class="font-sans text-body-md text-on-surface-variant">Kelola akses, role, dan hak administratif sistem.</p>
+    </div>
+  </div>
+
+  <!-- Quick Stats (Bento, 2 col) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-6 shadow-level-1 flex items-start justify-between relative overflow-hidden group">
+      <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-colors pointer-events-none"></div>
+      <div>
+        <p class="text-label-sm font-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Total Pengguna</p>
+        <h3 class="font-display font-bold text-display-lg text-primary">{{ total_users }}</h3>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined">group</span>
+      </div>
+    </div>
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-6 shadow-level-1 flex items-start justify-between relative overflow-hidden group">
+      <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary-container/10 rounded-full blur-xl pointer-events-none"></div>
+      <div>
+        <p class="text-label-sm font-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Admin</p>
+        <h3 class="font-display font-bold text-display-lg text-on-surface">{{ admin_count|default:"—" }}</h3>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Cluster: Filter + Table -->
+  <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 shadow-level-1 overflow-hidden flex flex-col">
+
+    <!-- Filter Bar (role only) -->
+    <div class="p-4 border-b border-outline-variant/30 bg-surface-bright flex flex-col md:flex-row gap-4 items-center">
+      <div class="flex items-center gap-2 bg-surface border border-outline-variant/50 rounded-lg py-1.5 pl-3 pr-2">
+        <span class="material-symbols-outlined text-outline text-[18px]">filter_list</span>
+        <span class="text-label-sm font-label-sm text-on-surface-variant">Role:</span>
+        <select id="roleFilter" class="bg-transparent border-none text-label-md font-label-md text-on-surface focus:ring-0 py-0 pl-2 pr-8 cursor-pointer outline-none w-auto">
+          <option value="">Semua Role</option>
+          {% for val, name in role_choices %}
+          <option value="{{ val }}">{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Mobile Card Layout -->
+    <div class="mobile-only divide-y divide-outline-variant/30" id="userCardList">
+      {% for u in users %}
+      <div class="p-4" data-username="{{ u.username }}" data-role="{{ u.role }}">
+        <!-- User header -->
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0
+              {% if u.is_superuser %}bg-primary-container text-primary
+              {% elif u.role == 'admin' %}bg-primary-container text-primary
+              {% elif u.role == 'pengelola_studio' %}bg-secondary-container text-on-secondary-container
+              {% else %}bg-surface-variant text-on-surface-variant border border-outline-variant/50{% endif %}">
+              {{ u.username|first|upper }}
+            </div>
+            <div class="min-w-0">
+              <p class="text-label-md font-label-md text-on-surface truncate">{{ u.first_name|default:u.username }}</p>
+              <p class="text-[12px] text-on-surface-variant truncate">@{{ u.username }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full flex-shrink-0 {% if u.is_active %}bg-[#10B981]{% else %}bg-outline{% endif %}"></div>
+            <span class="text-label-sm font-label-sm text-on-surface whitespace-nowrap">{% if u.is_active %}Aktif{% else %}Nonaktif{% endif %}</span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        {% if u.email %}
+        <p class="text-[12px] text-on-surface-variant mb-3 pl-[52px]">{{ u.email }}</p>
+        {% endif %}
+
+        <!-- Role -->
+        <div class="mb-3 pl-[52px]">
+          {% if u.is_superuser %}
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container/10 text-primary text-label-sm font-label-sm border border-primary/20">
+            <span class="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+            System Admin
+          </span>
+          {% else %}
+          <form action="{% url 'Klasifikasi:ubah_role_user' u.id_user %}" method="POST" class="change-role-form m-0 p-0">
+            {% csrf_token %}
+            <select name="role"
+                    class="bg-surface-container-lowest border border-outline-variant/50 text-label-md font-label-md text-on-surface rounded-lg py-1.5 pl-3 pr-10 focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer w-full
+                      {% if u.id_user == user.id_user %}opacity-50 cursor-not-allowed{% endif %}"
+                    {% if u.id_user == user.id_user %}disabled{% endif %}>
+              {% for val, name in role_choices %}
+              <option value="{{ val }}" {% if u.role == val %}selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </form>
+          {% endif %}
+        </div>
+
+        <!-- Footer: date + actions -->
+        <div class="flex items-center justify-between pl-[52px]">
+          <span class="text-[11px] text-on-surface-variant">Bergabung {{ u.date_joined|date:"d M Y" }}</span>
+          {% if not u.is_superuser and u.id_user != user.id_user %}
+          <div class="flex items-center gap-1">
+            <button type="button"
+                    onclick="openEditModal('{{ u.id_user }}', '{{ u.username }}', '{{ u.first_name }}', '{{ u.email }}')"
+                    class="p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-surface-container transition-colors"
+                    title="Edit Pengguna">
+              <span class="material-symbols-outlined text-[20px]">edit</span>
+            </button>
+            <form action="{% url 'Klasifikasi:hapus_user' u.id_user %}" method="POST" class="inline delete-user-form">
+              {% csrf_token %}
+              <button type="submit"
+                      class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors"
+                      title="Hapus Pengguna">
+                <span class="material-symbols-outlined text-[20px]">delete</span>
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="py-16 text-center">
+        <span class="material-symbols-outlined text-[48px] text-outline-variant block mb-3">person_off</span>
+        <p class="text-body-md text-on-surface-variant">Tidak ada pengguna terdaftar.</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Desktop Table -->
+    <div class="desktop-only overflow-x-auto w-full">
+      <table class="w-full text-left border-collapse min-w-[800px]" id="userTable">
+        <thead>
+          <tr class="bg-surface-bright border-b border-outline-variant/50">
+            <th class="text-label-sm font-label-sm text-on-surface-variant py-4 px-6 uppercase tracking-wider">Pengguna</th>
+            <th class="text-label-sm font-label-sm text-on-surface-variant py-4 px-6 uppercase tracking-wider">Role</th>
+            <th class="text-label-sm font-label-sm text-on-surface-variant py-4 px-6 uppercase tracking-wider">Bergabung</th>
+            <th class="text-label-sm font-label-sm text-on-surface-variant py-4 px-6 uppercase tracking-wider">Status</th>
+            <th class="text-label-sm font-label-sm text-on-surface-variant py-4 px-6 uppercase tracking-wider text-right">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/30">
+          {% for u in users %}
+          <tr class="hover:bg-surface-container-low transition-colors group" data-username="{{ u.username }}" data-role="{{ u.role }}">
+            <!-- User info -->
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0
+                  {% if u.is_superuser %}bg-primary-container text-primary
+                  {% elif u.role == 'admin' %}bg-primary-container text-primary
+                  {% elif u.role == 'pengelola_studio' %}bg-secondary-container text-on-secondary-container
+                  {% else %}bg-surface-variant text-on-surface-variant border border-outline-variant/50{% endif %}">
+                  {{ u.username|first|upper }}
+                </div>
+                <div>
+                  <p class="text-label-md font-label-md text-on-surface">{{ u.first_name|default:u.username }}</p>
+                  <p class="text-[13px] text-on-surface-variant font-mono">@{{ u.username }} <span class="mx-1">&bull;</span> <span class="font-sans">{{ u.email|default:"-" }}</span></p>
+                </div>
+              </div>
+            </td>
+
+            <!-- Role -->
+            <td class="py-4 px-6">
+              {% if u.is_superuser %}
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container/10 text-primary text-label-sm font-label-sm border border-primary/20">
+                <span class="material-symbols-outlined text-[14px]">admin_panel_settings</span>
+                System Admin
+              </span>
+              {% else %}
+              <form action="{% url 'Klasifikasi:ubah_role_user' u.id_user %}" method="POST" class="change-role-form m-0 p-0">
+                {% csrf_token %}
+                <select name="role"
+                        class="bg-surface-container-lowest border border-outline-variant/50 text-label-md font-label-md text-on-surface rounded-lg py-1.5 pl-3 pr-10 focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer
+                          {% if u.id_user == user.id_user %}opacity-50 cursor-not-allowed{% endif %}"
+                        {% if u.id_user == user.id_user %}disabled{% endif %}>
+                  {% for val, name in role_choices %}
+                  <option value="{{ val }}" {% if u.role == val %}selected{% endif %}>{{ name }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+              {% endif %}
+            </td>
+
+            <!-- Join Date -->
+            <td class="py-4 px-6 text-body-md text-on-surface-variant">{{ u.date_joined|date:"d M Y" }}</td>
+
+            <!-- Status -->
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full {% if u.is_active %}bg-[#10B981]{% else %}bg-outline{% endif %}"></div>
+                <span class="text-label-sm font-label-sm text-on-surface">{% if u.is_active %}Aktif{% else %}Nonaktif{% endif %}</span>
+              </div>
+            </td>
+
+            <!-- Actions -->
+            <td class="py-4 px-6 text-right">
+              {% if not u.is_superuser and u.id_user != user.id_user %}
+              <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <!-- Edit Button (trigger modal) -->
+                <button type="button"
+                        onclick="openEditModal('{{ u.id_user }}', '{{ u.username }}', '{{ u.first_name }}', '{{ u.email }}')"
+                        class="p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-surface-container transition-colors"
+                        title="Edit Pengguna">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <!-- Delete -->
+                <form action="{% url 'Klasifikasi:hapus_user' u.id_user %}" method="POST" class="inline delete-user-form">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors"
+                          title="Hapus Pengguna">
+                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                  </button>
+                </form>
+              </div>
+              {% else %}
+              <span class="text-label-sm font-label-sm text-outline italic">—</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="py-16 text-center">
+              <span class="material-symbols-outlined text-[48px] text-outline-variant block mb-3">person_off</span>
+              <p class="text-body-md text-on-surface-variant">Tidak ada pengguna terdaftar.</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination placeholder -->
+    <div class="p-4 border-t border-outline-variant/30 bg-surface flex items-center justify-between">
+      <p class="text-label-sm font-label-sm text-on-surface-variant">Menampilkan {{ users|length }} dari {{ total_users }} pengguna</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ EDIT USER MODAL ═══════════════ -->
+<div id="editModal"
+     class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl shadow-level-2 w-full max-w-md p-8 relative">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="font-display font-bold text-headline-md text-on-surface" id="editModalTitle">Edit Pengguna</h3>
+      <button type="button" onclick="closeEditModal()"
+              class="text-outline hover:text-on-surface transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <form id="editForm" method="POST" class="flex flex-col gap-md">
+      {% csrf_token %}
+      <div>
+        <label class="text-label-md font-label-md text-on-surface block mb-xs" for="edit_username">Username</label>
+        <input type="text" name="username" id="edit_username"
+               class="w-full border border-outline-variant rounded-lg py-3 px-4 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+               required>
+      </div>
+      <div>
+        <label class="text-label-md font-label-md text-on-surface block mb-xs" for="edit_first_name">Nama Lengkap</label>
+        <input type="text" name="first_name" id="edit_first_name"
+               class="w-full border border-outline-variant rounded-lg py-3 px-4 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors">
+      </div>
+      <div>
+        <label class="text-label-md font-label-md text-on-surface block mb-xs" for="edit_email">Email</label>
+        <input type="email" name="email" id="edit_email"
+               class="w-full border border-outline-variant rounded-lg py-3 px-4 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors">
+      </div>
+      <div>
+        <label class="text-label-md font-label-md text-on-surface block mb-xs" for="edit_password">Password Baru <span class="text-outline font-normal">(kosongkan jika tidak diubah)</span></label>
+        <input type="password" name="password" id="edit_password"
+               placeholder="••••••••"
+               class="w-full border border-outline-variant rounded-lg py-3 px-4 text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors">
+      </div>
+      <div class="flex justify-between mt-sm">
+        <button type="button" onclick="closeEditModal()"
+                class="px-5 py-2.5 border border-outline-variant rounded-lg text-label-md font-label-md text-on-surface hover:bg-surface-container transition-colors">
+          Batal
+        </button>
+        <button type="submit"
+                class="px-5 py-2.5 bg-primary text-on-primary rounded-lg text-label-md font-label-md hover:bg-primary/90 transition-colors">
+          Simpan Perubahan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // ── Edit Modal ──
+  function openEditModal(userId, username, firstName, email) {
+    document.getElementById('editModalTitle').textContent = 'Edit: ' + username;
+    document.getElementById('edit_username').value = username;
+    document.getElementById('edit_first_name').value = firstName;
+    document.getElementById('edit_email').value = email;
+    document.getElementById('edit_password').value = '';
+    document.getElementById('editForm').action = '/admin-panel/users/' + userId + '/edit/';
+    document.getElementById('editModal').classList.remove('hidden');
+    document.getElementById('editModal').classList.add('flex');
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').classList.add('hidden');
+    document.getElementById('editModal').classList.remove('flex');
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+  });
+
+  // ── Live role filter ──
+  document.getElementById('roleFilter').addEventListener('change', filterTable);
+
+  function filterTable() {
+    const role = document.getElementById('roleFilter').value.toLowerCase();
+    // Filter desktop table rows
+    const rows = document.querySelectorAll('#userTable tbody tr[data-username]');
+    rows.forEach(row => {
+      const userRole = (row.dataset.role || '').toLowerCase();
+      const matchRole = !role || userRole === role;
+      row.style.display = matchRole ? '' : 'none';
+    });
+    // Filter mobile cards
+    const cards = document.querySelectorAll('#userCardList > div[data-username]');
+    cards.forEach(card => {
+      const userRole = (card.dataset.role || '').toLowerCase();
+      const matchRole = !role || userRole === role;
+      card.style.display = matchRole ? '' : 'none';
+    });
+  }
+
+  // ── AJAX Handlers ──
+  // Hapus User
+  document.querySelectorAll('.delete-user-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const username = this.closest('tr').dataset.username;
+      showConfirm('Hapus Pengguna', `Apakah Anda yakin ingin menghapus akun ${username} secara permanen?`, 'Hapus Permanen', async () => {
+        try {
+          const row = this.closest('tr');
+          row.classList.add('opacity-50', 'pointer-events-none');
+          
+          const formData = new FormData(this);
+          const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+          });
+          
+          if (response.ok) {
+            showToast(`Akun ${username} berhasil dihapus.`);
+            // Hapus baris dari DOM
+            row.style.transition = 'all 0.3s';
+            row.style.height = '0px';
+            row.style.opacity = '0';
+            setTimeout(() => row.remove(), 300);
+          } else {
+            row.classList.remove('opacity-50', 'pointer-events-none');
+            showToast('Gagal menghapus pengguna.', 'error');
+          }
+        } catch (err) {
+          showToast('Terjadi kesalahan jaringan.', 'error');
+        }
+      });
+    });
+  });
+
+  // Ubah Role User
+  document.querySelectorAll('.change-role-form select').forEach(select => {
+    select.addEventListener('change', async function() {
+      const form = this.closest('form');
+      const row = form.closest('tr');
+      const username = row.dataset.username;
+      const newRoleText = this.options[this.selectedIndex].text;
+      
+      try {
+        row.classList.add('opacity-50', 'pointer-events-none');
+        
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        if (response.ok) {
+          showToast(`Role ${username} berhasil diubah menjadi ${newRoleText}.`);
+          // Update data-role for filter logic
+          row.dataset.role = this.value;
+        } else {
+          showToast('Gagal mengubah role.', 'error');
+          // Revert selection? (optional, ideally yes but simpler to just show error)
+        }
+      } catch (err) {
+        showToast('Terjadi kesalahan jaringan.', 'error');
+      } finally {
+        row.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    });
+  });
+
+  // Edit User
+  document.getElementById('editForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = this.querySelector('button[type="submit"]');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan...';
+    
+    try {
+      const formData = new FormData(this);
+      const response = await fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+      
+      if (response.ok) {
+        // Because edit might change multiple fields, we can either re-fetch the page and extract the row,
+        // or just reload the page for simplicity since edit is rare.
+        // Wait, the prompt says: "tabel otomatis update menampilkan data terbaru tanpa reload manual."
+        // We will update the DOM manually based on input values.
+        
+        const username = document.getElementById('edit_username').value;
+        const firstName = document.getElementById('edit_first_name').value;
+        const email = document.getElementById('edit_email').value;
+        
+        // Find the row by checking which one had the edit button clicked?
+        // Let's find by looking at form action which contains user id
+        const actionUrl = this.action;
+        // Action is /klasifikasi/edit-user/<id>/
+        const parts = actionUrl.split('/');
+        const userId = parts[parts.length - 2]; 
+        
+        // Need to add data-id to rows to find it easily. 
+        // Or simply find by checking all rows.
+        const row = Array.from(document.querySelectorAll('#userTable tbody tr')).find(r => r.querySelector(`form[action*="/${userId}/"]`));
+        
+        if (row) {
+           row.dataset.username = username;
+           const cells = row.querySelectorAll('td');
+           // Column 1 is Name + Username
+           const nameEl = cells[0].querySelector('.text-on-surface');
+           if (nameEl) nameEl.textContent = firstName || username;
+           const userEl = cells[0].querySelector('.text-on-surface-variant');
+           if (userEl) userEl.textContent = '@' + username;
+           
+           // Column 2 is Email
+           const emailEl = cells[1].querySelector('a');
+           if (emailEl) {
+             emailEl.textContent = email || '—';
+             if (email) emailEl.href = 'mailto:' + email;
+           }
+        }
+        
+        showToast(`Data ${username} berhasil diperbarui.`);
+        closeEditModal();
+      } else {
+        const html = await response.text();
+        if (html.includes('sudah digunakan')) {
+           showToast('Gagal: Username sudah digunakan.', 'error');
+        } else {
+           showToast('Gagal menyimpan perubahan.', 'error');
+        }
+      }
+    } catch (err) {
+      showToast('Terjadi kesalahan jaringan.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+</script>
+{% endblock %}

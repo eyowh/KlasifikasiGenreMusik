@@ -1,0 +1,770 @@
+{% extends "Klasifikasi/base.html" %}
+{% block title %}Kinerja Model{% endblock %}
+
+{% block content %}
+<div class="space-y-xl">
+
+  <!-- Header -->
+  <div>
+    <h2 class="font-display font-bold text-headline-lg text-on-surface mb-2">Evaluasi Kinerja Model SVM</h2>
+    <p class="font-sans text-body-lg text-on-surface-variant">
+      Seberapa pintar model dalam mengenali genre musik? Temukan jawabannya di sini.
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- METRIC CARDS — judul awam sebagai primary, teknis kecil -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    <!-- Accuracy -->
+    <div class="glass-panel p-6 rounded-xl flex flex-col gap-3 relative overflow-hidden group">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors pointer-events-none"></div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">target</span>
+        <div>
+          <!-- Judul awam sebagai heading utama -->
+          <h3 class="text-label-md font-label-md text-on-surface font-semibold leading-tight">Ketepatan Tebakan</h3>
+          <!-- Istilah teknis sebagai keterangan kecil -->
+          <span class="text-[11px] text-outline font-sans tracking-wide">Accuracy</span>
+        </div>
+      </div>
+      <!-- Angka besar -->
+      <div class="font-display font-bold text-headline-lg text-on-background relative">
+        <div class="skeleton-loader h-10 w-24 bg-surface-variant rounded animate-pulse"></div>
+        <div class="data-content hidden opacity-0 transition-opacity duration-500">
+          {{ accuracy_pct }}<span class="text-headline-md text-outline">%</span>
+        </div>
+      </div>
+      <!-- Kalimat cerita konkret -->
+      <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
+        Dari <strong class="text-on-surface">100 lagu</strong> yang diuji, model berhasil menebak genre-nya dengan benar untuk sekitar <strong class="text-primary">{{ accuracy_pct|floatformat:0 }} lagu</strong>.
+      </p>
+    </div>
+
+    <!-- Precision -->
+    <div class="glass-panel p-6 rounded-xl flex flex-col gap-3 relative overflow-hidden group">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-secondary-container/20 rounded-full blur-2xl group-hover:bg-secondary-container/30 transition-colors pointer-events-none"></div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-secondary">my_location</span>
+        <div>
+          <h3 class="text-label-md font-label-md text-on-surface font-semibold leading-tight">Ketepatan Label</h3>
+          <span class="text-[11px] text-outline font-sans tracking-wide">Precision</span>
+        </div>
+      </div>
+      <div class="font-display font-bold text-headline-lg text-on-background relative">
+        <div class="skeleton-loader h-10 w-24 bg-surface-variant rounded animate-pulse"></div>
+        <div class="data-content hidden opacity-0 transition-opacity duration-500">
+          {{ precision_pct }}<span class="text-headline-md text-outline">%</span>
+        </div>
+      </div>
+      <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
+        Saat model menyebut sebuah lagu bergenre tertentu, sekitar <strong class="text-secondary">{{ precision_pct|floatformat:0 }} dari 100</strong> tebakannya memang benar-benar lagu dari genre itu.
+      </p>
+    </div>
+
+    <!-- Recall -->
+    <div class="glass-panel p-6 rounded-xl flex flex-col gap-3 relative overflow-hidden group">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-colors pointer-events-none"></div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-tertiary">replay</span>
+        <div>
+          <h3 class="text-label-md font-label-md text-on-surface font-semibold leading-tight">Kemampuan Menemukan</h3>
+          <span class="text-[11px] text-outline font-sans tracking-wide">Recall</span>
+        </div>
+      </div>
+      <div class="font-display font-bold text-headline-lg text-on-background relative">
+        <div class="skeleton-loader h-10 w-24 bg-surface-variant rounded animate-pulse"></div>
+        <div class="data-content hidden opacity-0 transition-opacity duration-500">
+          {{ recall_pct }}<span class="text-headline-md text-outline">%</span>
+        </div>
+      </div>
+      <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
+        Dari setiap <strong class="text-on-surface">100 lagu</strong> yang memiliki genre tertentu, model berhasil menemukan dan mengenali sekitar <strong class="text-tertiary">{{ recall_pct|floatformat:0 }} lagu</strong> di antaranya.
+      </p>
+    </div>
+
+    <!-- F1 Score -->
+    <div class="glass-panel p-6 rounded-xl flex flex-col gap-3 relative overflow-hidden group">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary-fixed/30 rounded-full blur-2xl group-hover:bg-primary-fixed/50 transition-colors pointer-events-none"></div>
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">balance</span>
+        <div>
+          <h3 class="text-label-md font-label-md text-on-surface font-semibold leading-tight">Skor Keseimbangan</h3>
+          <span class="text-[11px] text-outline font-sans tracking-wide">F1-Score</span>
+        </div>
+      </div>
+      <div class="font-display font-bold text-headline-lg text-on-background relative">
+        <div class="skeleton-loader h-10 w-24 bg-surface-variant rounded animate-pulse"></div>
+        <div class="data-content hidden opacity-0 transition-opacity duration-500">
+          {{ f1_pct }}<span class="text-headline-md text-outline">%</span>
+        </div>
+      </div>
+      <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
+        Nilai tunggal yang merangkum kualitas keseluruhan model secara adil. Skor <strong class="text-primary">{{ f1_pct }}%</strong> berarti model bekerja dengan cukup seimbang: tidak terlalu banyak salah tebak, tidak terlalu banyak yang terlewat.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- TABEL REFERENSI KATEGORI SKOR                             -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="glass-panel p-8 rounded-xl overflow-hidden">
+
+    <!-- Header tabel referensi -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="material-symbols-outlined text-primary">rule</span>
+        <h2 class="font-display font-bold text-headline-md text-on-background">Panduan Kategori Skor</h2>
+      </div>
+      <p class="text-[13px] text-on-surface-variant font-sans mt-1">
+        Gunakan tabel ini untuk memvalidasi angka-angka di atas. Setiap rentang nilai menjadi patokan performa model.
+      </p>
+    </div>
+
+    <!-- Tabel kategori -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-outline-variant/40">
+            <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant w-[22%]">Rentang Nilai</th>
+            <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant text-center w-[13%]">Kategori</th>
+            <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant w-[65%]">Artinya secara Praktis</th>
+          </tr>
+        </thead>
+        <tbody class="font-sans text-body-md">
+
+          <!-- Header baris grup 1 -->
+          <tr>
+            <td colspan="3" class="pt-6 pb-2 px-4 border-b border-outline-variant/20">
+              <div class="flex items-center gap-2 text-primary">
+                <span class="material-symbols-outlined text-[18px]">target</span>
+                <span class="text-label-md font-label-md font-bold uppercase tracking-wider">Akurasi &amp; F1-Score</span>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-green-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                90% ke atas
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-green-700">Sangat Baik</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Model hampir selalu benar. Kesalahan sangat jarang terjadi.</td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-blue-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></span>
+                80% &ndash; 89%
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-blue-700">Baik</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Secara umum dapat dipercaya, hanya sebagian kecil yang salah.</td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-yellow-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 flex-shrink-0"></span>
+                70% &ndash; 79%
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-yellow-700">Cukup</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Cukup mampu, tapi sekitar 2 dari 10 lagu masih salah tebak.</td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-orange-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-500 flex-shrink-0"></span>
+                60% &ndash; 69%
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-orange-700">Kurang</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Sering salah tebak (hampir 1 dari 3 lagu). Perlu ditingkatkan.</td>
+          </tr>
+
+          <tr class="hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-red-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>
+                Di bawah 60%
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-red-700">Buruk</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Tebakan sering salah dan tidak bisa diandalkan.</td>
+          </tr>
+
+          <!-- Header baris grup 2 -->
+          <tr>
+            <td colspan="3" class="pt-6 pb-2 px-4 border-b border-outline-variant/20">
+              <div class="flex items-center gap-2 text-secondary">
+                <span class="material-symbols-outlined text-[18px]">my_location</span>
+                <span class="text-label-md font-label-md font-bold uppercase tracking-wider">Precision &amp; Recall</span>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-green-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                0.85 ke atas
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-green-700">Sangat Baik</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Hampir selalu tepat saat menebak, dan hampir tidak ada yang terlewat.</td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-blue-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></span>
+                0.70 &ndash; 0.84
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-blue-700">Baik</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Sebagian besar tebakan benar, hanya beberapa yang terlewat.</td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-yellow-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 flex-shrink-0"></span>
+                0.55 &ndash; 0.69
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-yellow-700">Cukup</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Cukup banyak salah tuduh atau ada yang gagal dikenali.</td>
+          </tr>
+
+          <tr class="hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-red-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>
+                Di bawah 0.55
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-red-700">Perbaikan</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Sangat sering salah tebak dan banyak melewatkan lagu.</td>
+          </tr>
+
+          <!-- Header baris grup 3 -->
+          <tr>
+            <td colspan="3" class="pt-6 pb-2 px-4 border-b border-outline-variant/20">
+              <div class="flex items-center gap-2 text-tertiary">
+                <span class="material-symbols-outlined text-[18px]">bar_chart</span>
+                <span class="text-label-md font-label-md font-bold uppercase tracking-wider">Konsistensi (CV Std)</span>
+              </div>
+            </td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-green-100 text-green-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-green-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                0.000 &ndash; 0.015
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-green-700">Sangat Stabil</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Skor konsisten dan tidak bergantung keberuntungan.</td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-blue-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0"></span>
+                0.016 &ndash; 0.030
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-blue-700">Cukup Stabil</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Ada sedikit variasi antar percobaan tapi masih wajar.</td>
+          </tr>
+
+          <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-yellow-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 flex-shrink-0"></span>
+                0.031 &ndash; 0.050
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-yellow-700">Kurang Stabil</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Skor naik turun cukup signifikan.</td>
+          </tr>
+
+          <tr class="hover:bg-surface-container/50 transition-colors">
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center gap-1.5 bg-red-100 text-red-800 px-3 py-1 rounded-full text-label-sm font-label-sm border border-red-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0"></span>
+                Di atas 0.050
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold text-red-700">Tidak Stabil</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Sangat bergantung pada data pengujian, tidak bisa diandalkan.</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-4 px-4 py-3 bg-surface-container-low rounded-lg border border-outline-variant/30 flex items-start gap-2">
+      <span class="material-symbols-outlined text-outline text-[16px] flex-shrink-0 mt-0.5">info</span>
+      <p class="text-[12px] text-on-surface-variant font-sans leading-relaxed">
+        <strong>Catatan:</strong> Untuk klasifikasi 10 genre musik, model dengan skor di rentang <strong class="text-on-surface">70% &ndash; 80%</strong> sudah tergolong kompetitif.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- CROSS-VALIDATION                                          -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="mb-8">
+    <div class="glass-panel p-8 rounded-xl flex flex-col w-full">
+      <div class="flex justify-between items-start mb-4 flex-wrap gap-3">
+        <div>
+          <!-- Judul awam utama -->
+          <h2 class="font-display font-bold text-headline-md text-on-background">Uji Konsistensi Model</h2>
+          <span class="text-[11px] text-outline font-sans tracking-wide">5-Fold Cross-Validation</span>
+          <p class="text-[13px] text-on-surface-variant mt-2 max-w-xl leading-relaxed">
+            Model diuji sebanyak <strong class="text-on-surface">5 kali</strong>, masing-masing menggunakan potongan data yang berbeda. Tujuannya untuk memastikan model <strong class="text-on-surface">tidak hanya kebetulan pintar</strong> pada satu percobaan saja.
+          </p>
+        </div>
+        <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+          <span class="text-label-md font-label-md bg-surface-container-highest px-3 py-1 rounded-full text-primary whitespace-nowrap">
+            Rata-rata: {{ cv_mean_pct }}% &plusmn; {{ cv_std }}
+          </span>
+          <span class="text-label-sm font-label-sm px-3 py-1 rounded-full whitespace-nowrap
+            {% if cv_std_level == 'sangat stabil' %}bg-green-100 text-green-800{% elif cv_std_level == 'cukup stabil' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+            Model {{ cv_std_level }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Kalimat cerita hasil CV -->
+      <div class="mb-6 bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 flex items-start gap-3">
+        <span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">auto_stories</span>
+        <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans">
+          Dari 5 percobaan pengujian, skor yang didapat model berkisar antara hasil terendah hingga tertinggi di grafik di bawah. Selisih antara percobaan yang paling bagus dan paling buruk tercermin dari angka <strong class="text-on-surface">standar deviasi {{ cv_std }}</strong>. Karena nilainya kecil, model dinilai <strong class="text-on-surface">{{ cv_std_level }}</strong> artinya performanya tidak naik-turun tajam setiap kali diuji dengan data yang berbeda.
+        </p>
+      </div>
+
+      {% if cv_folds %}
+      <div class="flex items-end justify-between gap-2 md:gap-4 mt-2 px-2">
+        {% for fold in cv_folds %}
+        <div class="flex-1 flex flex-col items-center gap-2 md:gap-3 group relative">
+          <div class="w-full h-32 md:h-48 bg-surface-container-low/50 rounded-t-lg flex items-end relative overflow-hidden">
+            <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-white text-label-sm font-label-sm px-2.5 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-10 transform scale-95 group-hover:scale-100 shadow-md">
+              {{ fold.score|floatformat:4 }}
+            </div>
+            <div class="w-full rounded-t-lg bg-gradient-to-t from-primary/90 to-primary/60 hover:from-primary hover:to-primary/80 transition-all duration-500 shadow-[inset_0_2px_4px_rgba(255,255,255,0.2)]"
+                 style="height: calc({{ fold.score_css }} * 100%);">
+            </div>
+          </div>
+          <span class="text-center text-[10px] md:text-label-sm font-label-sm text-on-surface-variant font-medium">Percobaan {{ fold.fold }}</span>
+          <span class="text-center text-[10px] md:text-label-sm font-label-sm text-primary font-semibold">{{ fold.score|floatformat:2 }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="flex-1 flex items-center justify-center text-on-surface-variant flex-col gap-3 py-10">
+        <span class="material-symbols-outlined text-[48px] text-outline-variant">bar_chart</span>
+        <p class="text-body-md">Data uji konsistensi belum tersedia.</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- CONFUSION MATRIX                                          -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="flex flex-col gap-5">
+
+    <!-- Judul + Ringkasan Naratif Confusion Matrix -->
+    <div class="glass-panel p-6 rounded-xl">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="material-symbols-outlined text-primary">grid_view</span>
+        <h2 class="font-display font-bold text-headline-md text-on-background">Peta Kebingungan Model</h2>
+      </div>
+      <span class="text-[11px] text-outline font-sans tracking-wide">Confusion Matrix</span>
+
+      <!-- Ringkasan naratif otomatis -->
+      <div class="mt-4 bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 flex items-start gap-3">
+        <span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">auto_stories</span>
+        <div class="text-[13px] text-on-surface-variant leading-relaxed font-sans">
+          <p>
+            Tabel di bawah menunjukkan <strong class="text-on-surface">di mana model sering melakukan kesalahan</strong>. Setiap baris mewakili genre asli lagu, sedangkan setiap kolom mewakili genre yang ditebak model. Angka-angka di <strong class="text-green-700">garis diagonal</strong> (sudut kiri atas ke kanan bawah) adalah prediksi yang <strong class="text-green-700">benar</strong>. Angka di luar diagonal adalah prediksi yang <strong class="text-red-700">salah</strong>.
+          </p>
+          {% if worst_confusion_pair %}
+          <p class="mt-2">
+            Kesalahan terbesar yang ditemukan: sebanyak <strong class="text-on-surface">{{ worst_confusion_pair.count }} lagu</strong> yang sebenarnya bergenre <strong class="text-primary">{{ worst_confusion_pair.actual }}</strong> justru ditebak oleh model sebagai genre <strong class="text-primary">{{ worst_confusion_pair.predicted }}</strong>. Artinya, kedua genre ini memiliki karakteristik suara yang cukup mirip sehingga model sulit membedakannya.
+          </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Panduan ringkas cara baca (selalu terbuka, bukan collapsible) -->
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="flex items-start gap-2 bg-surface-container-low rounded-lg p-3">
+          <span class="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5">table_rows</span>
+          <p class="text-[12px] text-on-surface-variant leading-snug"><strong class="text-on-surface">Baris</strong> = genre asli lagu</p>
+        </div>
+        <div class="flex items-start gap-2 bg-surface-container-low rounded-lg p-3">
+          <span class="material-symbols-outlined text-secondary text-[18px] flex-shrink-0 mt-0.5">view_column</span>
+          <p class="text-[12px] text-on-surface-variant leading-snug"><strong class="text-on-surface">Kolom</strong> = genre tebakan model</p>
+        </div>
+        <div class="flex items-start gap-2 bg-green-50 border border-green-100 rounded-lg p-3">
+          <span class="material-symbols-outlined text-green-600 text-[18px] flex-shrink-0 mt-0.5">check_circle</span>
+          <p class="text-[12px] text-green-800 leading-snug"><strong>Diagonal</strong> = tebakan benar</p>
+        </div>
+        <div class="flex items-start gap-2 bg-red-50 border border-red-100 rounded-lg p-3">
+          <span class="material-symbols-outlined text-red-500 text-[18px] flex-shrink-0 mt-0.5">cancel</span>
+          <p class="text-[12px] text-red-800 leading-snug"><strong>Luar diagonal</strong> = tebakan salah</p>
+        </div>
+      </div>
+    </div>
+
+    {% if confusion_matrix_json %}
+    <script id="matrix-data" type="application/json">
+      {{ confusion_matrix_json|safe }}
+    </script>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Matrix Counts -->
+      <div class="glass-panel p-6 rounded-xl flex flex-col items-center overflow-x-auto">
+        <h3 class="font-display font-bold text-headline-sm text-on-background mb-1">Jumlah Prediksi</h3>
+        <p class="text-[11px] text-on-surface-variant mb-8 text-center">Baris = genre asli &nbsp;|&nbsp; Kolom = genre tebakan model</p>
+        <div id="cmCounts" class="w-full max-w-[450px]"></div>
+      </div>
+
+      <!-- Matrix Percentages -->
+      <div class="glass-panel p-6 rounded-xl flex flex-col items-center overflow-x-auto">
+        <h3 class="font-display font-bold text-headline-sm text-on-background mb-1">Persentase Prediksi (%)</h3>
+        <p class="text-[11px] text-on-surface-variant mb-8 text-center">Warna lebih gelap = persentase lebih besar. Warna gelap di diagonal berarti genre mudah dikenali.</p>
+        <div id="cmPercents" class="w-full max-w-[450px]"></div>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="glass-panel p-8 rounded-xl flex flex-col items-center justify-center py-16">
+      <span class="material-symbols-outlined text-[48px] text-outline-variant mb-4">grid_view</span>
+      <p class="text-body-md text-on-surface-variant">Data peta kebingungan belum tersedia.</p>
+    </div>
+    {% endif %}
+
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- PER-GENRE TABLE                                           -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="glass-panel p-4 md:p-8 rounded-xl overflow-hidden">
+
+    <!-- Judul + Ringkasan Naratif otomatis -->
+    <div class="mb-6">
+      <h2 class="font-display font-bold text-headline-md text-on-background">Performa per Genre Musik</h2>
+      <span class="text-[11px] text-outline font-sans tracking-wide">Metrik Per Kelas</span>
+
+      <!-- Ringkasan naratif otomatis berdasarkan data -->
+      <div class="mt-4 bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 flex items-start gap-3">
+        <span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">auto_stories</span>
+        <div class="text-[13px] text-on-surface-variant leading-relaxed font-sans">
+          <p>
+            Tabel berikut merinci seberapa baik model mengenali <strong class="text-on-surface">setiap genre secara terpisah</strong>.
+            {% for cls in per_class_list %}{% if cls.performance_color == 'green' %}
+            Genre <strong class="text-green-700">{{ cls.genre }}</strong>{% if not forloop.last %},{% endif %}
+            {% endif %}{% endfor %}
+            merupakan genre yang <strong class="text-green-700">paling mudah dikenali</strong> oleh model.
+            Sebaliknya,
+            {% for cls in per_class_list %}{% if cls.performance_color == 'red' %}
+            genre <strong class="text-red-700">{{ cls.genre }}</strong>{% if not forloop.last %},{% endif %}
+            {% endif %}{% endfor %}
+            adalah yang <strong class="text-red-700">paling sering tertukar</strong> dengan genre lain, sehingga masih butuh peningkatan.
+            {% if worst_confusion_pair %}
+            Sebagai contoh kasus spesifik kebingungan model: lagu yang sebenarnya bergenre <strong class="text-on-surface">{{ worst_confusion_pair.actual }}</strong> sering salah dianggap sebagai <strong class="text-on-surface">{{ worst_confusion_pair.predicted }}</strong>.
+            {% endif %}
+          </p>
+        </div>
+      </div>
+
+      <!-- Legenda Status -->
+      <div class="flex items-center gap-4 flex-wrap mt-4">
+        <span class="text-[12px] text-on-surface-variant font-sans">Status performa:</span>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500"></span>
+          <span class="text-label-sm font-label-sm text-on-surface-variant">Sangat Baik (F1 di atas 0,85)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+          <span class="text-label-sm font-label-sm text-on-surface-variant">Baik (F1 antara 0,70 dan 0,85)</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500"></span>
+          <span class="text-label-sm font-label-sm text-on-surface-variant">Perlu Ditingkatkan (F1 di bawah 0,70)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse min-w-[700px]">
+      <thead>
+        <tr class="border-b border-outline-variant/40">
+          <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant">Genre</th>
+          <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant">
+            <div>
+              <div class="font-semibold text-on-surface text-[13px]">Ketepatan Label</div>
+              <div class="text-[11px] text-outline font-normal">Precision</div>
+            </div>
+          </th>
+          <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant">
+            <div>
+              <div class="font-semibold text-on-surface text-[13px]">Kemampuan Menemukan</div>
+              <div class="text-[11px] text-outline font-normal">Recall</div>
+            </div>
+          </th>
+          <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant">
+            <div>
+              <div class="font-semibold text-on-surface text-[13px]">Skor Keseimbangan</div>
+              <div class="text-[11px] text-outline font-normal">F1-Score</div>
+            </div>
+          </th>
+          <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant text-center">Status</th>
+          <th class="py-4 px-4 text-label-md font-label-md text-on-surface-variant text-right">Jumlah Lagu Diuji</th>
+        </tr>
+      </thead>
+      <tbody class="font-sans text-body-md">
+        {% for cls in per_class_list %}
+        <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
+          <!-- Genre -->
+          <td class="py-3 px-4">
+            <div class="inline-flex items-center gap-2 bg-primary-fixed/40 text-primary px-3 py-1 rounded-full text-label-sm font-label-sm capitalize">
+              <span class="material-symbols-outlined text-[16px]">music_note</span>
+              {{ cls.genre }}
+            </div>
+          </td>
+          <!-- Precision -->
+          <td class="py-3 px-4 text-on-surface font-medium">{{ cls.precision|floatformat:2 }}</td>
+          <!-- Recall -->
+          <td class="py-3 px-4 text-on-surface font-medium">{{ cls.recall|floatformat:2 }}</td>
+          <!-- F1 Score + mini bar -->
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-3">
+              <span class="text-on-surface font-medium w-8">{{ cls.f1_score|floatformat:2 }}</span>
+              <div class="flex-1 h-1.5 rounded-full bg-surface-variant overflow-hidden max-w-[60px]">
+                <div class="f1-mini-bar h-full rounded-full
+                  {% if cls.performance_color == 'green' %}bg-green-500
+                  {% elif cls.performance_color == 'yellow' %}bg-yellow-500
+                  {% else %}bg-red-500{% endif %}"
+                     data-f1="{{ cls.f1_score }}"
+                     style="width: 0%;">
+                </div>
+              </div>
+            </div>
+          </td>
+          <!-- Status Badge -->
+          <td class="py-3 px-4 text-center">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-label-sm font-label-sm
+              {% if cls.performance_color == 'green' %}bg-green-100 text-green-800 border border-green-200
+              {% elif cls.performance_color == 'yellow' %}bg-yellow-100 text-yellow-800 border border-yellow-200
+              {% else %}bg-red-100 text-red-800 border border-red-200{% endif %}">
+              <span class="w-1.5 h-1.5 rounded-full flex-shrink-0
+                {% if cls.performance_color == 'green' %}bg-green-500
+                {% elif cls.performance_color == 'yellow' %}bg-yellow-500
+                {% else %}bg-red-500{% endif %}">
+              </span>
+              {{ cls.performance_label }}
+            </span>
+          </td>
+          <!-- Support -->
+          <td class="py-3 px-4 text-right text-on-surface-variant">{{ cls.support }} lagu</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="py-12 text-center text-on-surface-variant text-body-md">
+            <span class="material-symbols-outlined text-[40px] text-outline-variant block mb-3">query_stats</span>
+            Data per genre belum tersedia.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+
+    <!-- Ringkasan kartu teks di bawah tabel -->
+    <div class="mt-6 pt-5 border-t border-outline-variant/30 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-[13px]">
+      {% for cls in per_class_list %}{% if cls.performance_color == 'green' %}
+      <div class="flex items-start gap-2 text-green-800 bg-green-50 border border-green-100 rounded-lg px-3 py-3">
+        <span class="material-symbols-outlined text-green-600 text-[18px] flex-shrink-0 mt-0.5">verified</span>
+        <div>
+          <p class="font-semibold">{{ cls.genre }}</p>
+          <p class="text-green-700 mt-0.5">Paling akurat dikenali oleh model.</p>
+        </div>
+      </div>
+      {% endif %}{% endfor %}
+      {% for cls in per_class_list %}{% if cls.performance_color == 'red' %}
+      <div class="flex items-start gap-2 text-red-800 bg-red-50 border border-red-100 rounded-lg px-3 py-3">
+        <span class="material-symbols-outlined text-red-600 text-[18px] flex-shrink-0 mt-0.5">report_problem</span>
+        <div>
+          <p class="font-semibold">{{ cls.genre }}</p>
+          <p class="text-red-700 mt-0.5">Sering tertukar dengan genre lain.</p>
+        </div>
+      </div>
+      {% endif %}{% endfor %}
+    </div>
+  </section>
+
+  <!-- Footer Info -->
+  <footer class="bg-surface-container p-4 md:p-6 rounded-xl border border-outline-variant/30 grid grid-cols-2 md:grid-cols-4 gap-4 text-on-surface-variant text-label-sm font-label-sm">
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">memory</span><span><strong>Model:</strong> SVM (RBF Kernel)</span></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">equalizer</span><span><strong>Fitur:</strong> 43 Diekstrak</span></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">data_usage</span><span><strong>Split:</strong> 800 Training / 200 Test</span></div>
+    <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">source</span><span><strong>Dataset:</strong> GTZAN</span></div>
+  </footer>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ════════════════════════════════════════════════════════════════
+// CONFUSION MATRIX RENDERER
+// ════════════════════════════════════════════════════════════════
+(function () {
+  'use strict';
+
+  var matrixDataEl = document.getElementById('matrix-data');
+  if (!matrixDataEl) return;
+
+  try {
+    var parsedData = JSON.parse(matrixDataEl.textContent);
+
+    function renderMatrix(containerId, data, isPercentage, colorTheme) {
+      var container = document.getElementById(containerId);
+      if (!container) return;
+
+      var matrix  = data.matrix || data;
+      var labels  = data.labels || [];
+      var n       = matrix.length;
+      var rowSums = matrix.map(function (r) { return r.reduce(function (a, b) { return a + b; }, 0); });
+      var flat    = matrix.reduce(function (acc, r) { return acc.concat(r); }, []);
+      var maxVal  = Math.max.apply(null, flat.filter(function (v) { return typeof v === 'number'; }));
+
+      var maxOffVal = 0;
+      var maxOffPct = 0;
+      matrix.forEach(function (row, r) {
+        var rowSum = rowSums[r];
+        row.forEach(function (val, c) {
+          if (r !== c) {
+            if (val > maxOffVal) maxOffVal = val;
+            var pct = rowSum > 0 ? (val / rowSum) : 0;
+            if (pct > maxOffPct) maxOffPct = pct;
+          }
+        });
+      });
+
+      container.style.display             = 'grid';
+      container.style.gridTemplateColumns = 'auto repeat(' + n + ', 1fr)';
+      container.style.gridTemplateRows    = 'auto repeat(' + n + ', 1fr)';
+      container.style.gap                 = '2px';
+
+      container.appendChild(document.createElement('div')); // top-left empty
+
+      labels.forEach(function (l) {
+        var header = document.createElement('div');
+        header.className = 'text-[9px] md:text-[10px] font-bold text-on-surface-variant text-center self-end pb-3 overflow-visible';
+        header.style.transform       = 'rotate(-45deg)';
+        header.style.transformOrigin = 'bottom center';
+        header.textContent = l.toLowerCase();
+        container.appendChild(header);
+      });
+
+      matrix.forEach(function (row, r) {
+        var rowHeader = document.createElement('div');
+        rowHeader.className = 'text-[9px] md:text-[10px] font-bold text-on-surface-variant text-right pr-2 self-center capitalize';
+        rowHeader.textContent = labels[r] ? labels[r].toLowerCase() : ('Kelas ' + (r + 1));
+        container.appendChild(rowHeader);
+
+        row.forEach(function (val, c) {
+          var rowSum = rowSums[r];
+          var pct    = rowSum > 0 ? (val / rowSum) : 0;
+          var isDiag = r === c;
+          
+          var alpha = 0;
+          if (isPercentage) {
+            alpha = isDiag 
+              ? (pct > 0 ? (pct * 0.95) + 0.05 : 0.03)
+              : (maxOffPct > 0 ? (pct / maxOffPct * 0.85) + 0.15 : 0.03);
+          } else {
+            alpha = isDiag
+              ? (maxVal > 0 ? (val / maxVal * 0.95) + 0.05 : 0.03)
+              : (maxOffVal > 0 ? (val / maxOffVal * 0.85) + 0.15 : 0.03);
+          }
+          if (val === 0) alpha = 0.03;
+
+          var cell = document.createElement('div');
+          cell.className = 'flex items-center justify-center text-[9px] md:text-[10px] font-medium cursor-help rounded-sm aspect-square transition-transform duration-150 hover:scale-110 hover:z-10 hover:shadow-md';
+
+          if (isDiag) {
+            cell.style.backgroundColor = colorTheme === 'blue'
+              ? 'rgba(13, 71, 161, ' + alpha.toFixed(2) + ')'
+              : 'rgba(27, 94, 32, '  + alpha.toFixed(2) + ')';
+          } else {
+            cell.style.backgroundColor = 'rgba(185, 28, 28, ' + alpha.toFixed(2) + ')';
+          }
+
+          var isDark = alpha > 0.45;
+          cell.style.color = (val === 0) ? '#94a3b8' : (isDark ? '#ffffff' : '#334155');
+
+          cell.textContent = isPercentage
+            ? (pct > 0 ? (pct * 100).toFixed(1) + '%' : '0.0%')
+            : val;
+
+          var actualLabel = labels[r] || ('Kelas ' + (r + 1));
+          var predLabel   = labels[c] || ('Kelas ' + (c + 1));
+          cell.title = 'Genre asli: ' + actualLabel + '\nTebakan model: ' + predLabel + '\nJumlah: ' + val + ' (' + (pct * 100).toFixed(1) + '%)';
+
+          container.appendChild(cell);
+        });
+      });
+    }
+
+    renderMatrix('cmCounts',   parsedData, false, 'blue');
+    renderMatrix('cmPercents', parsedData, true,  'green');
+
+  } catch (e) {
+    console.error('Gagal memuat confusion matrix:', e);
+    ['cmCounts', 'cmPercents'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = '<p class="text-error text-sm p-4">Gagal memuat tabel.</p>';
+    });
+  }
+})();
+
+// ════════════════════════════════════════════════════════════════
+// INISIALISASI MINI BAR F1 + SKELETON LOADER
+// ════════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function () {
+  // Mini bar F1 per genre
+  document.querySelectorAll('.f1-mini-bar').forEach(function (bar) {
+    var val = parseFloat(bar.dataset.f1 || 0);
+    bar.style.width = (val * 100).toFixed(1) + '%';
+  });
+
+  // Skeleton loader
+  setTimeout(function () {
+    document.querySelectorAll('.skeleton-loader').forEach(function (el) {
+      el.classList.add('hidden');
+    });
+    document.querySelectorAll('.data-content').forEach(function (el) {
+      el.classList.remove('hidden');
+      void el.offsetWidth;
+      el.classList.remove('opacity-0');
+    });
+  }, 800);
+});
+</script>
+{% endblock %}

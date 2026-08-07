@@ -1,0 +1,207 @@
+{% extends "Klasifikasi/base.html" %}
+{% block title %}Dungeon Studio{% endblock %}
+
+{% block content %}
+<div class="space-y-xl">
+
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div>
+      <h2 class="font-display font-bold text-[24px] md:text-headline-lg text-on-surface mb-1">
+        Selamat datang, {{ user.first_name|default:user.username }}
+      </h2>
+      <p class="font-sans text-body-md text-on-surface-variant">Berikut ringkasan aktivitas klasifikasi audio Anda.</p>
+    </div>
+  </div>
+
+  <!-- === STAT CARDS (Bento Grid) === -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- Card 1: Total Klasifikasi Saya -->
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6 relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
+        <span class="material-symbols-outlined text-[64px] text-primary">library_music</span>
+      </div>
+      <h3 class="text-label-md font-label-md text-on-surface-variant mb-4">Total Klasifikasi Saya</h3>
+      <div class="flex items-baseline gap-3 mb-2">
+        <span class="text-display-lg font-display font-bold text-on-surface">{{ total_klasifikasi_user }}</span>
+      </div>
+      <p class="text-label-sm font-label-sm text-outline">Sepanjang waktu</p>
+    </div>
+
+    <!-- Card 2: Genre Terbanyak Saya -->
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6 flex flex-col justify-between">
+      <div>
+        <h3 class="text-label-md font-label-md text-on-surface-variant mb-1">Genre Terbanyak Saya</h3>
+        <div class="mt-4 flex items-center justify-between">
+          <span class="font-display font-bold text-headline-md text-on-surface uppercase">
+            {% if top_genre_user %}{{ top_genre_user }}{% else %}—{% endif %}
+          </span>
+        </div>
+      </div>
+      <!-- Mini bar -->
+      <div class="mt-6 h-2 w-full rounded-full overflow-hidden bg-surface-container">
+        <div class="h-full bg-primary rounded-full" style="width: 60%;"></div>
+      </div>
+    </div>
+
+    <!-- Card 3: Akurasi Model (global) -->
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6 flex items-center gap-6">
+      <!-- Circle progress -->
+      <div class="relative w-24 h-24 flex-shrink-0">
+        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="transparent" stroke="#e7eeff" stroke-width="8"></circle>
+          <circle cx="50" cy="50" r="40" fill="transparent"
+            stroke="url(#accGrad)"
+            stroke-width="8"
+            stroke-dasharray="251.2"
+            stroke-dashoffset="{{ accuracy_dashoffset|default:'62' }}"></circle>
+          <defs>
+            <linearGradient id="accGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#3525cd"></stop>
+              <stop offset="100%" stop-color="#4cd7f6"></stop>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center text-headline-md font-display font-bold text-on-surface">
+          {% if accuracy %}{{ accuracy }}{% else %}—{% endif %}<span class="text-sm text-outline">%</span>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-label-md font-label-md text-on-surface-variant mb-2">Akurasi Model</h3>
+        <p class="text-body-md text-on-surface mb-2">SVM Kernel {{ kernel|default:"RBF" }}</p>
+        <a href="{% url 'Klasifikasi:kinerja' %}" class="text-label-sm font-label-sm text-primary hover:underline flex items-center gap-1">
+          Lihat detail <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- === ADMIN/PENGELOLA GLOBAL STATS === -->
+  {% if role == 'admin' or role == 'pengelola_studio' %}
+  <div class="grid grid-cols-2 {% if role == 'admin' %}md:grid-cols-4{% else %}md:grid-cols-3{% endif %} gap-6">
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6">
+      <p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Total Klasifikasi Sistem</p>
+      <p class="font-display font-bold text-headline-lg text-primary">{{ total_klasifikasi_all }}</p>
+    </div>
+    {% if role == 'admin' %}
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6">
+      <p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Total Pengguna</p>
+      <p class="font-display font-bold text-headline-lg text-on-surface">{{ total_users }}</p>
+    </div>
+    {% endif %}
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6">
+      <p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Fitur Diekstrak</p>
+      <p class="font-display font-bold text-headline-lg text-secondary-fixed-dim">{{ jumlah_fitur|default:"43" }}</p>
+    </div>
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 p-6">
+      <p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Genre Didukung</p>
+      <p class="font-display font-bold text-headline-lg text-on-surface">{{ jumlah_genre|default:"10" }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- === LOWER SECTION === -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Recent Classifications Table (2 cols) -->
+    <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 overflow-hidden flex flex-col">
+      <div class="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-white/50 backdrop-blur-md">
+        <h3 class="font-display font-bold text-headline-md text-on-surface">Klasifikasi Terbaru</h3>
+        <a href="{% url 'Klasifikasi:riwayat' %}" class="text-label-sm font-label-sm text-primary hover:underline">Lihat semua</a>
+      </div>
+      <div class="flex-1 overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[550px]">
+          <thead>
+            <tr class="bg-surface-bright border-b border-outline-variant/30">
+              <th class="py-3 px-6 text-label-md font-label-md text-outline">Nama File</th>
+              <th class="py-3 px-6 text-label-md font-label-md text-outline">Genre</th>
+              <th class="py-3 px-6 text-label-md font-label-md text-outline">Confidence</th>
+              <th class="py-3 px-6 text-label-md font-label-md text-outline text-right">Waktu</th>
+            </tr>
+          </thead>
+          <tbody class="text-body-md text-on-surface">
+            {% for r in riwayat_saya %}
+            <tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/50 transition-colors group">
+              <td class="py-4 px-6 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
+                  <span class="material-symbols-outlined text-[20px]">audio_file</span>
+                </div>
+                <span class="font-medium text-on-surface truncate max-w-[180px]" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+              </td>
+              <td class="py-4 px-6">
+                <span class="inline-block px-3 py-1 rounded-full bg-primary-fixed/50 text-primary font-label-sm text-label-sm border border-primary/20 uppercase">
+                  {{ r.genre_prediksi }}
+                </span>
+              </td>
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-2">
+                  <div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                    <div class="h-full progress-fill" style="width: {{ r.confidence }}%;"></div>
+                  </div>
+                  <span class="text-label-sm font-label-sm text-on-surface-variant">{{ r.confidence }}%</span>
+                </div>
+              </td>
+              <td class="py-4 px-6 text-right text-label-sm font-label-sm text-outline">{{ r.waktu|timesince }} lalu</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="py-12 text-center text-on-surface-variant text-body-md">
+                <span class="material-symbols-outlined text-[40px] text-outline-variant block mb-3">inbox</span>
+                Belum ada riwayat klasifikasi.
+                <br>
+                <a href="{% url 'Klasifikasi:klasifikasi' %}" class="text-primary text-label-md font-label-md hover:underline mt-2 inline-block">Upload audio pertama Anda →</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Active Engine Card (dark) -->
+    <div class="bg-gradient-to-br from-inverse-surface to-on-background rounded-xl shadow-level-2 p-1 border border-outline/30 relative overflow-hidden group h-full">
+      <div class="absolute -top-20 -right-20 w-64 h-64 bg-primary rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-700 pointer-events-none"></div>
+      <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary-fixed-dim rounded-full blur-[60px] opacity-10 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"></div>
+      <div class="bg-inverse-surface/90 backdrop-blur-xl w-full h-full rounded-[10px] p-6 relative z-10 flex flex-col">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="material-symbols-outlined text-secondary-fixed-dim text-[32px]">memory</span>
+          <h3 class="font-display font-bold text-headline-md text-white">Active Engine</h3>
+        </div>
+        <div class="space-y-5 flex-1">
+          <div>
+            <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">Algoritma</p>
+            <p class="text-body-lg text-white font-medium flex items-center gap-2">
+              Support Vector Machine
+              <span class="material-symbols-outlined text-primary-fixed-dim text-[16px]" title="Non-linear classification">info</span>
+            </p>
+          </div>
+          <div class="h-px w-full bg-outline/20"></div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">Fitur</p>
+              <p class="font-display font-bold text-headline-md text-secondary-fixed-dim">{{ jumlah_fitur|default:"43" }}</p>
+              <p class="text-label-sm font-label-sm text-tertiary-fixed-dim mt-1">MFCC, Spectral, Tempo</p>
+            </div>
+            <div>
+              <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">Genre</p>
+              <p class="font-display font-bold text-headline-md text-secondary-fixed-dim">{{ jumlah_genre|default:"10" }}</p>
+              <p class="text-label-sm font-label-sm text-tertiary-fixed-dim mt-1">GTZAN Dataset</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 pt-4 border-t border-outline/20">
+          <a href="{% url 'Klasifikasi:klasifikasi' %}"
+             class="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-label-md font-label-md transition-colors border border-white/10 flex justify-center items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">upload</span>
+            Upload Track Sekarang
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
