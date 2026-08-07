@@ -14,6 +14,7 @@ ffmpeg==1.4
 ffmpeg-python==0.2.0
 fonttools==4.63.0
 future==1.0.0
+gunicorn==26.0.0
 idna==3.18
 joblib==1.5.3
 kiwisolver==1.5.0
