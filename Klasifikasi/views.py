@@ -331,7 +331,10 @@ def register_view(request):
                 password=password1,
                 first_name=first_name,
             )
-            UserProfile.objects.create(user=user, role='pengguna_studio', is_active=True)
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.role = 'pengguna_studio'
+            profile.is_active = True
+            profile.save()
             messages.success(request, f'Akun "{username}" berhasil dibuat. Silakan login.')
             return redirect('Klasifikasi:login')
 
