@@ -1,4 +1,4 @@
-﻿{% extends "Klasifikasi/base.html" %}
+{% extends "Klasifikasi/base.html" %}
 {% block title %}Manajemen Pengguna{% endblock %}
 
 {% block extra_head %}
@@ -171,7 +171,7 @@
             </form>
 
             <button type="button" class="act-btn text-on-surface-variant hover:bg-primary/10 hover:text-primary"
-                    onclick="openEditModal('{{ u.id_user }}','{{ u.username }}','{{ u.first_name }}','{{ u.email }}')" title="Edit">
+                    onclick="openEditModal('{{ u.id_user }}','{{ u.username|escapejs }}','{{ u.first_name|default:''|escapejs }}','{{ u.email|default:''|escapejs }}')" title="Edit">
               <span class="material-symbols-outlined text-[18px]">edit</span>
             </button>
 
@@ -242,7 +242,7 @@
         <label class="text-[12px] font-semibold text-on-surface block mb-1" for="edit_password">
           Password Baru <span class="text-outline font-normal">(kosongkan jika tidak diubah)</span>
         </label>
-        <input type="password" name="password" id="edit_password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+        <input type="password" name="password" id="edit_password" placeholder="••••••••"
                class="w-full border border-outline-variant rounded-xl py-2.5 px-3 text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors">
       </div>
       <div class="flex gap-3 pt-1">
@@ -329,7 +329,7 @@
       try {
         if(card) card.classList.add('opacity-50','pointer-events-none');
         const r = await fetch(form.action, { method:'POST', body:new FormData(form), headers:{'X-Requested-With':'XMLHttpRequest'} });
-        if(r.ok) { showToast(`Role ${uname} â†’ ${roleText}`); if(card) card.dataset.role = this.value; }
+        if(r.ok) { showToast(`Role ${uname} -> ${roleText}`); if(card) card.dataset.role = this.value; }
         else showToast('Gagal ubah role.','error');
       } catch { showToast('Kesalahan jaringan.','error'); }
       finally { if(card) card.classList.remove('opacity-50','pointer-events-none'); }
