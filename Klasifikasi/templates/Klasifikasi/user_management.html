@@ -12,8 +12,8 @@
     </div>
   </div>
 
-  <!-- Quick Stats (Bento, 2 col) -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+  <!-- Quick Stats (Bento, 4 col) -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-6 shadow-level-1 flex items-start justify-between relative overflow-hidden group">
       <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/5 rounded-full blur-xl group-hover:bg-primary/10 transition-colors pointer-events-none"></div>
       <div>
@@ -28,10 +28,30 @@
       <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary-container/10 rounded-full blur-xl pointer-events-none"></div>
       <div>
         <p class="text-label-sm font-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Admin</p>
-        <h3 class="font-display font-bold text-display-lg text-on-surface">{{ admin_count|default:"—" }}</h3>
+        <h3 class="font-display font-bold text-display-lg text-on-surface">{{ admin_count|default:"0" }}</h3>
       </div>
       <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
         <span class="material-symbols-outlined">admin_panel_settings</span>
+      </div>
+    </div>
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-6 shadow-level-1 flex items-start justify-between relative overflow-hidden group">
+      <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary/5 rounded-full blur-xl pointer-events-none"></div>
+      <div>
+        <p class="text-label-sm font-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Pengelola</p>
+        <h3 class="font-display font-bold text-display-lg text-secondary">{{ pengelola_count|default:"0" }}</h3>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+        <span class="material-symbols-outlined">manage_accounts</span>
+      </div>
+    </div>
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 p-6 shadow-level-1 flex items-start justify-between relative overflow-hidden group">
+      <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-green-100/30 rounded-full blur-xl pointer-events-none"></div>
+      <div>
+        <p class="text-label-sm font-label-sm text-on-surface-variant mb-1 uppercase tracking-wider">Pengguna Aktif</p>
+        <h3 class="font-display font-bold text-display-lg" style="color:#10B981;">{{ pengguna_aktif_count|default:"0" }}</h3>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center" style="color:#10B981;">
+        <span class="material-symbols-outlined">person_check</span>
       </div>
     </div>
   </div>
@@ -110,20 +130,37 @@
           <span class="text-[11px] text-on-surface-variant">Bergabung {{ u.date_joined|date:"d M Y" }}</span>
           {% if not u.is_superuser and u.id_user != user.id_user %}
           <div class="flex items-center gap-1">
+            <!-- Toggle Aktif/Nonaktif -->
+            <form action="{% url 'Klasifikasi:toggle_active_user' u.id_user %}" method="POST" class="inline toggle-active-form">
+              {% csrf_token %}
+              <button type="submit"
+                      class="p-1.5 rounded-md transition-colors {% if u.is_active %}text-on-surface-variant hover:text-yellow-600 hover:bg-yellow-50{% else %}text-on-surface-variant hover:text-green-600 hover:bg-green-50{% endif %}"
+                      title="{% if u.is_active %}Nonaktifkan akun{% else %}Aktifkan akun{% endif %}">
+                <span class="material-symbols-outlined text-[20px]">{% if u.is_active %}person_off{% else %}person_check{% endif %}</span>
+              </button>
+            </form>
             <button type="button"
                     onclick="openEditModal('{{ u.id_user }}', '{{ u.username }}', '{{ u.first_name }}', '{{ u.email }}')"
                     class="p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-surface-container transition-colors"
                     title="Edit Pengguna">
               <span class="material-symbols-outlined text-[20px]">edit</span>
             </button>
+            {% if u.is_active %}
+            <button type="button"
+                    class="p-1.5 text-outline-variant rounded-md cursor-not-allowed"
+                    title="Tidak bisa dihapus — akun masih aktif. Nonaktifkan dulu." disabled>
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+            {% else %}
             <form action="{% url 'Klasifikasi:hapus_user' u.id_user %}" method="POST" class="inline delete-user-form">
               {% csrf_token %}
               <button type="submit"
                       class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors"
-                      title="Hapus Pengguna">
+                      title="Hapus Pengguna (nonaktif)">
                 <span class="material-symbols-outlined text-[20px]">delete</span>
               </button>
             </form>
+            {% endif %}
           </div>
           {% endif %}
         </div>
@@ -205,6 +242,15 @@
             <td class="py-4 px-6 text-right">
               {% if not u.is_superuser and u.id_user != user.id_user %}
               <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <!-- Toggle Aktif/Nonaktif -->
+                <form action="{% url 'Klasifikasi:toggle_active_user' u.id_user %}" method="POST" class="inline toggle-active-form">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="p-1.5 rounded-md transition-colors {% if u.is_active %}text-on-surface-variant hover:text-yellow-600 hover:bg-yellow-50{% else %}text-on-surface-variant hover:text-green-600 hover:bg-green-50{% endif %}"
+                          title="{% if u.is_active %}Nonaktifkan akun{% else %}Aktifkan akun{% endif %}">
+                    <span class="material-symbols-outlined text-[20px]">{% if u.is_active %}person_off{% else %}person_check{% endif %}</span>
+                  </button>
+                </form>
                 <!-- Edit Button (trigger modal) -->
                 <button type="button"
                         onclick="openEditModal('{{ u.id_user }}', '{{ u.username }}', '{{ u.first_name }}', '{{ u.email }}')"
@@ -212,15 +258,23 @@
                         title="Edit Pengguna">
                   <span class="material-symbols-outlined text-[20px]">edit</span>
                 </button>
-                <!-- Delete -->
+                <!-- Delete: hanya jika user nonaktif -->
+                {% if u.is_active %}
+                <button type="button"
+                        class="p-1.5 text-outline-variant rounded-md cursor-not-allowed"
+                        title="Tidak bisa dihapus — akun masih aktif. Nonaktifkan dulu." disabled>
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+                {% else %}
                 <form action="{% url 'Klasifikasi:hapus_user' u.id_user %}" method="POST" class="inline delete-user-form">
                   {% csrf_token %}
                   <button type="submit"
                           class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors"
-                          title="Hapus Pengguna">
+                          title="Hapus Pengguna (nonaktif)">
                     <span class="material-symbols-outlined text-[20px]">delete</span>
                   </button>
                 </form>
+                {% endif %}
               </div>
               {% else %}
               <span class="text-label-sm font-label-sm text-outline italic">—</span>
@@ -343,15 +397,45 @@
   }
 
   // ── AJAX Handlers ──
+  // Toggle Aktif/Nonaktif User
+  document.querySelectorAll('.toggle-active-form').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const row = this.closest('tr') || this.closest('[data-username]');
+      const username = row ? row.dataset.username : '?';
+      
+      try {
+        if (row) row.classList.add('opacity-50', 'pointer-events-none');
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (response.ok) {
+          showToast(`Status akun ${username} berhasil diubah.`);
+          // Reload halaman untuk update tampilan status & tombol
+          setTimeout(() => window.location.reload(), 800);
+        } else {
+          if (row) row.classList.remove('opacity-50', 'pointer-events-none');
+          showToast('Gagal mengubah status akun.', 'error');
+        }
+      } catch (err) {
+        if (row) row.classList.remove('opacity-50', 'pointer-events-none');
+        showToast('Terjadi kesalahan jaringan.', 'error');
+      }
+    });
+  });
+
   // Hapus User
   document.querySelectorAll('.delete-user-form').forEach(form => {
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const username = this.closest('tr').dataset.username;
+      const row = this.closest('tr') || this.closest('[data-username]');
+      const username = row ? row.dataset.username : '?';
       showConfirm('Hapus Pengguna', `Apakah Anda yakin ingin menghapus akun ${username} secara permanen?`, 'Hapus Permanen', async () => {
         try {
-          const row = this.closest('tr');
-          row.classList.add('opacity-50', 'pointer-events-none');
+          if (row) row.classList.add('opacity-50', 'pointer-events-none');
           
           const formData = new FormData(this);
           const response = await fetch(this.action, {
@@ -362,13 +446,14 @@
           
           if (response.ok) {
             showToast(`Akun ${username} berhasil dihapus.`);
-            // Hapus baris dari DOM
-            row.style.transition = 'all 0.3s';
-            row.style.height = '0px';
-            row.style.opacity = '0';
-            setTimeout(() => row.remove(), 300);
+            // Hapus baris/card dari DOM
+            if (row) {
+              row.style.transition = 'all 0.3s';
+              row.style.opacity = '0';
+              setTimeout(() => row.remove(), 300);
+            }
           } else {
-            row.classList.remove('opacity-50', 'pointer-events-none');
+            if (row) row.classList.remove('opacity-50', 'pointer-events-none');
             showToast('Gagal menghapus pengguna.', 'error');
           }
         } catch (err) {
@@ -382,12 +467,12 @@
   document.querySelectorAll('.change-role-form select').forEach(select => {
     select.addEventListener('change', async function() {
       const form = this.closest('form');
-      const row = form.closest('tr');
-      const username = row.dataset.username;
+      const row = form.closest('tr') || form.closest('[data-username]');
+      const username = row ? row.dataset.username : '?';
       const newRoleText = this.options[this.selectedIndex].text;
       
       try {
-        row.classList.add('opacity-50', 'pointer-events-none');
+        if (row) row.classList.add('opacity-50', 'pointer-events-none');
         
         const formData = new FormData(form);
         const response = await fetch(form.action, {
@@ -399,15 +484,14 @@
         if (response.ok) {
           showToast(`Role ${username} berhasil diubah menjadi ${newRoleText}.`);
           // Update data-role for filter logic
-          row.dataset.role = this.value;
+          if (row) row.dataset.role = this.value;
         } else {
           showToast('Gagal mengubah role.', 'error');
-          // Revert selection? (optional, ideally yes but simpler to just show error)
         }
       } catch (err) {
         showToast('Terjadi kesalahan jaringan.', 'error');
       } finally {
-        row.classList.remove('opacity-50', 'pointer-events-none');
+        if (row) row.classList.remove('opacity-50', 'pointer-events-none');
       }
     });
   });
@@ -430,41 +514,22 @@
       });
       
       if (response.ok) {
-        // Because edit might change multiple fields, we can either re-fetch the page and extract the row,
-        // or just reload the page for simplicity since edit is rare.
-        // Wait, the prompt says: "tabel otomatis update menampilkan data terbaru tanpa reload manual."
-        // We will update the DOM manually based on input values.
-        
         const username = document.getElementById('edit_username').value;
         const firstName = document.getElementById('edit_first_name').value;
-        const email = document.getElementById('edit_email').value;
         
-        // Find the row by checking which one had the edit button clicked?
-        // Let's find by looking at form action which contains user id
         const actionUrl = this.action;
-        // Action is /klasifikasi/edit-user/<id>/
         const parts = actionUrl.split('/');
         const userId = parts[parts.length - 2]; 
         
-        // Need to add data-id to rows to find it easily. 
-        // Or simply find by checking all rows.
         const row = Array.from(document.querySelectorAll('#userTable tbody tr')).find(r => r.querySelector(`form[action*="/${userId}/"]`));
         
         if (row) {
            row.dataset.username = username;
            const cells = row.querySelectorAll('td');
-           // Column 1 is Name + Username
            const nameEl = cells[0].querySelector('.text-on-surface');
            if (nameEl) nameEl.textContent = firstName || username;
            const userEl = cells[0].querySelector('.text-on-surface-variant');
            if (userEl) userEl.textContent = '@' + username;
-           
-           // Column 2 is Email
-           const emailEl = cells[1].querySelector('a');
-           if (emailEl) {
-             emailEl.textContent = email || '—';
-             if (email) emailEl.href = 'mailto:' + email;
-           }
         }
         
         showToast(`Data ${username} berhasil diperbarui.`);

@@ -1248,6 +1248,8 @@ def user_management_view(request):
     users = CustomUser.objects.select_related('profile').all().order_by('date_joined')
     user_data = []
     admin_count = 0
+    pengelola_count = 0
+    pengguna_aktif_count = 0
     for u in users:
         try:
             profile = u.profile
@@ -1259,6 +1261,11 @@ def user_management_view(request):
             
         if u.is_superuser or role == 'admin':
             admin_count += 1
+        elif role == 'pengelola_studio':
+            pengelola_count += 1
+        
+        if is_active_profile:
+            pengguna_aktif_count += 1
             
         user_data.append({
             'id_user': u.id_user,
@@ -1275,6 +1282,8 @@ def user_management_view(request):
         'users': user_data,
         'total_users': len(user_data),
         'admin_count': admin_count,
+        'pengelola_count': pengelola_count,
+        'pengguna_aktif_count': pengguna_aktif_count,
         'role_choices': [('admin', 'Admin'), ('pengelola_studio', 'Pengelola Studio'), ('pengguna_studio', 'Pengguna Studio')],
     }
     return render(request, 'Klasifikasi/user_management.html', context)
@@ -1304,12 +1313,22 @@ def ubah_role_user(request, user_id):
 
 @role_required('admin')
 def hapus_user(request, user_id):
-    """Hapus akun pengguna secara permanen — hanya admin."""
+    """Hapus akun pengguna secara permanen — hanya admin, dan hanya jika user nonaktif."""
     if request.method != 'POST':
         return redirect('Klasifikasi:user_management')
     target_user = get_object_or_404(CustomUser, pk=user_id)
     if target_user == request.user:
         messages.error(request, 'Anda tidak dapat menghapus akun Anda sendiri.')
+        return redirect('Klasifikasi:user_management')
+    
+    # Cek status aktif dari profile
+    try:
+        is_active_profile = target_user.profile.is_active
+    except Exception:
+        is_active_profile = True
+    
+    if is_active_profile:
+        messages.error(request, f'Akun "{target_user.username}" masih aktif dan tidak dapat dihapus. Nonaktifkan akun terlebih dahulu.')
         return redirect('Klasifikasi:user_management')
     
     username = target_user.username
@@ -1345,4 +1364,24 @@ def edit_user(request, user_id):
         
     target_user.save()
     messages.success(request, f'Data pengguna "{target_user.username}" berhasil diperbarui.')
+    return redirect('Klasifikasi:user_management')
+
+
+@role_required('admin')
+def toggle_active_user(request, user_id):
+    """Toggle status aktif/nonaktif pengguna — hanya admin."""
+    from .models import UserProfile
+    if request.method != 'POST':
+        return redirect('Klasifikasi:user_management')
+    target_user = get_object_or_404(CustomUser, pk=user_id)
+    if target_user == request.user:
+        messages.error(request, 'Anda tidak dapat mengubah status akun Anda sendiri.')
+        return redirect('Klasifikasi:user_management')
+    
+    profile, _ = UserProfile.objects.get_or_create(user=target_user)
+    profile.is_active = not profile.is_active
+    profile.save()
+    
+    status_text = 'diaktifkan' if profile.is_active else 'dinonaktifkan'
+    messages.success(request, f'Akun "{target_user.username}" berhasil {status_text}.')
     return redirect('Klasifikasi:user_management')

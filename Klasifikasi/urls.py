@@ -35,4 +35,5 @@ urlpatterns = [
     path('admin-panel/users/<uuid:user_id>/role/', views.ubah_role_user, name='ubah_role_user'),
     path('admin-panel/users/<uuid:user_id>/hapus/', views.hapus_user, name='hapus_user'),
     path('admin-panel/users/<uuid:user_id>/edit/', views.edit_user, name='edit_user'),
+    path('admin-panel/users/<uuid:user_id>/toggle-active/', views.toggle_active_user, name='toggle_active_user'),
 ]

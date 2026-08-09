@@ -70,9 +70,13 @@
       <div>
         <h3 class="text-label-md font-label-md text-on-surface-variant mb-2">Akurasi Model</h3>
         <p class="text-body-md text-on-surface mb-2">SVM Kernel {{ kernel|default:"RBF" }}</p>
+        {% if role == 'admin' or role == 'pengelola_studio' %}
         <a href="{% url 'Klasifikasi:kinerja' %}" class="text-label-sm font-label-sm text-primary hover:underline flex items-center gap-1">
           Lihat detail <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
         </a>
+        {% else %}
+        <p class="text-label-sm font-label-sm text-outline">Model SVM aktif & siap pakai</p>
+        {% endif %}
       </div>
     </div>
   </div>
