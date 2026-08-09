@@ -68,14 +68,16 @@
         </div>
       </div>
       <div>
+        {% if role == 'admin' %}
         <h3 class="text-label-md font-label-md text-on-surface-variant mb-2">Akurasi Model</h3>
         <p class="text-body-md text-on-surface mb-2">SVM Kernel {{ kernel|default:"RBF" }}</p>
-        {% if role == 'admin' or role == 'pengelola_studio' %}
         <a href="{% url 'Klasifikasi:kinerja' %}" class="text-label-sm font-label-sm text-primary hover:underline flex items-center gap-1">
-          Lihat detail <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+          Lihat detail evaluasi <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
         </a>
         {% else %}
-        <p class="text-label-sm font-label-sm text-outline">Model SVM aktif & siap pakai</p>
+        <h3 class="text-label-md font-label-md text-on-surface-variant mb-2">Tingkat Ketepatan</h3>
+        <p class="text-body-md text-on-surface mb-2">Sistem AI Penganalisis Suara</p>
+        <p class="text-label-sm font-label-sm text-outline">Sistem siap mengenali genre musik</p>
         {% endif %}
       </div>
     </div>
@@ -170,28 +172,33 @@
       <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary-fixed-dim rounded-full blur-[60px] opacity-10 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"></div>
       <div class="bg-inverse-surface/90 backdrop-blur-xl w-full h-full rounded-[10px] p-6 relative z-10 flex flex-col">
         <div class="flex items-center gap-3 mb-6">
-          <span class="material-symbols-outlined text-secondary-fixed-dim text-[32px]">memory</span>
-          <h3 class="font-display font-bold text-headline-md text-white">Active Engine</h3>
+          <span class="material-symbols-outlined text-secondary-fixed-dim text-[32px]">{% if role == 'admin' %}memory{% else %}music_note{% endif %}</span>
+          <h3 class="font-display font-bold text-headline-md text-white">{% if role == 'admin' %}Active Engine{% else %}Sistem Pengenal Musik{% endif %}</h3>
         </div>
         <div class="space-y-5 flex-1">
           <div>
-            <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">Algoritma</p>
+            <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">{% if role == 'admin' %}Algoritma{% else %}Teknologi{% endif %}</p>
             <p class="text-body-lg text-white font-medium flex items-center gap-2">
+              {% if role == 'admin' %}
               Support Vector Machine
               <span class="material-symbols-outlined text-primary-fixed-dim text-[16px]" title="Non-linear classification">info</span>
+              {% else %}
+              Kecerdasan Buatan (AI)
+              <span class="material-symbols-outlined text-primary-fixed-dim text-[16px]" title="Sistem pintar pengenal suara">info</span>
+              {% endif %}
             </p>
           </div>
           <div class="h-px w-full bg-outline/20"></div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">Fitur</p>
+              <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">{% if role == 'admin' %}Fitur Diekstrak{% else %}Karakteristik Suara{% endif %}</p>
               <p class="font-display font-bold text-headline-md text-secondary-fixed-dim">{{ jumlah_fitur|default:"43" }}</p>
-              <p class="text-label-sm font-label-sm text-tertiary-fixed-dim mt-1">MFCC, Spectral, Tempo</p>
+              <p class="text-label-sm font-label-sm text-tertiary-fixed-dim mt-1">{% if role == 'admin' %}MFCC, Spectral, Tempo{% else %}Ketukan & Nada Musik{% endif %}</p>
             </div>
             <div>
-              <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">Genre</p>
+              <p class="text-label-sm font-label-sm text-outline-variant mb-1 uppercase tracking-wider">Genre Tersedia</p>
               <p class="font-display font-bold text-headline-md text-secondary-fixed-dim">{{ jumlah_genre|default:"10" }}</p>
-              <p class="text-label-sm font-label-sm text-tertiary-fixed-dim mt-1">GTZAN Dataset</p>
+              <p class="text-label-sm font-label-sm text-tertiary-fixed-dim mt-1">{% if role == 'admin' %}GTZAN Dataset{% else %}Kategori Musik{% endif %}</p>
             </div>
           </div>
         </div>
