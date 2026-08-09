@@ -1107,7 +1107,7 @@ def download_laporan_excel(request):
 
     # Judul
     ws.merge_cells('A1:G1')
-    ws['A1'] = 'Studio Dungeon Limo — Laporan Riwayat Klasifikasi Genre Musik'
+    ws['A1'] = 'Studio Dungeon Limo - Laporan Riwayat Klasifikasi Genre Musik'
     ws['A1'].font = Font(bold=True, size=14, color='FFFFFF')
     ws['A1'].fill = PatternFill(start_color='6D28D9', end_color='6D28D9', fill_type='solid')
     ws['A1'].alignment = Alignment(horizontal='center', vertical='center')

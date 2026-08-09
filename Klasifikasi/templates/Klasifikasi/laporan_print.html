@@ -3,7 +3,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Laporan Klasifikasi — Dungeon Studio</title>
+  <title>Laporan Klasifikasi - Dungeon Studio</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
 
@@ -46,7 +46,7 @@
   <div class="header">
     <div class="brand">
       <h1>Dungeon Studio</h1>
-      <p>Music Classification Engine &mdash; Laporan Resmi</p>
+      <p>Music Classification Engine - Laporan Resmi</p>
     </div>
     <div class="report-meta">
       <div>Dibuat: {% now "d M Y, H:i" %} WIB</div>
@@ -59,13 +59,13 @@
   <div class="summary-grid">
     <div class="summary-card">
       <div class="label">Total Data</div>
-      <div class="value">{{ total_preview }}</div>
+      <div class="value">{{ total }}</div>
     </div>
     {% if date_from or date_to %}
     <div class="summary-card">
       <div class="label">Periode</div>
       <div class="value" style="font-size:13px; padding-top:4px;">
-        {{ date_from|default:"—" }} s/d {{ date_to|default:"—" }}
+        {{ date_from|default:"-" }} s/d {{ date_to|default:"-" }}
       </div>
     </div>
     {% endif %}
@@ -116,14 +116,14 @@
       </tr>
     </thead>
     <tbody>
-      {% for p in preview %}
+      {% for p in riwayat %}
       <tr>
         <td>{{ forloop.counter }}</td>
         {% if active_tab == 'semua' %}<td><strong>{{ p.username }}</strong></td>{% endif %}
         <td>{{ p.nama_file }}</td>
         <td>{{ p.format_file }}</td>
         <td><span class="genre-badge">{{ p.genre_prediksi }}</span></td>
-        <td>{{ p.confidence }}%</td>
+        <td>{{ p.confidence }}</td>
         <td>{{ p.waktu|date:"d/m/Y H:i" }}</td>
       </tr>
       {% empty %}

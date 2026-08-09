@@ -35,7 +35,7 @@
         <h3 class="text-label-md font-label-md text-on-surface-variant mb-1">Genre Terbanyak Saya</h3>
         <div class="mt-4 flex items-center justify-between">
           <span class="font-display font-bold text-headline-md text-on-surface uppercase">
-            {% if top_genre_user %}{{ top_genre_user }}{% else %}—{% endif %}
+            {% if top_genre_user %}{{ top_genre_user }}{% else %}-{% endif %}
           </span>
         </div>
       </div>
@@ -64,7 +64,7 @@
           </defs>
         </svg>
         <div class="absolute inset-0 flex items-center justify-center text-headline-md font-display font-bold text-on-surface">
-          {% if accuracy %}{{ accuracy }}{% else %}—{% endif %}<span class="text-sm text-outline">%</span>
+          {% if accuracy %}{{ accuracy }}{% else %}-{% endif %}<span class="text-sm text-outline">%</span>
         </div>
       </div>
       <div>
