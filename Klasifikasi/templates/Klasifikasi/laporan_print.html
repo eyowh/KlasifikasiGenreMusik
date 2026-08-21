@@ -46,7 +46,7 @@
   <div class="header">
     <div class="brand">
       <h1>Dungeon Studio</h1>
-      <p>Music Classification Engine - Laporan Resmi</p>
+      <p>{% if role == 'pengguna_studio' %}Sistem Pengenal Genre Musik{% else %}Music Classification Engine{% endif %} - Laporan Resmi</p>
     </div>
     <div class="report-meta">
       <div>Dibuat: {% now "d M Y, H:i" %} WIB</div>
@@ -75,10 +75,12 @@
       <div class="value" style="font-size:18px;">{{ genre_filter|title }}</div>
     </div>
     {% endif %}
+    {% if role != 'pengguna_studio' %}
     <div class="summary-card">
       <div class="label">Model</div>
       <div class="value" style="font-size:14px; padding-top:4px;">SVM RBF</div>
     </div>
+    {% endif %}
   </div>
 
   <!-- Filter Info -->
@@ -111,7 +113,7 @@
         <th>Nama File</th>
         <th>Format</th>
         <th>Genre Prediksi</th>
-        <th>Confidence</th>
+        <th>{% if role == 'pengguna_studio' %}Kecocokan{% else %}Confidence{% endif %}</th>
         <th>Waktu</th>
       </tr>
     </thead>
