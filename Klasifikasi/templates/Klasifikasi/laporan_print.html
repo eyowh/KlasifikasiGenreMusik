@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Laporan Klasifikasi - Dungeon Studio</title>
+  <link rel="icon" type="image/png" href="{% static 'Asset 1.png' %}">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap');
 
@@ -75,7 +76,7 @@
       <div class="value" style="font-size:18px;">{{ genre_filter|title }}</div>
     </div>
     {% endif %}
-    {% if role != 'pengguna_studio' %}
+    {% if user.profile.role != 'pengguna_studio' %}
     <div class="summary-card">
       <div class="label">Model</div>
       <div class="value" style="font-size:14px; padding-top:4px;">SVM RBF</div>
@@ -98,7 +99,7 @@
             style="display:inline-flex; align-items:center; gap:8px; background:#3525cd; color:#fff; border:none; padding:10px 24px; border-radius:8px; font-family:Inter; font-size:14px; font-weight:600; cursor:pointer;">
       🖨️ Cetak Laporan
     </button>
-    <a href="javascript:history.back()"
+    <a href="{% url 'Klasifikasi:laporan' %}"
        style="margin-left:12px; display:inline-flex; align-items:center; gap:8px; background:#f0f3ff; color:#3525cd; border:1px solid #c7c4d8; padding:10px 24px; border-radius:8px; font-family:Inter; font-size:14px; font-weight:600; text-decoration:none;">
       ← Kembali
     </a>

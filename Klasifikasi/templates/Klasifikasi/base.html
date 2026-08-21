@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Dungeon Studio{% endblock %}</title>
-
+  <link rel="icon" type="image/png" href="{% static 'Asset 1.png' %}">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -223,9 +223,7 @@
 
     <!-- Brand -->
     <div class="px-6 mb-8 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary-fixed-dim flex items-center justify-center text-white shadow-level-2 flex-shrink-0">
-        <span class="material-symbols-outlined" style="font-size:20px; font-variation-settings:'FILL' 1;">graphic_eq</span>
-      </div>
+      <img src="{% static 'Asset 1.png' %}" alt="Dungeon Studio Logo" class="w-14 h-14 object-contain flex-shrink-0 drop-shadow-md">
       <div>
         <h1 class="font-display text-headline-md font-bold text-primary leading-tight">Dungeon Studio</h1>
       </div>
