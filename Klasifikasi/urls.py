@@ -4,6 +4,9 @@ from . import views
 app_name = 'Klasifikasi'
 
 urlpatterns = [
+    # ── Landing page (public) ───────────────────────────────────────────────
+    path('', views.landing_view, name='landing'),
+
     # ── Auth (public) ──────────────────────────────────────────────────────
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
@@ -13,7 +16,7 @@ urlpatterns = [
     path('403/', views.forbidden_view, name='forbidden'),
 
     # ── Main (all authenticated) ───────────────────────────────────────────
-    path('', views.home_view, name='home'),
+    path('dashboard/', views.home_view, name='home'),
     path('klasifikasi/', views.klasifikasi_view, name='klasifikasi'),
 
     # ── Riwayat personal (semua role) ──────────────────────────────────────

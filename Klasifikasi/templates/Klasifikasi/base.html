@@ -186,12 +186,38 @@
     @media (max-width: 767px) {
       .desktop-only { display: none !important; }
     }
+
+    /* ══════════════════════════════════════
+       FLOATING MUSIC NOTES (Global)
+    ══════════════════════════════════════ */
+    .music-particles {
+      position: fixed;
+      inset: 0;
+      z-index: 1; 
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .note-particle {
+      position: absolute;
+      font-size: var(--size, 24px);
+      color: var(--color, rgba(53, 37, 205, 0.1));
+      animation: floatNote var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+      user-select: none;
+    }
+    @keyframes floatNote {
+      0%   { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.8; }
+      100% { transform: translateY(-20vh) translateX(var(--drift, 60px)) rotate(360deg); opacity: 0; }
+    }
   </style>
 
   {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-background text-on-background font-sans min-h-screen flex antialiased selection:bg-primary-container selection:text-on-primary-container">
 
+  <!-- Floating music notes (global) -->
+  <div class="music-particles" id="musicParticles"></div>
   <!-- ═══════════════ SIDEBAR ═══════════════ -->
   <aside class="h-screen w-64 fixed left-0 top-0 glass-sidebar border-r border-outline-variant/40 shadow-sm flex flex-col py-md z-50 hidden md:flex">
 
@@ -481,6 +507,37 @@
       btnCancel.onclick = closeHandler;
       modal.onclick = (e) => { if(e.target === modal) closeHandler(); };
     }
+
+    // ── Global Floating Music Notes ──
+    (function() {
+      const container = document.getElementById('musicParticles');
+      if (!container) return;
+      const notes = ['♪', '♫', '♬', '♩', '🎵', '🎶'];
+      const colors = [
+        'rgba(53, 37, 205, 0.12)',
+        'rgba(0, 104, 122, 0.08)',
+        'rgba(76, 215, 246, 0.15)',
+        'rgba(79, 70, 229, 0.1)',
+      ];
+      const count = 15; // tidak terlalu ramai di dashboard
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'note-particle';
+        const size = Math.random() * 20 + 12;
+        const drift = (Math.random() - 0.5) * 150;
+        el.textContent = notes[Math.floor(Math.random() * notes.length)];
+        el.style.cssText = `
+          left: ${Math.random() * 100}%;
+          bottom: -60px;
+          --size: ${size}px;
+          --color: ${colors[Math.floor(Math.random() * colors.length)]};
+          --dur: ${Math.random() * 15 + 10}s;
+          --delay: ${Math.random() * 12}s;
+          --drift: ${drift}px;
+        `;
+        container.appendChild(el);
+      }
+    })();
   </script>
 
   {% block extra_js %}{% endblock %}

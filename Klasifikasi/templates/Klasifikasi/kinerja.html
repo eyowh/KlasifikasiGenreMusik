@@ -8,7 +8,7 @@
   <div>
     <h2 class="font-display font-bold text-headline-lg text-on-surface mb-2">Evaluasi Kinerja Model SVM</h2>
     <p class="font-sans text-body-lg text-on-surface-variant">
-      Seberapa pintar model dalam mengenali genre musik? Temukan jawabannya di sini.
+      Seberapa pintar Model / Sistem dalam mengenali genre musik? Temukan jawabannya di sini.
     </p>
   </div>
 
@@ -38,7 +38,7 @@
       </div>
       <!-- Kalimat cerita konkret -->
       <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
-        Dari <strong class="text-on-surface">100 lagu</strong> yang diuji, model berhasil menebak genre-nya dengan benar untuk sekitar <strong class="text-primary">{{ accuracy_pct|floatformat:0 }} lagu</strong>.
+        Dari <strong class="text-on-surface">100 lagu</strong> yang diuji, Model / Sistem berhasil menebak genre-nya dengan benar untuk sekitar <strong class="text-primary">{{ accuracy_pct|floatformat:0 }} lagu</strong>.
       </p>
     </div>
 
@@ -59,7 +59,7 @@
         </div>
       </div>
       <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
-        Saat model menyebut sebuah lagu bergenre tertentu, sekitar <strong class="text-secondary">{{ precision_pct|floatformat:0 }} dari 100</strong> tebakannya memang benar-benar lagu dari genre itu.
+        Saat Model / Sistem menyebut sebuah lagu bergenre tertentu, sekitar <strong class="text-secondary">{{ precision_pct|floatformat:0 }} dari 100</strong> tebakannya memang benar-benar lagu dari genre itu.
       </p>
     </div>
 
@@ -80,7 +80,7 @@
         </div>
       </div>
       <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
-        Dari setiap <strong class="text-on-surface">100 lagu</strong> yang memiliki genre tertentu, model berhasil menemukan dan mengenali sekitar <strong class="text-tertiary">{{ recall_pct|floatformat:0 }} lagu</strong> di antaranya.
+        Dari setiap <strong class="text-on-surface">100 lagu</strong> yang memiliki genre tertentu, Model / Sistem berhasil menemukan dan mengenali sekitar <strong class="text-tertiary">{{ recall_pct|floatformat:0 }} lagu</strong> di antaranya.
       </p>
     </div>
 
@@ -101,7 +101,7 @@
         </div>
       </div>
       <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans border-t border-outline-variant/30 pt-3">
-        Nilai tunggal yang merangkum kualitas keseluruhan model secara adil. Skor <strong class="text-primary">{{ f1_pct }}%</strong> berarti model bekerja dengan cukup seimbang: tidak terlalu banyak salah tebak, tidak terlalu banyak yang terlewat.
+        Nilai tunggal yang merangkum kualitas keseluruhan Model / Sistem secara menyeluruh. Skor <strong class="text-primary">{{ f1_pct }}%</strong> berarti Model / Sistem bekerja dengan cukup seimbang.
       </p>
     </div>
 
@@ -119,7 +119,7 @@
         <h2 class="font-display font-bold text-headline-md text-on-background">Panduan Kategori Skor</h2>
       </div>
       <p class="text-[13px] text-on-surface-variant font-sans mt-1">
-        Gunakan tabel ini untuk memvalidasi angka-angka di atas. Setiap rentang nilai menjadi patokan performa model.
+        Gunakan tabel ini untuk memvalidasi angka-angka di atas. Setiap rentang nilai menjadi patokan performa Model / Sistem.
       </p>
     </div>
 
@@ -153,7 +153,7 @@
               </span>
             </td>
             <td class="py-3 px-4 text-center font-semibold text-green-700">Sangat Baik</td>
-            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Model hampir selalu benar. Kesalahan sangat jarang terjadi.</td>
+            <td class="py-3 px-4 text-[13px] text-on-surface-variant leading-relaxed">Model / Sistem hampir selalu benar. Kesalahan sangat jarang terjadi.</td>
           </tr>
 
           <tr class="border-b border-outline-variant/20 hover:bg-surface-container/50 transition-colors">
@@ -315,7 +315,7 @@
     <div class="mt-4 px-4 py-3 bg-surface-container-low rounded-lg border border-outline-variant/30 flex items-start gap-2">
       <span class="material-symbols-outlined text-outline text-[16px] flex-shrink-0 mt-0.5">info</span>
       <p class="text-[12px] text-on-surface-variant font-sans leading-relaxed">
-        <strong>Catatan:</strong> Untuk klasifikasi 10 genre musik, model dengan skor di rentang <strong class="text-on-surface">70% &ndash; 80%</strong> sudah tergolong kompetitif.
+        <strong>Catatan:</strong> Untuk klasifikasi 10 genre musik, Model / Sistem dengan skor di rentang <strong class="text-on-surface">70% &ndash; 80%</strong> sudah tergolong kompetitif.
       </p>
     </div>
 
@@ -329,10 +329,10 @@
       <div class="flex justify-between items-start mb-4 flex-wrap gap-3">
         <div>
           <!-- Judul awam utama -->
-          <h2 class="font-display font-bold text-headline-md text-on-background">Uji Konsistensi Model</h2>
+          <h2 class="font-display font-bold text-headline-md text-on-background">Uji Konsistensi Model / Sistem</h2>
           <span class="text-[11px] text-outline font-sans tracking-wide">5-Fold Cross-Validation</span>
           <p class="text-[13px] text-on-surface-variant mt-2 max-w-xl leading-relaxed">
-            Model diuji sebanyak <strong class="text-on-surface">5 kali</strong>, masing-masing menggunakan potongan data yang berbeda. Tujuannya untuk memastikan model <strong class="text-on-surface">tidak hanya kebetulan pintar</strong> pada satu percobaan saja.
+            Model / Sistem diuji sebanyak <strong class="text-on-surface">5 kali</strong>, masing-masing menggunakan potongan data yang berbeda. Tujuannya untuk memastikan Model / Sistem <strong class="text-on-surface">tidak hanya kebetulan pintar</strong> pada satu percobaan saja.
           </p>
         </div>
         <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
@@ -341,7 +341,7 @@
           </span>
           <span class="text-label-sm font-label-sm px-3 py-1 rounded-full whitespace-nowrap
             {% if cv_std_level == 'sangat stabil' %}bg-green-100 text-green-800{% elif cv_std_level == 'cukup stabil' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
-            Model {{ cv_std_level }}
+            Model / Sistem {{ cv_std_level }}
           </span>
         </div>
       </div>
@@ -350,7 +350,7 @@
       <div class="mb-6 bg-surface-container-low border border-outline-variant/30 rounded-xl p-4 flex items-start gap-3">
         <span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">auto_stories</span>
         <p class="text-[13px] text-on-surface-variant leading-relaxed font-sans">
-          Dari 5 percobaan pengujian, skor yang didapat model berkisar antara hasil terendah hingga tertinggi di grafik di bawah. Selisih antara percobaan yang paling bagus dan paling buruk tercermin dari angka <strong class="text-on-surface">standar deviasi {{ cv_std }}</strong>. Karena nilainya kecil, model dinilai <strong class="text-on-surface">{{ cv_std_level }}</strong> artinya performanya tidak naik-turun tajam setiap kali diuji dengan data yang berbeda.
+          Dari 5 percobaan pengujian, skor yang didapat Model / Sistem berkisar antara hasil terendah hingga tertinggi di grafik di bawah. Selisih antara percobaan yang paling bagus dan paling buruk tercermin dari angka <strong class="text-on-surface">standar deviasi {{ cv_std }}</strong>. Karena nilainya kecil, Model / Sistem dinilai <strong class="text-on-surface">{{ cv_std_level }}</strong> artinya performanya tidak naik-turun tajam setiap kali diuji dengan data yang berbeda.
         </p>
       </div>
 
@@ -389,7 +389,7 @@
     <div class="glass-panel p-6 rounded-xl">
       <div class="flex items-center gap-2 mb-1">
         <span class="material-symbols-outlined text-primary">grid_view</span>
-        <h2 class="font-display font-bold text-headline-md text-on-background">Peta Kebingungan Model</h2>
+        <h2 class="font-display font-bold text-headline-md text-on-background">Peta Kebingungan Model / Sistem</h2>
       </div>
       <span class="text-[11px] text-outline font-sans tracking-wide">Confusion Matrix</span>
 
@@ -398,11 +398,11 @@
         <span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">auto_stories</span>
         <div class="text-[13px] text-on-surface-variant leading-relaxed font-sans">
           <p>
-            Tabel di bawah menunjukkan <strong class="text-on-surface">di mana model sering melakukan kesalahan</strong>. Setiap baris mewakili genre asli lagu, sedangkan setiap kolom mewakili genre yang ditebak model. Angka-angka di <strong class="text-green-700">garis diagonal</strong> (sudut kiri atas ke kanan bawah) adalah prediksi yang <strong class="text-green-700">benar</strong>. Angka di luar diagonal adalah prediksi yang <strong class="text-red-700">salah</strong>.
+            Tabel di bawah menunjukkan <strong class="text-on-surface">di mana Model / Sistem sering melakukan kesalahan</strong>. Setiap baris mewakili genre asli lagu, sedangkan setiap kolom mewakili genre yang ditebak Model / Sistem. Angka-angka di <strong class="text-green-700">garis diagonal</strong> (sudut kiri atas ke kanan bawah) adalah prediksi yang <strong class="text-green-700">benar</strong>. Angka di luar diagonal adalah prediksi yang <strong class="text-red-700">salah</strong>.
           </p>
           {% if worst_confusion_pair %}
           <p class="mt-2">
-            Kesalahan terbesar yang ditemukan: sebanyak <strong class="text-on-surface">{{ worst_confusion_pair.count }} lagu</strong> yang sebenarnya bergenre <strong class="text-primary">{{ worst_confusion_pair.actual }}</strong> justru ditebak oleh model sebagai genre <strong class="text-primary">{{ worst_confusion_pair.predicted }}</strong>. Artinya, kedua genre ini memiliki karakteristik suara yang cukup mirip sehingga model sulit membedakannya.
+            Kesalahan terbesar yang ditemukan: sebanyak <strong class="text-on-surface">{{ worst_confusion_pair.count }} lagu</strong> yang sebenarnya bergenre <strong class="text-primary">{{ worst_confusion_pair.actual }}</strong> justru ditebak oleh Model / Sistem sebagai genre <strong class="text-primary">{{ worst_confusion_pair.predicted }}</strong>. Artinya, kedua genre ini memiliki karakteristik suara yang cukup mirip sehingga Model / Sistem sulit membedakannya.
           </p>
           {% endif %}
         </div>
@@ -416,7 +416,7 @@
         </div>
         <div class="flex items-start gap-2 bg-surface-container-low rounded-lg p-3">
           <span class="material-symbols-outlined text-secondary text-[18px] flex-shrink-0 mt-0.5">view_column</span>
-          <p class="text-[12px] text-on-surface-variant leading-snug"><strong class="text-on-surface">Kolom</strong> = genre tebakan model</p>
+          <p class="text-[12px] text-on-surface-variant leading-snug"><strong class="text-on-surface">Kolom</strong> = genre tebakan Model / Sistem</p>
         </div>
         <div class="flex items-start gap-2 bg-green-50 border border-green-100 rounded-lg p-3">
           <span class="material-symbols-outlined text-green-600 text-[18px] flex-shrink-0 mt-0.5">check_circle</span>
@@ -438,7 +438,7 @@
       <!-- Matrix Counts -->
       <div class="glass-panel p-6 rounded-xl flex flex-col items-center overflow-x-auto">
         <h3 class="font-display font-bold text-headline-sm text-on-background mb-1">Jumlah Prediksi</h3>
-        <p class="text-[11px] text-on-surface-variant mb-8 text-center">Baris = genre asli &nbsp;|&nbsp; Kolom = genre tebakan model</p>
+        <p class="text-[11px] text-on-surface-variant mb-8 text-center">Baris = genre asli &nbsp;|&nbsp; Kolom = genre tebakan Model / Sistem</p>
         <div id="cmCounts" class="w-full max-w-[450px]"></div>
       </div>
 
@@ -474,18 +474,18 @@
         <span class="material-symbols-outlined text-primary text-[20px] flex-shrink-0 mt-0.5">auto_stories</span>
         <div class="text-[13px] text-on-surface-variant leading-relaxed font-sans">
           <p>
-            Tabel berikut merinci seberapa baik model mengenali <strong class="text-on-surface">setiap genre secara terpisah</strong>.
+            Tabel berikut merinci seberapa baik Model / Sistem mengenali <strong class="text-on-surface">setiap genre secara terpisah</strong>.
             {% for cls in per_class_list %}{% if cls.performance_color == 'green' %}
             Genre <strong class="text-green-700">{{ cls.genre }}</strong>{% if not forloop.last %},{% endif %}
             {% endif %}{% endfor %}
-            merupakan genre yang <strong class="text-green-700">paling mudah dikenali</strong> oleh model.
+            merupakan genre yang <strong class="text-green-700">paling mudah dikenali</strong> oleh Model / Sistem.
             Sebaliknya,
             {% for cls in per_class_list %}{% if cls.performance_color == 'red' %}
             genre <strong class="text-red-700">{{ cls.genre }}</strong>{% if not forloop.last %},{% endif %}
             {% endif %}{% endfor %}
             adalah yang <strong class="text-red-700">paling sering tertukar</strong> dengan genre lain, sehingga masih butuh peningkatan.
             {% if worst_confusion_pair %}
-            Sebagai contoh kasus spesifik kebingungan model: lagu yang sebenarnya bergenre <strong class="text-on-surface">{{ worst_confusion_pair.actual }}</strong> sering salah dianggap sebagai <strong class="text-on-surface">{{ worst_confusion_pair.predicted }}</strong>.
+            Sebagai contoh kasus spesifik kebingungan Model / Sistem: lagu yang sebenarnya bergenre <strong class="text-on-surface">{{ worst_confusion_pair.actual }}</strong> sering salah dianggap sebagai <strong class="text-on-surface">{{ worst_confusion_pair.predicted }}</strong>.
             {% endif %}
           </p>
         </div>
@@ -601,7 +601,7 @@
         <span class="material-symbols-outlined text-green-600 text-[18px] flex-shrink-0 mt-0.5">verified</span>
         <div>
           <p class="font-semibold">{{ cls.genre }}</p>
-          <p class="text-green-700 mt-0.5">Paling akurat dikenali oleh model.</p>
+          <p class="text-green-700 mt-0.5">Paling akurat dikenali oleh Model / Sistem.</p>
         </div>
       </div>
       {% endif %}{% endfor %}
@@ -725,7 +725,7 @@
 
           var actualLabel = labels[r] || ('Kelas ' + (r + 1));
           var predLabel   = labels[c] || ('Kelas ' + (c + 1));
-          cell.title = 'Genre asli: ' + actualLabel + '\nTebakan model: ' + predLabel + '\nJumlah: ' + val + ' (' + (pct * 100).toFixed(1) + '%)';
+          cell.title = 'Genre asli: ' + actualLabel + '\nTebakan Model / Sistem: ' + predLabel + '\nJumlah: ' + val + ' (' + (pct * 100).toFixed(1) + '%)';
 
           container.appendChild(cell);
         });

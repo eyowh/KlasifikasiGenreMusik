@@ -14,7 +14,7 @@
 
   <!-- === ERROR / WARNING ALERTS === -->
   {% if error %}
-  <div class="flex items-start gap-3 bg-error-container/60 border border-error/30 text-on-error-container p-4 rounded-xl">
+  <div id="backendErrorAlert" class="flex items-start gap-3 bg-error-container/60 border border-error/30 text-on-error-container p-4 rounded-xl">
     <span class="material-symbols-outlined text-error flex-shrink-0">error</span>
     <p class="text-body-md">{{ error }}</p>
   </div>
@@ -184,7 +184,7 @@
         </div>
         <h4 class="font-display font-bold text-display-lg gradient-text mb-2 uppercase">{{ genre }}</h4>
         <div class="mt-4 bg-surface-container-low border border-surface-container-highest text-primary px-4 py-2 rounded-full text-label-md font-label-md flex items-center gap-2 shadow-sm">
-          Kepercayaan: {{ confidence }}%
+          {% if role == 'pengguna_studio' %}Tingkat Kecocokan:{% else %}Confidence:{% endif %} {{ confidence }}%
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
         </div>
       </div>
@@ -204,23 +204,27 @@
     <!-- Secondary Data (7 cols) -->
     <div class="md:col-span-7 flex flex-col gap-gutter h-full">
 
-      <!-- Probability Breakdown -->
+      <!-- Kemungkinan Genre — tampil untuk semua role -->
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-level-1 p-8 flex flex-col">
-        <div class="flex items-center justify-between mb-8">
-          <h3 class="font-display font-bold text-headline-md text-on-surface">Probabilitas Genre</h3>
-          <span class="material-symbols-outlined text-outline">bar_chart</span>
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="font-display font-bold text-headline-md text-on-surface">Kemungkinan Genre</h3>
+          <span class="material-symbols-outlined text-outline">equalizer</span>
         </div>
-        <div class="flex flex-col gap-5">
+        <p class="text-body-sm text-on-surface-variant mb-5">Seberapa yakin AI mengenali genre dari audio kamu:</p>
+        <div class="flex flex-col gap-4">
           {% for prob in probabilities %}
           <div class="w-full flex items-center gap-4">
-            <span class="text-label-md font-label-md {% if forloop.first %}text-on-surface{% else %}text-on-surface-variant{% endif %} w-16 md:w-24 text-right capitalize">
-              {{ prob.genre }}
-            </span>
+            <div class="flex items-center gap-1.5 w-16 md:w-28 justify-end flex-shrink-0">
+              <span class="text-base leading-none">{{ prob.icon }}</span>
+              <span class="text-label-md font-label-md {% if forloop.first %}text-on-surface font-bold{% else %}text-on-surface-variant{% endif %} capitalize truncate">
+                {{ prob.genre }}
+              </span>
+            </div>
             <div class="flex-1 h-3 rounded-full bg-surface-variant overflow-hidden relative">
               <div class="absolute top-0 left-0 h-full {% if forloop.first %}progress-fill{% else %}bg-tertiary opacity-50{% endif %} rounded-full transition-all duration-700"
                    style="width: {{ prob.probability }}%;"></div>
             </div>
-            <span class="text-label-md font-label-md {% if forloop.first %}text-primary{% else %}text-on-surface-variant{% endif %} w-12 text-right">
+            <span class="text-label-md font-label-md {% if forloop.first %}text-primary font-bold{% else %}text-on-surface-variant{% endif %} w-12 text-right flex-shrink-0">
               {{ prob.probability }}%
             </span>
           </div>
@@ -228,42 +232,118 @@
         </div>
       </div>
 
-      <!-- Audio Features -->
+      <!-- ════════════════════════════════════════════════════════ -->
+      <!-- PENGGUNA STUDIO: info ramah & mudah dipahami            -->
+      <!-- ════════════════════════════════════════════════════════ -->
+      {% if role == 'pengguna_studio' %}
       <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-level-1 p-6">
-        <h3 class="font-display font-bold text-headline-md text-on-surface mb-4">Fitur Audio Diekstrak</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-display font-bold text-headline-md text-on-surface">Tentang Genre Ini</h3>
+          <span class="material-symbols-outlined text-outline">info</span>
+        </div>
+        <div class="flex flex-col gap-4">
+
+          <!-- Deskripsi genre dalam bahasa awam -->
+          {% if genre_desc %}
+          <div class="bg-surface-container-low rounded-xl p-4 flex gap-3 items-start">
+            <span class="material-symbols-outlined text-primary text-[22px] mt-0.5" style="font-variation-settings:'FILL' 1;">music_note</span>
+            <p class="text-body-sm text-on-surface leading-relaxed">{{ genre_desc }}</p>
+          </div>
+          {% endif %}
+
+          <!-- Tingkat keyakinan & tempo dalam bahasa sederhana -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-surface-container-low rounded-xl p-4">
+              <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">🎯 Tingkat Kecocokan</p>
+              {% if confidence_level == 'tinggi' %}
+              <p class="text-label-md font-label-md text-green-600 font-bold">Sangat Yakin</p>
+              <p class="text-label-sm text-on-surface-variant">Hasil ini dapat diandalkan</p>
+              {% elif confidence_level == 'sedang' %}
+              <p class="text-label-md font-label-md text-yellow-600 font-bold">Cukup Yakin</p>
+              <p class="text-label-sm text-on-surface-variant">Mungkin mirip genre lain</p>
+              {% else %}
+              <p class="text-label-md font-label-md text-red-500 font-bold">Kurang Yakin</p>
+              <p class="text-label-sm text-on-surface-variant">Audio mungkin campuran genre</p>
+              {% endif %}
+            </div>
+            {% if feat_tempo %}
+            <div class="bg-surface-container-low rounded-xl p-4">
+              <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">🥁 Kecepatan Lagu</p>
+              <p class="text-label-md font-label-md text-on-surface font-bold">{{ feat_tempo }} BPM</p>
+              <p class="text-label-sm text-on-surface-variant">
+                {% if feat_tempo < 80 %}Lambat &amp; santai
+                {% elif feat_tempo < 120 %}Sedang &amp; enak
+                {% elif feat_tempo < 160 %}Cepat &amp; energik
+                {% else %}Sangat cepat{% endif %}
+              </p>
+            </div>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <!-- ADMIN / PENGELOLA STUDIO: detail teknis fitur audio     -->
+      <!-- ════════════════════════════════════════════════════════ -->
+      {% else %}
+      <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 shadow-level-1 p-6">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-display font-bold text-headline-md text-on-surface">Fitur Audio Diekstrak</h3>
+          <span class="material-symbols-outlined text-outline">analytics</span>
+        </div>
+        <p class="text-body-sm text-on-surface-variant mb-4">Nilai fitur teknis yang diekstrak dari audio untuk proses klasifikasi SVM:</p>
         <div class="grid grid-cols-2 gap-3">
           {% if feat_tempo %}
-          <div class="bg-surface-container-low rounded-lg p-3">
+          <div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
             <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Tempo</p>
-            <p class="text-label-md font-label-md text-on-surface">{{ feat_tempo }} BPM</p>
+            <p class="text-label-md font-label-md text-on-surface font-mono">{{ feat_tempo }} BPM</p>
           </div>
           {% endif %}
           {% if feat_mfcc_mean %}
-          <div class="bg-surface-container-low rounded-lg p-3">
+          <div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
             <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">MFCC Mean</p>
-            <p class="text-label-md font-label-md text-on-surface">{{ feat_mfcc_mean }}</p>
+            <p class="text-label-md font-label-md text-on-surface font-mono">{{ feat_mfcc_mean }}</p>
           </div>
           {% endif %}
           {% if feat_spectral_centroid %}
-          <div class="bg-surface-container-low rounded-lg p-3">
+          <div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
             <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Spectral Centroid</p>
-            <p class="text-label-md font-label-md text-on-surface">{{ feat_spectral_centroid }}</p>
+            <p class="text-label-md font-label-md text-on-surface font-mono">{{ feat_spectral_centroid }}</p>
           </div>
           {% endif %}
           {% if feat_zcr %}
-          <div class="bg-surface-container-low rounded-lg p-3">
+          <div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
             <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Zero Crossing Rate</p>
-            <p class="text-label-md font-label-md text-on-surface">{{ feat_zcr }}</p>
+            <p class="text-label-md font-label-md text-on-surface font-mono">{{ feat_zcr }}</p>
           </div>
           {% endif %}
           {% if feat_chroma_mean %}
-          <div class="bg-surface-container-low rounded-lg p-3">
+          <div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
             <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Chroma Mean</p>
-            <p class="text-label-md font-label-md text-on-surface">{{ feat_chroma_mean }}</p>
+            <p class="text-label-md font-label-md text-on-surface font-mono">{{ feat_chroma_mean }}</p>
+          </div>
+          {% endif %}
+          {% if feat_spectral_bandwidth %}
+          <div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
+            <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Spectral Bandwidth</p>
+            <p class="text-label-md font-label-md text-on-surface font-mono">{{ feat_spectral_bandwidth }}</p>
+          </div>
+          {% endif %}
+          {% if feat_rms %}
+          <div class="bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
+            <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">RMS Energy</p>
+            <p class="text-label-md font-label-md text-on-surface font-mono">{{ feat_rms }}</p>
           </div>
           {% endif %}
         </div>
+        <!-- Badge penanda role -->
+        <div class="mt-4 flex items-center gap-2 text-label-sm text-on-surface-variant border-t border-outline-variant/20 pt-3">
+          <span class="material-symbols-outlined text-[14px] text-primary">admin_panel_settings</span>
+          <span>Ditampilkan khusus untuk <strong>{{ role|title }}</strong></span>
+        </div>
       </div>
+      {% endif %}
 
     </div>
   </section>
@@ -272,48 +352,246 @@
 
 </div>
 
-<!-- Progress Overlay -->
+
+<!-- ═══════════════════════════════════════════════════════
+     MUSIC ANALYSIS VISUALIZER OVERLAY
+═══════════════════════════════════════════════════════ -->
 <div id="loadingOverlay"
-     class="fixed inset-0 bg-white/95 backdrop-blur-sm z-[200] hidden flex-col items-center justify-center p-6">
-  
-  <div class="w-full max-w-lg bg-surface-container-lowest rounded-2xl p-8 shadow-level-2 border border-outline-variant/20">
-    <div class="flex flex-col items-center gap-4 mb-8">
-      <div class="w-16 h-16 rounded-full border-4 border-surface-container border-t-primary animate-spin"></div>
-      <h3 class="font-display font-bold text-headline-sm text-on-surface">Menganalisis Audio</h3>
+     class="fixed inset-0 z-[200] hidden flex-col items-center justify-center p-6"
+     style="background: rgba(249, 249, 255, 0.85); backdrop-filter: blur(16px);">
+
+  <!-- Ambient glow blobs -->
+  <div aria-hidden="true" style="
+    position:absolute; top:-10%; left:-10%; width:50%; height:50%;
+    background: radial-gradient(circle, rgba(53,37,205,0.1) 0%, transparent 70%);
+    pointer-events:none;
+  "></div>
+  <div aria-hidden="true" style="
+    position:absolute; bottom:-10%; right:-10%; width:40%; height:40%;
+    background: radial-gradient(circle, rgba(76,215,246,0.05) 0%, transparent 70%);
+    pointer-events:none;
+  "></div>
+
+  <!-- Floating music note particles (injected by JS) -->
+  <div id="overlayNotes" aria-hidden="true" style="position:absolute; inset:0; pointer-events:none; overflow:hidden;"></div>
+
+  <!-- Main card -->
+  <div style="
+    position:relative; z-index:10;
+    width:100%; max-width:520px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-radius: 28px;
+    padding: 2.5rem 2rem;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 40px rgba(53, 37, 205, 0.1), 0 20px 60px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  ">
+    <!-- top accent line -->
+    <div style="position:absolute; top:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, #3525cd, #4cd7f6, transparent);"></div>
+
+    <!-- Header row -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:0.75rem; margin-bottom:2rem;">
+      <span class="material-symbols-outlined" style="color:#3525cd; font-size:22px; font-variation-settings:'FILL' 1;">audio_file</span>
+      <span style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.1rem; color:#111c2d; letter-spacing:-0.01em;"
+            id="overlayTitle">Menganalisis Audio</span>
+      <!-- Typewriter dots -->
+      <span id="overlayDots" style="color:#3525cd; font-size:1.1rem; font-weight:800; min-width:24px;">...</span>
+    </div>
+
+    <!-- ── VINYL RECORD + EQUALIZER ROW ── -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:2rem; margin-bottom:2rem;">
+
+      <!-- Vinyl Record -->
+      <div style="position:relative; width:100px; height:100px; flex-shrink:0;" aria-hidden="true">
+        <!-- Outer ring -->
+        <div id="vinylDisc" style="
+          width:100px; height:100px; border-radius:50%;
+          background: conic-gradient(
+            #f0f3ff 0deg, #e7eeff 30deg, #cfdaf2 60deg, #f0f3ff 90deg,
+            #e7eeff 120deg, #cfdaf2 150deg, #f0f3ff 180deg,
+            #e7eeff 210deg, #cfdaf2 240deg, #f0f3ff 270deg,
+            #e7eeff 300deg, #cfdaf2 330deg, #f0f3ff 360deg
+          );
+          animation: vinylSpin 2.5s linear infinite;
+          box-shadow: 0 0 20px rgba(53,37,205,0.15), 0 0 40px rgba(76,215,246,0.1);
+        ">
+          <!-- Groove rings -->
+          <div style="position:absolute; inset:10px; border-radius:50%; border:1px solid rgba(53,37,205,0.1);"></div>
+          <div style="position:absolute; inset:20px; border-radius:50%; border:1px solid rgba(53,37,205,0.08);"></div>
+          <div style="position:absolute; inset:30px; border-radius:50%; border:1px solid rgba(53,37,205,0.05);"></div>
+          <!-- Center label -->
+          <div style="
+            position:absolute; inset:35px; border-radius:50%;
+            background: linear-gradient(135deg, #3525cd, #4cd7f6);
+            display:flex; align-items:center; justify-content:center;
+          ">
+            <span class="material-symbols-outlined" style="font-size:16px; color:white; font-variation-settings:'FILL' 1;">music_note</span>
+          </div>
+          <!-- Sheen -->
+          <div style="
+            position:absolute; inset:0; border-radius:50%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 60%);
+            pointer-events:none;
+          "></div>
+        </div>
+        <!-- Needle arm -->
+        <div style="
+          position:absolute; top:-4px; right:-14px;
+          width:40px; height:4px;
+          background: linear-gradient(90deg, #888, #ccc);
+          border-radius:2px;
+          transform-origin: right center;
+          transform: rotate(-35deg);
+        ">
+          <div style="
+            position:absolute; right:-2px; top:50%; transform:translateY(-50%);
+            width:6px; height:6px; border-radius:50%; background:#4cd7f6;
+            box-shadow: 0 0 6px rgba(76,215,246,0.8);
+          "></div>
+        </div>
+      </div>
+
+      <!-- Equalizer Bars -->
+      <div style="display:flex; align-items:flex-end; gap:4px; height:80px;" id="eqBars" aria-label="Visualizer equalizer">
+        <!-- bars injected by JS -->
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="margin-bottom:1.75rem;">
+      <div style="
+        width:100%; height:4px; border-radius:100px;
+        background:rgba(53,37,205,0.1);
+        overflow:hidden;
+      ">
+        <div id="overlayProgress" style="
+          height:100%; width:0%; border-radius:100px;
+          background: linear-gradient(90deg, #3525cd, #4cd7f6);
+          transition: width 0.6s cubic-bezier(0.16,1,0.3,1);
+          box-shadow: 0 0 10px rgba(76,215,246,0.4);
+        "></div>
+      </div>
     </div>
 
     <!-- 5 Steps -->
-    <div class="flex flex-col gap-4 relative">
-      <!-- Line connector -->
-      <div class="absolute left-4 top-4 bottom-4 w-0.5 bg-surface-container-high -z-10"></div>
-      
+    <div style="display:flex; flex-direction:column; gap:0.6rem;">
+
       <!-- Step 1 -->
-      <div class="flex items-center gap-4 progress-step opacity-50 transition-opacity duration-300" id="step-1">
-        <div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface-container-highest flex items-center justify-center text-outline-variant text-[14px] font-bold step-icon">1</div>
-        <span class="text-label-md font-label-md text-on-surface-variant step-text">Validasi File &amp; Format</span>
+      <div class="progress-step" id="step-1" style="
+        display:flex; align-items:center; gap:0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        opacity: 0.35;
+        transition: all 0.4s ease;
+      ">
+        <div class="step-icon" style="
+          width:30px; height:30px; border-radius:50%; flex-shrink:0;
+          background:rgba(53,37,205,0.04);
+          border:2px solid rgba(53,37,205,0.15);
+          display:flex; align-items:center; justify-content:center;
+          font-size:12px; font-weight:700; color:rgba(53,37,205,0.4);
+          font-family:'Plus Jakarta Sans',sans-serif;
+        ">1</div>
+        <span class="step-text" style="font-size:0.85rem; font-weight:600; color:rgba(17,28,45,0.5);">Validasi File &amp; Format</span>
       </div>
+
       <!-- Step 2 -->
-      <div class="flex items-center gap-4 progress-step opacity-50 transition-opacity duration-300" id="step-2">
-        <div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface-container-highest flex items-center justify-center text-outline-variant text-[14px] font-bold step-icon">2</div>
-        <span class="text-label-md font-label-md text-on-surface-variant step-text">Mengekstrak Fitur Audio</span>
+      <div class="progress-step" id="step-2" style="
+        display:flex; align-items:center; gap:0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        opacity: 0.35;
+        transition: all 0.4s ease;
+      ">
+        <div class="step-icon" style="
+          width:30px; height:30px; border-radius:50%; flex-shrink:0;
+          background:rgba(53,37,205,0.04);
+          border:2px solid rgba(53,37,205,0.15);
+          display:flex; align-items:center; justify-content:center;
+          font-size:12px; font-weight:700; color:rgba(53,37,205,0.4);
+          font-family:'Plus Jakarta Sans',sans-serif;
+        ">2</div>
+        <span class="step-text" style="font-size:0.85rem; font-weight:600; color:rgba(17,28,45,0.5);">Mengekstrak Fitur Audio</span>
       </div>
+
       <!-- Step 3 -->
-      <div class="flex items-center gap-4 progress-step opacity-50 transition-opacity duration-300" id="step-3">
-        <div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface-container-highest flex items-center justify-center text-outline-variant text-[14px] font-bold step-icon">3</div>
-        <span class="text-label-md font-label-md text-on-surface-variant step-text">Menormalisasi Skala Fitur</span>
+      <div class="progress-step" id="step-3" style="
+        display:flex; align-items:center; gap:0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        opacity: 0.35;
+        transition: all 0.4s ease;
+      ">
+        <div class="step-icon" style="
+          width:30px; height:30px; border-radius:50%; flex-shrink:0;
+          background:rgba(53,37,205,0.04);
+          border:2px solid rgba(53,37,205,0.15);
+          display:flex; align-items:center; justify-content:center;
+          font-size:12px; font-weight:700; color:rgba(53,37,205,0.4);
+          font-family:'Plus Jakarta Sans',sans-serif;
+        ">3</div>
+        <span class="step-text" style="font-size:0.85rem; font-weight:600; color:rgba(17,28,45,0.5);">Menormalisasi Skala Fitur</span>
       </div>
+
       <!-- Step 4 -->
-      <div class="flex items-center gap-4 progress-step opacity-50 transition-opacity duration-300" id="step-4">
-        <div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface-container-highest flex items-center justify-center text-outline-variant text-[14px] font-bold step-icon">4</div>
-        <span class="text-label-md font-label-md text-on-surface-variant step-text">Mengklasifikasi dengan SVM</span>
+      <div class="progress-step" id="step-4" style="
+        display:flex; align-items:center; gap:0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        opacity: 0.35;
+        transition: all 0.4s ease;
+      ">
+        <div class="step-icon" style="
+          width:30px; height:30px; border-radius:50%; flex-shrink:0;
+          background:rgba(53,37,205,0.04);
+          border:2px solid rgba(53,37,205,0.15);
+          display:flex; align-items:center; justify-content:center;
+          font-size:12px; font-weight:700; color:rgba(53,37,205,0.4);
+          font-family:'Plus Jakarta Sans',sans-serif;
+        ">4</div>
+        <span class="step-text" style="font-size:0.85rem; font-weight:600; color:rgba(17,28,45,0.5);">Mengklasifikasi dengan SVM</span>
       </div>
+
       <!-- Step 5 -->
-      <div class="flex items-center gap-4 progress-step opacity-50 transition-opacity duration-300" id="step-5">
-        <div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface-container-highest flex items-center justify-center text-outline-variant text-[14px] font-bold step-icon">5</div>
-        <span class="text-label-md font-label-md text-on-surface-variant step-text">Menyimpan Hasil ke Riwayat</span>
+      <div class="progress-step" id="step-5" style="
+        display:flex; align-items:center; gap:0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        opacity: 0.35;
+        transition: all 0.4s ease;
+      ">
+        <div class="step-icon" style="
+          width:30px; height:30px; border-radius:50%; flex-shrink:0;
+          background:rgba(53,37,205,0.04);
+          border:2px solid rgba(53,37,205,0.15);
+          display:flex; align-items:center; justify-content:center;
+          font-size:12px; font-weight:700; color:rgba(53,37,205,0.4);
+          font-family:'Plus Jakarta Sans',sans-serif;
+        ">5</div>
+        <span class="step-text" style="font-size:0.85rem; font-weight:600; color:rgba(17,28,45,0.5);">Menyimpan Hasil ke Riwayat</span>
       </div>
+
     </div>
   </div>
+
+  <style>
+    @keyframes vinylSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes eqBounce {
+      0%, 100% { height: var(--min, 6px); }
+      50%       { height: var(--max, 50px); }
+    }
+    @keyframes noteFloat {
+      0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.7; }
+      100% { transform: translateY(-180px) translateX(var(--dx, 30px)) rotate(360deg); opacity: 0; }
+    }
+  </style>
 </div>
 {% endblock %}
 
@@ -556,7 +834,66 @@
 
 
   // ════════════════════════════════════════
-  // FORM SUBMIT (AJAX) — tidak berubah dari aslinya
+  // MUSIC VISUALIZER — init on page load
+  // ════════════════════════════════════════
+  (function initVisualizer() {
+    // ── Equalizer bars ──
+    const eqContainer = document.getElementById('eqBars');
+    if (eqContainer) {
+      const barCount = 18;
+      const minH = [4,6,4,8,6,4,6,8,4,6,8,4,6,4,8,6,4,6];
+      const maxH = [30,50,38,62,44,32,56,70,28,48,66,36,54,40,72,46,30,52];
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement('div');
+        bar.style.cssText = `
+          width: 6px;
+          border-radius: 3px 3px 0 0;
+          background: linear-gradient(0deg, #3525cd, #4cd7f6);
+          --min: ${minH[i]}px;
+          --max: ${maxH[i]}px;
+          height: ${minH[i]}px;
+          animation: eqBounce ${(Math.random()*0.4+0.3).toFixed(2)}s ease-in-out infinite ${(Math.random()*0.4).toFixed(2)}s alternate;
+          box-shadow: 0 0 6px rgba(76,215,246,0.3);
+        `;
+        eqContainer.appendChild(bar);
+      }
+    }
+
+    // ── Floating notes in overlay ──
+    const notesContainer = document.getElementById('overlayNotes');
+    if (notesContainer) {
+      const notes = ['♪','♫','♬','♩'];
+      const noteCount = 10;
+      for (let i = 0; i < noteCount; i++) {
+        const n = document.createElement('div');
+        const size = Math.random()*16 + 12;
+        const dx = (Math.random()-0.5)*120;
+        n.textContent = notes[Math.floor(Math.random()*notes.length)];
+        n.style.cssText = `
+          position:absolute;
+          font-size:${size}px;
+          color:rgba(53,37,205,0.3);
+          left:${Math.random()*90+5}%;
+          bottom:${Math.random()*20}%;
+          animation: noteFloat ${Math.random()*3+4}s ease-in-out infinite ${Math.random()*4}s;
+          --dx: ${dx}px;
+          pointer-events:none;
+        `;
+        notesContainer.appendChild(n);
+      }
+    }
+
+    // ── Typewriter dots ──
+    const dotsEl = document.getElementById('overlayDots');
+    if (dotsEl) {
+      const seqs = ['.', '..', '...',  ''];
+      let idx = 0;
+      setInterval(() => { dotsEl.textContent = seqs[idx++ % seqs.length]; }, 400);
+    }
+  })();
+
+  // ════════════════════════════════════════
+  // FORM SUBMIT (AJAX)
   // ════════════════════════════════════════
   const uploadForm = document.getElementById('uploadForm');
 
@@ -567,7 +904,7 @@
       const file = fileInput.files[0];
       if (!file) return;
 
-      // Hentikan audio sebelum submit agar tidak ada suara selama loading
+      // Hentikan audio sebelum submit
       audioEl.pause();
 
       const overlay = document.getElementById('loadingOverlay');
@@ -576,19 +913,26 @@
 
       // Reset step indicators
       document.querySelectorAll('.progress-step').forEach(el => {
-        el.classList.add('opacity-50');
+        el.style.opacity = '0.35';
+        el.style.background = 'transparent';
         const icon = el.querySelector('.step-icon');
-        icon.className = 'w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface-container-highest flex items-center justify-center text-outline-variant text-[14px] font-bold step-icon';
+        icon.style.background = 'rgba(53,37,205,0.04)';
+        icon.style.border = '2px solid rgba(53,37,205,0.15)';
+        icon.style.color = 'rgba(53,37,205,0.4)';
         icon.innerHTML = el.id.replace('step-', '');
-        el.querySelector('.step-text').classList.replace('text-on-surface', 'text-on-surface-variant');
-        el.querySelector('.step-text').classList.replace('text-primary', 'text-on-surface-variant');
+        const text = el.querySelector('.step-text');
+        text.style.color = 'rgba(17,28,45,0.5)';
       });
+      const progressBar = document.getElementById('overlayProgress');
+      if (progressBar) progressBar.style.width = '0%';
 
-      // Animasi step (simulasi karena backend sinkron)
+      // Animasi step (simulasi)
       let currentStep = 1;
       const stepTimer = setInterval(() => {
         if (currentStep <= 5) {
           activateStep(currentStep);
+          // Update progress bar
+          if (progressBar) progressBar.style.width = (currentStep * 20) + '%';
           currentStep++;
         }
       }, 800);
@@ -605,7 +949,7 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
 
-        const errorAlert = doc.querySelector('.bg-error-container\\/60');
+        const errorAlert = doc.getElementById('backendErrorAlert');
 
         clearInterval(stepTimer);
 
@@ -620,6 +964,7 @@
         } else {
           // Selesaikan semua step
           for (let i = currentStep; i <= 5; i++) activateStep(i);
+          if (progressBar) progressBar.style.width = '100%';
 
           setTimeout(() => {
             overlay.classList.add('hidden');
@@ -631,7 +976,7 @@
               if (typeof showToast !== 'undefined') showToast('Klasifikasi berhasil!');
               document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-          }, 600);
+          }, 700);
         }
 
       } catch (err) {
@@ -643,20 +988,22 @@
     });
   }
 
-  // ── Fungsi helper step indicator ──
+  // ── Fungsi helper step indicator (dark visualizer style) ──
   window.activateStep = function (stepNum) {
     const el = document.getElementById('step-' + stepNum);
     if (!el) return;
-    el.classList.remove('opacity-50');
+    el.style.opacity = '1';
+    el.style.background = 'rgba(53,37,205,0.1)';
     const icon = el.querySelector('.step-icon');
-    icon.className = 'w-8 h-8 rounded-full bg-primary-fixed text-primary border-2 border-primary/20 flex items-center justify-center text-[18px] font-bold step-icon';
-    icon.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span>';
+    icon.style.background = 'linear-gradient(135deg, #3525cd, #4f46e5)';
+    icon.style.border = '2px solid rgba(53,37,205,0.3)';
+    icon.style.color = 'white';
+    icon.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px; font-variation-settings:\'FILL\' 1;">check</span>';
     const text = el.querySelector('.step-text');
-    text.classList.remove('text-on-surface-variant');
-    text.classList.add('text-primary');
+    text.style.color = '#111c2d';
   };
 
-  // showLoading() digunakan oleh onclick inline di tombol (biarkan sebagai fallback)
+  // showLoading() fallback
   window.showLoading = function () {};
 
 })();

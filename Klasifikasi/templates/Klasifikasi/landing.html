@@ -1,0 +1,1064 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dungeon Studio | Kenali Genre Musik Favoritmu</title>
+  <meta name="description" content="Dungeon Studio bisa langsung tahu genre musik dari file audio yang kamu upload. Cepat, mudah, dan gratis.">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #3525cd;
+      --primary-light: #4f46e5;
+      --cyan: #00687a;
+      --cyan-light: #57dffe;
+      --dark: #f9f9ff;
+      --dark-card: #ffffff;
+      --dark-card2: #f0f3ff;
+      --text: #111c2d;
+      --text-muted: #464555;
+      --border: rgba(53, 37, 205, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ══════════════════════════════════════
+       BACKGROUND  Deep Space Gradient
+    ══════════════════════════════════════ */
+    .bg-space {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(53, 37, 205, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(76, 215, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.9) 0%, transparent 100%),
+        linear-gradient(180deg, #f9f9ff 0%, #f0f3ff 50%, #f9f9ff 100%);
+    }
+
+    /* Star particles */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.05; transform: scale(1); }
+      50%       { opacity: 0.3; transform: scale(1.3); }
+    }
+
+    /* ══════════════════════════════════════
+       FLOATING MUSIC NOTES
+    ══════════════════════════════════════ */
+    .music-particles {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .note-particle {
+      position: absolute;
+      font-size: var(--size, 24px);
+      color: var(--color, rgba(79, 70, 229, 0.4));
+      animation: floatNote var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+      user-select: none;
+    }
+    @keyframes floatNote {
+      0%   { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-20vh) translateX(var(--drift, 60px)) rotate(360deg); opacity: 0; }
+    }
+
+    /* ══════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════ */
+    .page-wrapper {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      background: rgba(249, 249, 255, 0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(53, 37, 205, 0.1);
+      transition: all 0.3s ease;
+    }
+    .navbar.scrolled {
+      padding: 0.75rem 2.5rem;
+      background: rgba(249, 249, 255, 0.95);
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--cyan-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(53, 37, 205, 0.2);
+    }
+    .brand-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .btn-ghost {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .btn-ghost:hover { color: var(--primary); background: rgba(53, 37, 205, 0.05); }
+    .btn-primary-sm {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 700;
+      padding: 0.6rem 1.5rem;
+      border-radius: 100px;
+      transition: all 0.3s;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 20px rgba(53,37,205,0.3);
+      letter-spacing: 0.03em;
+    }
+    .btn-primary-sm:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(53,37,205,0.5), 0 0 60px rgba(76,215,246,0.15);
+    }
+
+    /* ── HERO SECTION ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 7rem 1.5rem 4rem;
+      position: relative;
+    }
+
+    /* Glowing orb behind hero */
+    .hero-orb {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(800px, 90vw);
+      height: min(800px, 90vw);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(53,37,205,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      animation: orb-pulse 6s ease-in-out infinite;
+    }
+    @keyframes orb-pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+      50%       { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(76, 215, 246, 0.1);
+      border: 1px solid rgba(76, 215, 246, 0.3);
+      border-radius: 100px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--cyan);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1.75rem;
+      animation: fadeInDown 0.8s ease both;
+    }
+    .hero-badge .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.6rem, 7vw, 5.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.25rem;
+      animation: fadeInUp 0.8s ease 0.1s both;
+      color: var(--text);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: var(--text-muted);
+      max-width: 500px;
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 0.8s ease 0.2s both;
+      font-weight: 400;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeInUp 0.8s ease 0.3s both;
+    }
+    .btn-hero-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
+      padding: 0.85rem 2.25rem;
+      border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 0 40px rgba(53,37,205,0.4), 0 8px 32px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-hero-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .btn-hero-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 60px rgba(53,37,205,0.6), 0 0 120px rgba(76,215,246,0.2), 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .btn-hero-primary:hover::before { opacity: 1; }
+    .btn-hero-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(53,37,205,0.03);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
+      padding: 0.85rem 2.25rem;
+      border-radius: 100px;
+      border: 1px solid rgba(53,37,205,0.1);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+    .btn-hero-secondary:hover {
+      background: rgba(53,37,205,0.06);
+      border-color: rgba(53,37,205,0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Visualizer (decorative) */
+    .hero-visual {
+      margin-top: 5rem;
+      position: relative;
+      width: min(700px, 95vw);
+      animation: fadeInUp 0.8s ease 0.5s both;
+    }
+    .visualizer-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(53, 37, 205, 0.15);
+      border-radius: 24px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 10px 40px rgba(53,37,205,0.08), 0 20px 60px rgba(0,0,0,0.03);
+      position: relative;
+      overflow: hidden;
+    }
+    .visualizer-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(53,37,205,0.3), rgba(76,215,246,0.2), transparent);
+    }
+    .viz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .viz-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .viz-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .viz-dot:nth-child(1) { background: #ff5f57; }
+    .viz-dot:nth-child(2) { background: #febc2e; }
+    .viz-dot:nth-child(3) { background: #28c840; }
+    .viz-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+    .viz-badge {
+      font-size: 0.75rem;
+      color: var(--cyan);
+      background: rgba(76,215,246,0.1);
+      border: 1px solid rgba(76,215,246,0.2);
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+      font-weight: 600;
+    }
+    /* Waveform bars */
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 80px;
+      margin-bottom: 1rem;
+    }
+    .wave-bar {
+      width: 5px;
+      border-radius: 100px;
+      background: linear-gradient(0deg, var(--primary), var(--cyan));
+      animation: wave var(--dur, 1s) ease-in-out infinite var(--delay, 0s) alternate;
+    }
+    @keyframes wave {
+      0%   { height: 6px;  opacity: 0.4; }
+      100% { height: var(--h, 40px); opacity: 1; }
+    }
+    .viz-genre-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .viz-genre-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 60px;
+      text-align: right;
+      text-transform: capitalize;
+    }
+    .viz-bar-track {
+      flex: 1;
+      height: 6px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+    .viz-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--primary), var(--cyan));
+      animation: barFill 1.5s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s) both;
+    }
+    @keyframes barFill {
+      from { width: 0%; }
+      to   { width: var(--w, 80%); }
+    }
+    .viz-percent {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--cyan);
+      width: 36px;
+      text-align: right;
+    }
+    .result-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      background: rgba(53,37,205,0.06);
+      border: 1px solid rgba(53,37,205,0.15);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* ══════════════════════════════════════
+       STATS STRIP
+    ══════════════════════════════════════ */
+    .stats-section {
+      padding: 3rem 1.5rem;
+      position: relative;
+    }
+    .stats-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: rgba(79,70,229,0.15);
+      border: 1px solid rgba(79,70,229,0.2);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .stat-item {
+      background: var(--dark-card);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .stat-item:hover { background: var(--dark-card2); }
+    .stat-number {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #fff, var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+      margin-bottom: 0.4rem;
+      display: block;
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    /* ══════════════════════════════════════
+       FEATURES SECTION
+    ══════════════════════════════════════ */
+    .features-section {
+      padding: 5rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-eyebrow {
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 0.875rem;
+    }
+    .section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.65rem, 3.5vw, 2.5rem);
+      text-align: center;
+      margin-bottom: 0.875rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 440px;
+      margin: 0 auto 3.5rem;
+      line-height: 1.75;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(53, 37, 205, 0.1);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(16px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(53,37,205,0.03), rgba(76,215,246,0.01));
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .feature-card:hover {
+      border-color: rgba(53, 37, 205, 0.25);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(53,37,205,0.08), 0 0 20px rgba(53,37,205,0.04);
+    }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-card:nth-child(2) { border-color: rgba(76,215,246,0.15); }
+    .feature-card:nth-child(2):hover { border-color: rgba(76,215,246,0.3); box-shadow: 0 20px 40px rgba(76,215,246,0.08), 0 0 20px rgba(76,215,246,0.04); }
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 26px;
+      position: relative;
+    }
+    .feature-icon.indigo {
+      background: rgba(53,37,205,0.2);
+      border: 1px solid rgba(79,70,229,0.3);
+      color: #a8b4ff;
+      box-shadow: 0 0 20px rgba(53,37,205,0.2);
+    }
+    .feature-icon.cyan {
+      background: rgba(76,215,246,0.1);
+      border: 1px solid rgba(76,215,246,0.25);
+      color: var(--cyan);
+      box-shadow: 0 0 20px rgba(76,215,246,0.1);
+    }
+    .feature-icon.purple {
+      background: rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.3);
+      color: #c4b5fd;
+      box-shadow: 0 0 20px rgba(139,92,246,0.15);
+    }
+    .feature-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+    .feature-desc {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      line-height: 1.75;
+    }
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+    .ftag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.7rem;
+      border-radius: 100px;
+      letter-spacing: 0.05em;
+    }
+    .ftag.indigo { background: rgba(79,70,229,0.15); color: #a8b4ff; border: 1px solid rgba(79,70,229,0.2); }
+    .ftag.cyan   { background: rgba(76,215,246,0.1);  color: var(--cyan);   border: 1px solid rgba(76,215,246,0.2); }
+    .ftag.purple { background: rgba(139,92,246,0.1);  color: #c4b5fd; border: 1px solid rgba(139,92,246,0.2); }
+
+    /* ══════════════════════════════════════
+       HOW IT WORKS
+    ══════════════════════════════════════ */
+
+    /* ══════════════════════════════════════
+       CTA SECTION
+    ══════════════════════════════════════ */
+    .cta-section {
+      padding: 5rem 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+    .cta-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(53,37,205,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-card {
+      position: relative;
+      max-width: 640px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid rgba(53,37,205,0.15);
+      border-radius: 28px;
+      padding: 4rem 3rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 10px 40px rgba(53,37,205,0.06), 0 20px 60px rgba(0,0,0,0.02);
+      overflow: hidden;
+    }
+    .cta-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(53,37,205,0.4), rgba(76,215,246,0.3), transparent);
+    }
+    .cta-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+      color: var(--text);
+      margin-bottom: 0.875rem;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .cta-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.75;
+      margin-bottom: 2.25rem;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      padding: 2rem 2.5rem;
+      border-top: 1px solid rgba(79,70,229,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .footer-links a {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--cyan); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll-triggered animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Material Icons */
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .navbar { padding: 1rem 1.25rem; }
+      .navbar-brand .brand-name { font-size: 1.1rem; }
+      .hero { padding: 5.5rem 1.25rem 3rem; }
+      .features-grid { grid-template-columns: 1fr; }
+      .cta-card { padding: 2.5rem 1.5rem; }
+      .footer { justify-content: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Deep space background -->
+  <div class="bg-space"></div>
+
+  <!-- Stars -->
+  <div class="stars" id="stars"></div>
+
+  <!-- Floating music notes -->
+  <div class="music-particles" id="musicParticles"></div>
+
+  <!-- ──────────────────────────────────── -->
+  <!-- PAGE WRAPPER -->
+  <!-- ──────────────────────────────────── -->
+  <div class="page-wrapper">
+
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar" aria-label="Navigasi utama">
+      <a href="{% url 'Klasifikasi:landing' %}" class="navbar-brand" aria-label="Dungeon Studio - Beranda">
+        <div class="brand-icon">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size:20px; color:white;">music_note</span>
+        </div>
+        <span class="brand-name">Dungeon Studio</span>
+      </a>
+      <div class="navbar-actions">
+        <a href="{% url 'Klasifikasi:login' %}" class="btn-ghost">Masuk</a>
+        <a href="{% url 'Klasifikasi:register' %}" class="btn-primary-sm" id="nav-cta">Daftar Gratis</a>
+      </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-orb" aria-hidden="true"></div>
+
+      <h1 class="hero-title" id="hero-title">
+        Kenali Genre Musikmu
+      </h1>
+
+      <p class="hero-sub">
+        Upload lagumu, dan dalam hitungan detik kami langsung kasih tahu genre-nya.
+        Blues, Jazz, Rock, Pop, dan 6 genre lainnya.
+      </p>
+
+      <div class="hero-cta">
+        <a href="{% url 'Klasifikasi:register' %}" class="btn-hero-primary" id="hero-cta-register">
+          <span class="material-symbols-outlined" style="font-size:20px; font-variation-settings:'FILL' 1;">rocket_launch</span>
+          Mulai Sekarang
+        </a>
+        <a href="{% url 'Klasifikasi:login' %}" class="btn-hero-secondary" id="hero-cta-login">
+          <span class="material-symbols-outlined" style="font-size:18px;">login</span>
+          Sudah punya akun
+        </a>
+      </div>
+
+      <!-- Decorative visualizer card -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="visualizer-card">
+          <div class="viz-header">
+            <div class="viz-dots">
+              <div class="viz-dot"></div>
+              <div class="viz-dot"></div>
+              <div class="viz-dot"></div>
+            </div>
+            <span class="viz-title">Audio Analysis</span>
+            <span class="viz-badge">&#9679; Live</span>
+          </div>
+
+          <!-- Animated waveform -->
+          <div class="waveform" id="heroWaveform">
+            <!-- bars injected by JS -->
+          </div>
+
+          <!-- Genre bars -->
+          <div class="viz-genre-row">
+            <span class="viz-genre-label">Blues</span>
+            <div class="viz-bar-track"><div class="viz-bar-fill" style="--w:88%; --delay:0.4s;"></div></div>
+            <span class="viz-percent">88%</span>
+          </div>
+          <div class="viz-genre-row">
+            <span class="viz-genre-label">Jazz</span>
+            <div class="viz-bar-track"><div class="viz-bar-fill" style="--w:45%; --delay:0.6s; background: linear-gradient(90deg, #6366f1, #a78bfa);"></div></div>
+            <span class="viz-percent" style="color:#a78bfa;">45%</span>
+          </div>
+          <div class="viz-genre-row">
+            <span class="viz-genre-label">Rock</span>
+            <div class="viz-bar-track"><div class="viz-bar-fill" style="--w:12%; --delay:0.8s; background: linear-gradient(90deg, #334155, #64748b);"></div></div>
+            <span class="viz-percent" style="color:#64748b;">12%</span>
+          </div>
+
+          <div style="text-align:center;">
+            <span class="result-label">
+              <span class="material-symbols-outlined" style="font-size:16px; font-variation-settings:'FILL' 1; color:#4cd7f6;">music_note</span>
+              Hasil: <strong>BLUES</strong> &mdash; kecocokan 88%
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section reveal" aria-label="Statistik sistem">
+      <div class="stats-inner">
+        <div class="stat-item">
+          <span class="stat-number" data-target="{{ total_klasifikasi|default:'0' }}">{{ total_klasifikasi|default:'0' }}</span>
+          <span class="stat-label">Lagu Sudah Dianalisis</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">10</span>
+          <span class="stat-label">Genre Musik Didukung</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">Gratis</span>
+          <span class="stat-label">Daftar & Gunakan</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section" aria-labelledby="features-title">
+      <p class="section-eyebrow reveal">Apa yang Bisa Kamu Lakukan</p>
+
+
+
+      <div class="features-grid">
+        <div class="feature-card reveal" style="transition-delay: 0.1s;">
+          <div class="feature-icon indigo">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">analytics</span>
+          </div>
+          <h3 class="feature-title">Tahu Genre Lagumu Seketika</h3>
+          <p class="feature-desc">Cukup upload file lagu, dan sistem kami langsung memberitahu genre-nya dalam hitungan detik. Tidak perlu isi apa-apa lagi.</p>
+          <div class="feature-tags">
+            <span class="ftag indigo">MP3</span>
+            <span class="ftag indigo">WAV</span>
+            <span class="ftag indigo">FLAC</span>
+            <span class="ftag indigo">+ banyak format</span>
+          </div>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay: 0.2s;">
+          <div class="feature-icon cyan">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">equalizer</span>
+          </div>
+          <h3 class="feature-title">Lihat Seberapa Mirip Tiap Genre</h3>
+          <p class="feature-desc">Sistem menampilkan persentase kecocokan untuk setiap genre, jadi kamu bisa lihat sendiri seberapa Blues, Jazz, atau Rock lagu kamu.</p>
+          <div class="feature-tags">
+            <span class="ftag cyan">Blues</span>
+            <span class="ftag cyan">Jazz</span>
+            <span class="ftag cyan">Rock</span>
+            <span class="ftag cyan">Pop & lainnya</span>
+          </div>
+        </div>
+
+        <div class="feature-card reveal" style="transition-delay: 0.3s;">
+          <div class="feature-icon purple">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">history</span>
+          </div>
+          <h3 class="feature-title">Riwayat Tersimpan Otomatis</h3>
+          <p class="feature-desc">Setiap lagu yang kamu analisis tersimpan rapi di akunmu. Kamu bisa lihat ulang hasilnya kapan saja, atau download laporannya.</p>
+          <div class="feature-tags">
+            <span class="ftag purple">Download PDF</span>
+            <span class="ftag purple">Download Excel</span>
+            <span class="ftag purple">Riwayat Lengkap</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <!-- CTA SECTION -->
+    <section class="cta-section" aria-labelledby="cta-title">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="cta-card reveal">
+        <h2 class="cta-title" id="cta-title">Penasaran Genre Lagumu?</h2>
+        <p class="cta-sub">Daftar gratis dan coba langsung sekarang. Tidak perlu kartu kredit, tidak perlu install apapun.</p>
+        <div class="cta-buttons">
+          <a href="{% url 'Klasifikasi:register' %}" class="btn-hero-primary" id="cta-register">
+            <span class="material-symbols-outlined" style="font-size:20px; font-variation-settings:'FILL' 1;">rocket_launch</span>
+            Coba Sekarang, Gratis!
+          </a>
+          <a href="{% url 'Klasifikasi:login' %}" class="btn-hero-secondary" id="cta-login">
+            <span class="material-symbols-outlined" style="font-size:18px;">login</span>
+            Sudah punya akun
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="footer-copy">&copy; 2024 Dungeon Studio &mdash; Pengenal Genre Musik Otomatis</p>
+      <div class="footer-links">
+        <a href="{% url 'Klasifikasi:login' %}">Login</a>
+        <a href="{% url 'Klasifikasi:register' %}">Daftar</a>
+      </div>
+    </footer>
+
+  </div><!-- end .page-wrapper -->
+
+  <script>
+    // ── Stars ──
+    (function() {
+      const container = document.getElementById('stars');
+      const count = 80;
+      for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2.5 + 0.5;
+        s.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          top: ${Math.random() * 100}%;
+          left: ${Math.random() * 100}%;
+          --dur: ${Math.random() * 4 + 2}s;
+          --delay: ${Math.random() * 5}s;
+        `;
+        container.appendChild(s);
+      }
+    })();
+
+    // ── Floating Music Notes ──
+    (function() {
+      const container = document.getElementById('musicParticles');
+      const notes = ['♪', '♫', '♬', '♩', '🎵', '🎶'];
+      const colors = [
+        'rgba(79, 70, 229, 0.5)',
+        'rgba(76, 215, 246, 0.4)',
+        'rgba(139, 92, 246, 0.45)',
+        'rgba(99, 102, 241, 0.4)',
+        'rgba(168, 180, 255, 0.35)',
+      ];
+      const count = 22;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'note-particle';
+        const size = Math.random() * 24 + 14;
+        const drift = (Math.random() - 0.5) * 200;
+        el.textContent = notes[Math.floor(Math.random() * notes.length)];
+        el.style.cssText = `
+          left: ${Math.random() * 100}%;
+          bottom: -60px;
+          --size: ${size}px;
+          --color: ${colors[Math.floor(Math.random() * colors.length)]};
+          --dur: ${Math.random() * 10 + 8}s;
+          --delay: ${Math.random() * 12}s;
+          --drift: ${drift}px;
+        `;
+        container.appendChild(el);
+      }
+    })();
+
+    // ── Hero Waveform Bars ──
+    (function() {
+      const waveform = document.getElementById('heroWaveform');
+      const barCount = 40;
+      const heights = [10, 16, 24, 35, 44, 52, 58, 62, 68, 60, 50, 44, 36, 28, 20, 16, 24, 36, 50, 62,
+                       70, 62, 50, 36, 28, 20, 30, 44, 56, 64, 58, 48, 36, 26, 18, 24, 34, 46, 30, 14];
+      for (let i = 0; i < barCount; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'wave-bar';
+        const h = heights[i % heights.length];
+        bar.style.cssText = `
+          --h: ${h}px;
+          --dur: ${(Math.random() * 0.6 + 0.4).toFixed(2)}s;
+          --delay: ${(Math.random() * 0.8).toFixed(2)}s;
+        `;
+        waveform.appendChild(bar);
+      }
+    })();
+
+    // ── Navbar scroll shrink ──
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── Reveal on scroll ──
+    (function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    })();
+  </script>
+</body>
+</html>

@@ -267,6 +267,36 @@ GENRE_INFO = {
 }
 
 
+
+# ═══════════════════════════════════════════════════════════════════════
+# LANDING PAGE (public)
+# ═══════════════════════════════════════════════════════════════════════
+
+def landing_view(request):
+    """Halaman landing publik — redirect ke dashboard jika sudah login."""
+    if request.user.is_authenticated:
+        return redirect('Klasifikasi:home')
+
+    # Ambil data publik jika ada (statistik sederhana untuk ditampilkan di landing)
+    try:
+        from .models import RiwayatKlasifikasi
+        total_klasifikasi = RiwayatKlasifikasi.objects.count()
+    except Exception:
+        total_klasifikasi = 0
+
+    try:
+        with open(MODEL_DIR / 'metrics.json', 'r') as f:
+            metrics = json.load(f)
+        accuracy = f"{metrics['overall']['accuracy'] * 100:.1f}"
+    except Exception:
+        accuracy = None
+
+    return render(request, 'Klasifikasi/landing.html', {
+        'total_klasifikasi': total_klasifikasi,
+        'accuracy': accuracy,
+    })
+
+
 # ═══════════════════════════════════════════════════════════════════════
 # AUTH VIEWS
 # ═══════════════════════════════════════════════════════════════════════
@@ -294,9 +324,9 @@ def login_view(request):
 
 
 def logout_view(request):
-    """Logout dan redirect ke login."""
+    """Logout dan redirect ke landing."""
     logout(request)
-    return redirect('Klasifikasi:login')
+    return redirect('Klasifikasi:landing')
 
 
 def register_view(request):
@@ -423,9 +453,12 @@ def klasifikasi_view(request):
     """Halaman klasifikasi genre musik — upload audio → prediksi."""
     from .models import RiwayatKlasifikasi, FiturAudio
 
+    role = get_user_role(request.user)
+
     context = {
         'supported_formats': ', '.join(sorted(SUPPORTED_FORMATS)),
         'model_ready': svm_model is not None,
+        'role': role,
     }
 
     if request.method == 'POST':
@@ -470,7 +503,8 @@ def klasifikasi_view(request):
                     {
                         'genre': g,
                         'probability': round(float(p) * 100, 2),
-                        'color': GENRE_INFO.get(g.lower(), {}).get('color', '#888')
+                        'color': GENRE_INFO.get(g.lower(), {}).get('color', '#888'),
+                        'icon': GENRE_INFO.get(g.lower(), {}).get('icon', '🎵'),
                     }
                     for g, p in proba_sorted
                 ]
@@ -536,12 +570,14 @@ def klasifikasi_view(request):
                 'top_features': top_features,
                 'filename': audio_file.name,
                 'filesize': filesize_str,
-                # Feature values for display
+                # Feature values for display (digunakan oleh admin & pengelola)
                 'feat_mfcc_mean': round(features_dict.get('mfcc_1_mean', 0.0), 4),
                 'feat_spectral_centroid': round(features_dict.get('spectral_centroid_mean', 0.0), 2),
                 'feat_zcr': round(features_dict.get('zcr_mean', 0.0), 6),
                 'feat_chroma_mean': round(features_dict.get('chroma_mean', 0.0), 4),
                 'feat_tempo': round(features_dict.get('tempo', 0.0), 2),
+                'feat_spectral_bandwidth': round(features_dict.get('spectral_bandwidth_mean', 0.0), 2),
+                'feat_rms': round(features_dict.get('rms_mean', 0.0), 6),
             })
 
         except ImportError as e:
