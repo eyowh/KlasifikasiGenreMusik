@@ -162,69 +162,17 @@
 
 </body>
 <script>
-  // Toast minimal untuk halaman yang belum ada base.html
-  function showMinimalToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `fixed top-6 right-6 z-[200] flex items-center gap-3 px-4 py-3 rounded-xl shadow-level-2 transform translate-y-[-10px] opacity-0 transition-all duration-300 ${type === 'error' ? 'bg-error-container text-on-error-container border border-error/30' : 'bg-surface-container-highest text-on-surface border border-outline-variant/30'}`;
-    toast.innerHTML = `<span class="material-symbols-outlined ${type === 'error' ? 'text-error' : 'text-primary'}">${type === 'error' ? 'error' : 'check_circle'}</span><span class="text-label-md font-label-md">${message}</span>`;
-    document.body.appendChild(toast);
-    requestAnimationFrame(() => toast.classList.remove('translate-y-[-10px]', 'opacity-0'));
-    setTimeout(() => { toast.classList.add('translate-y-[-10px]', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
-  }
-
-  document.getElementById('registerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const form = this;
+  // Spinner loading saat submit (form biasa, bukan AJAX)
+  document.getElementById('registerForm').addEventListener('submit', function() {
     const btn = document.getElementById('btnSubmit');
     const text = document.getElementById('btnText');
     const spinner = document.getElementById('btnSpinner');
     
-    // Loading state
     btn.disabled = true;
     btn.classList.add('opacity-90', 'cursor-wait');
     text.classList.add('invisible');
     spinner.classList.remove('hidden');
-
-    try {
-      const formData = new FormData(form);
-      const response = await fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      });
-
-      if (response.redirected) {
-        // Success redirect
-        showMinimalToast('Registrasi berhasil! Mengalihkan...', 'success');
-        setTimeout(() => {
-          window.location.href = response.url;
-        }, 1500);
-      } else {
-        // Validation error
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Update just the card content to show field errors
-        const newCard = doc.getElementById('registerCard');
-        if (newCard) {
-          document.getElementById('registerCard').innerHTML = newCard.innerHTML;
-          // Re-attach event listener since innerHTML replaced the form
-          document.getElementById('registerForm').addEventListener('submit', arguments.callee);
-        }
-      }
-    } catch (error) {
-      showMinimalToast('Terjadi kesalahan jaringan.', 'error');
-    } finally {
-      // Revert loading state if not redirected
-      if (document.getElementById('btnSubmit')) {
-        btn.disabled = false;
-        btn.classList.remove('opacity-90', 'cursor-wait');
-        text.classList.remove('invisible');
-        spinner.classList.add('hidden');
-      }
-    }
+    // Form submit secara normal → Django redirect ke login + messages.success
   });
 </script>
 </html>

@@ -22,7 +22,7 @@
     {% endif %}
   </div>
 
-  <!-- === TABS (My History vs All — admin/pengelola) === -->
+  <!-- === TABS (My History vs All - admin/pengelola) === -->
   {% if is_advanced %}
   <div class="flex bg-surface-container-low p-1 rounded-xl w-full md:w-fit border border-outline-variant/20 shadow-sm overflow-x-auto">
     <a href="?tab=saya"
@@ -424,7 +424,7 @@
               ${idx + 1}
             </span>
             <span class="${isFirst ? 'text-label-md font-label-md text-on-surface' : 'text-label-md font-label-md text-on-surface-variant'} capitalize">
-              ${item.genre || '—'}
+              ${item.genre || '-'}
             </span>
           </div>
           <span class="${isFirst ? 'text-primary font-bold' : 'text-on-surface-variant'} text-label-md font-label-md">

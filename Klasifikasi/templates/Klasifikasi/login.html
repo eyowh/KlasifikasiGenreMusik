@@ -73,9 +73,9 @@
 
       {% if messages %}
       {% for message in messages %}
-      <div class="mb-md flex items-center gap-2 bg-surface-container text-on-surface p-sm rounded-lg text-label-md">
-        <span class="material-symbols-outlined text-[18px] text-primary">check_circle</span>
-        {{ message }}
+      <div class="mb-md flex items-center gap-3 bg-green-50 border border-green-300 text-green-800 px-4 py-3 rounded-xl text-label-md font-label-md shadow-sm animate-pulse-once">
+        <span class="material-symbols-outlined flex-shrink-0" style="color:#16a34a; font-size:22px;">check_circle</span>
+        <span>{{ message }}</span>
       </div>
       {% endfor %}
       {% endif %}
