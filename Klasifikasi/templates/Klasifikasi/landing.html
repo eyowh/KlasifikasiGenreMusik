@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dungeon Studio | Kenali Genre Musik Favoritmu</title>
-  <link rel="icon" type="image/png" href="{% static 'asset-1.png' %}">
+  <link rel="icon" type="image/png" href="{% static 'asset-1.png' %}?v=1.1">
   <meta name="description" content="Dungeon Studio bisa langsung tahu genre musik dari file audio yang kamu upload. Cepat, mudah, dan gratis.">
 
   <!-- Fonts -->
@@ -89,9 +89,11 @@
     .note-particle {
       position: absolute;
       font-size: var(--size, 24px);
-      color: var(--color, rgba(79, 70, 229, 0.4));
+      font-weight: 700;
+      color: var(--color, rgba(79, 70, 229, 0.65));
       animation: floatNote var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
       user-select: none;
+      text-shadow: 0 0 8px var(--color, rgba(79, 70, 229, 0.3));
     }
     @keyframes floatNote {
       0%   { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
@@ -813,7 +815,6 @@
 
       <p class="hero-sub">
         Upload lagumu, dan dalam hitungan detik kami langsung kasih tahu genre-nya.
-        Blues, Jazz, Rock, Pop, dan 6 genre lainnya.
       </p>
 
       <div class="hero-cta">
@@ -877,10 +878,6 @@
         <div class="stat-item">
           <span class="stat-number" data-target="{{ total_klasifikasi|default:'0' }}">{{ total_klasifikasi|default:'0' }}</span>
           <span class="stat-label">Lagu Sudah Dianalisis</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">10</span>
-          <span class="stat-label">Genre Musik Didukung</span>
         </div>
         <div class="stat-item">
           <span class="stat-number">Gratis</span>
@@ -961,7 +958,7 @@
     </section>
 
     <footer class="footer">
-      <p class="footer-copy">&copy; 2024 Dungeon Studio - Pengenal Genre Musik Otomatis</p>
+      <p class="footer-copy">&copy; 2025 Dungeon Studio</p>
       <div class="footer-links">
         <a href="{% url 'Klasifikasi:login' %}">Login</a>
         <a href="{% url 'Klasifikasi:register' %}">Daftar</a>
@@ -996,11 +993,11 @@
       const container = document.getElementById('musicParticles');
       const notes = ['♪', '♫', '♬', '♩', '🎵', '🎶'];
       const colors = [
-        'rgba(79, 70, 229, 0.5)',
-        'rgba(76, 215, 246, 0.4)',
-        'rgba(139, 92, 246, 0.45)',
-        'rgba(99, 102, 241, 0.4)',
-        'rgba(168, 180, 255, 0.35)',
+        'rgba(53, 37, 205, 0.7)',
+        'rgba(0, 104, 122, 0.65)',
+        'rgba(99, 102, 241, 0.7)',
+        'rgba(139, 92, 246, 0.65)',
+        'rgba(79, 70, 229, 0.72)',
       ];
       const count = 22;
       for (let i = 0; i < count; i++) {
