@@ -768,14 +768,15 @@
 
     /* Responsive */
     @media (max-width: 640px) {
-      .navbar { padding: 1rem 1.25rem; }
-      .navbar-brand .brand-name { font-size: 1.1rem; }
+      .navbar { padding: 0.75rem 1rem; }
+      .navbar-brand .brand-name { font-size: 1rem; }
       .hero { padding: 5.5rem 1.25rem 3rem; }
       .features-grid { grid-template-columns: 1fr; }
       .cta-card { padding: 2.5rem 1.5rem; }
       .footer { justify-content: center; text-align: center; flex-direction: column; align-items: center; gap: 1rem; }
-      .navbar-actions { display: none; }
-      .navbar-hamburger { display: flex; }
+      .navbar-actions { gap: 0.5rem; }
+      .btn-ghost { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+      .btn-primary-sm { padding: 0.45rem 1rem; font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -801,34 +802,13 @@
         <img src="{% static 'asset-1.png' %}" alt="Logo" class="w-12 h-12 object-contain mr-2" style="width: 48px; height: 48px; object-fit: contain;">
         <span class="brand-name">Dungeon Studio</span>
       </a>
-      <!-- Hamburger (mobile only) -->
-      <button class="navbar-hamburger" id="navHamburger" aria-label="Buka menu" aria-expanded="false">
-        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <line x1="3" y1="12" x2="21" y2="12"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
       <div class="navbar-actions">
         <a href="{% url 'Klasifikasi:login' %}" class="btn-ghost">Masuk</a>
         <a href="{% url 'Klasifikasi:register' %}" class="btn-primary-sm" id="nav-cta">Daftar Gratis</a>
       </div>
     </nav>
 
-    <!-- Mobile nav drawer -->
-    <div class="mobile-nav-drawer" id="mobileNavDrawer">
-      <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
-      <div class="mobile-nav-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:1.1rem; background:linear-gradient(135deg,var(--primary),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">Dungeon Studio</span>
-          <button id="mobileNavClose" style="background:none;border:none;cursor:pointer;color:var(--text-muted);" aria-label="Tutup menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <a href="{% url 'Klasifikasi:login' %}" class="mobile-nav-link">Masuk</a>
-        <a href="{% url 'Klasifikasi:register' %}" class="btn-primary-sm" style="text-align:center; justify-content:center;">Daftar Gratis</a>
-      </div>
-    </div>
+
 
     <!-- HERO SECTION -->
     <section class="hero" aria-labelledby="hero-title">
@@ -1081,19 +1061,7 @@
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     })();
 
-    // ── Mobile Hamburger Menu ──
-    (function() {
-      const btn = document.getElementById('navHamburger');
-      const drawer = document.getElementById('mobileNavDrawer');
-      const overlay = document.getElementById('mobileNavOverlay');
-      const close = document.getElementById('mobileNavClose');
-      if (!btn || !drawer) return;
-      function openMenu() { drawer.classList.add('open'); btn.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
-      function closeMenu() { drawer.classList.remove('open'); btn.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
-      btn.addEventListener('click', openMenu);
-      overlay.addEventListener('click', closeMenu);
-      close.addEventListener('click', closeMenu);
-    })();
+    // (Mobile hamburger menu removed - buttons always visible)
   </script>
 </body>
 </html>

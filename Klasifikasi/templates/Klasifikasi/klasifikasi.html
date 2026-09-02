@@ -6,7 +6,7 @@
 
   <!-- Page Header -->
   <div class="flex flex-col gap-2">
-    <h2 class="font-display font-bold text-headline-lg text-on-surface">Klasifikasi Genre Audio</h2>
+    <h2 class="font-display font-bold text-[22px] md:text-headline-lg text-on-surface">Klasifikasi Genre Audio</h2>
 
   </div>
 
@@ -180,7 +180,7 @@
         <div class="h-24 w-24 rounded-full bg-gradient-to-br from-surface-container to-surface-container-highest flex items-center justify-center mb-6 shadow-inner border border-white">
           <span class="material-symbols-outlined text-[48px] text-primary" style="font-variation-settings:'FILL' 1;">music_note</span>
         </div>
-        <h4 class="font-display font-bold text-display-lg gradient-text mb-2 uppercase">{{ genre }}</h4>
+        <h4 class="font-display font-bold text-[2rem] md:text-display-lg gradient-text mb-2 uppercase break-words">{{ genre }}</h4>
         <div class="mt-4 bg-surface-container-low border border-surface-container-highest text-primary px-4 py-2 rounded-full text-label-md font-label-md flex items-center gap-2 shadow-sm">
           {% if role == 'pengguna_studio' %}Tingkat Kecocokan:{% else %}Confidence:{% endif %} {{ confidence }}%
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>

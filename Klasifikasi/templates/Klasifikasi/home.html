@@ -74,21 +74,30 @@
 
   <!-- Riwayat Terbaru Pengguna (tanpa kolom Confidence) -->
   <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 overflow-hidden flex flex-col">
-    <div class="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-white/50 backdrop-blur-md">
-      <h3 class="font-display font-bold text-headline-md text-on-surface">Riwayat Lagu Terakhir</h3>
+    <div class="p-4 md:p-6 border-b border-outline-variant/30 flex justify-between items-center bg-white/50 backdrop-blur-md">
+      <h3 class="font-display font-bold text-[18px] md:text-headline-md text-on-surface">Riwayat Lagu Terakhir</h3>
       <a href="{% url 'Klasifikasi:riwayat' %}" class="text-label-sm font-label-sm text-primary hover:underline">Lihat semua</a>
     </div>
-    <div class="flex-1 overflow-x-auto">
-      <table class="w-full text-left border-collapse min-w-[360px]">
-        <thead>
-          <tr class="bg-surface-bright border-b border-outline-variant/30">
-            <th class="py-3 px-6 text-label-md font-label-md text-outline">Nama File</th>
-            <th class="py-3 px-6 text-label-md font-label-md text-outline">Genre Terdeteksi</th>
-            <th class="py-3 px-6 text-label-md font-label-md text-outline text-right">Waktu</th>
-          </tr>
-        </thead>
+    {% for r in riwayat_saya %}
+    <!-- Mobile Card -->
+    <div class="mobile-only p-4 border-b border-outline-variant/10 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px]">audio_file</span>
+        </div>
+        <div class="min-w-0">
+          <span class="text-label-md font-label-md text-on-surface block truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 mt-0.5 rounded-full bg-primary-fixed/50 text-primary font-label-sm text-[11px] border border-primary/20 uppercase">
+            <span>{{ r.genre_icon }}</span>{{ r.genre_prediksi }}
+          </span>
+        </div>
+      </div>
+      <span class="text-[11px] text-outline flex-shrink-0">{{ r.waktu|timesince }} lalu</span>
+    </div>
+    <!-- Desktop Row -->
+    <div class="desktop-only flex-1 overflow-x-auto">
+      <table class="w-full text-left border-collapse">
         <tbody class="text-body-md text-on-surface">
-          {% for r in riwayat_saya %}
           <tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/50 transition-colors group">
             <td class="py-4 px-6 flex items-center gap-3">
               <div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
@@ -104,19 +113,17 @@
             </td>
             <td class="py-4 px-6 text-right text-label-sm font-label-sm text-outline">{{ r.waktu|timesince }} lalu</td>
           </tr>
-          {% empty %}
-          <tr>
-            <td colspan="3" class="py-12 text-center text-on-surface-variant text-body-md">
-              <span class="material-symbols-outlined text-[40px] text-outline-variant block mb-3">inbox</span>
-              Belum ada riwayat. Yuk upload lagu pertamamu!
-              <br>
-              <a href="{% url 'Klasifikasi:klasifikasi' %}" class="text-primary text-label-md font-label-md hover:underline mt-2 inline-block">Upload sekarang &rarr;</a>
-            </td>
-          </tr>
-          {% endfor %}
         </tbody>
       </table>
     </div>
+    {% empty %}
+    <div class="py-12 text-center text-on-surface-variant text-body-md">
+      <span class="material-symbols-outlined text-[40px] text-outline-variant block mb-3">inbox</span>
+      Belum ada riwayat. Yuk upload lagu pertamamu!
+      <br>
+      <a href="{% url 'Klasifikasi:klasifikasi' %}" class="text-primary text-label-md font-label-md hover:underline mt-2 inline-block">Upload sekarang &rarr;</a>
+    </div>
+    {% endfor %}
   </div>
 
   {% else %}
@@ -218,57 +225,63 @@
 
     <!-- Recent Classifications Table -->
     <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-level-1 overflow-hidden flex flex-col">
-      <div class="p-6 border-b border-outline-variant/30 flex justify-between items-center bg-white/50 backdrop-blur-md">
-        <h3 class="font-display font-bold text-headline-md text-on-surface">Klasifikasi Terbaru</h3>
+      <div class="p-4 md:p-6 border-b border-outline-variant/30 flex justify-between items-center bg-white/50 backdrop-blur-md">
+        <h3 class="font-display font-bold text-[18px] md:text-headline-md text-on-surface">Klasifikasi Terbaru</h3>
         <a href="{% url 'Klasifikasi:riwayat' %}" class="text-label-sm font-label-sm text-primary hover:underline">Lihat semua</a>
       </div>
-      <div class="flex-1 overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[550px]">
-          <thead>
-            <tr class="bg-surface-bright border-b border-outline-variant/30">
-              <th class="py-3 px-6 text-label-md font-label-md text-outline">Nama File</th>
-              <th class="py-3 px-6 text-label-md font-label-md text-outline">Genre</th>
-              <th class="py-3 px-6 text-label-md font-label-md text-outline">Confidence</th>
-              <th class="py-3 px-6 text-label-md font-label-md text-outline text-right">Waktu</th>
-            </tr>
-          </thead>
-          <tbody class="text-body-md text-on-surface">
-            {% for r in riwayat_saya %}
-            <tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/50 transition-colors group">
-              <td class="py-4 px-6 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
-                  <span class="material-symbols-outlined text-[20px]">audio_file</span>
-                </div>
-                <span class="font-medium text-on-surface truncate max-w-[180px]" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
-              </td>
-              <td class="py-4 px-6">
-                <span class="inline-block px-3 py-1 rounded-full bg-primary-fixed/50 text-primary font-label-sm text-label-sm border border-primary/20 uppercase">
-                  {{ r.genre_prediksi }}
-                </span>
-              </td>
-              <td class="py-4 px-6">
-                <div class="flex items-center gap-2">
-                  <div class="w-16 h-1.5 bg-surface-container rounded-full overflow-hidden">
-                    <div class="h-full progress-fill" style="width: {{ r.confidence }}%;"></div>
-                  </div>
-                  <span class="text-label-sm font-label-sm text-on-surface-variant">{{ r.confidence }}%</span>
-                </div>
-              </td>
-              <td class="py-4 px-6 text-right text-label-sm font-label-sm text-outline">{{ r.waktu|timesince }} lalu</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="4" class="py-12 text-center text-on-surface-variant text-body-md">
-                <span class="material-symbols-outlined text-[40px] text-outline-variant block mb-3">inbox</span>
-                Belum ada riwayat klasifikasi.
-                <br>
-                <a href="{% url 'Klasifikasi:klasifikasi' %}" class="text-primary text-label-md font-label-md hover:underline mt-2 inline-block">Upload audio pertama Anda &rarr;</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <div class="desktop-only bg-surface-bright border-b border-outline-variant/30 grid grid-cols-12 gap-2 px-6 py-3">
+        <div class="col-span-5 text-label-md font-label-md text-outline">Nama File</div>
+        <div class="col-span-3 text-label-md font-label-md text-outline">Genre</div>
+        <div class="col-span-2 text-label-md font-label-md text-outline">Confidence</div>
+        <div class="col-span-2 text-label-md font-label-md text-outline text-right">Waktu</div>
       </div>
+      {% for r in riwayat_saya %}
+      <!-- Mobile Card -->
+      <div class="mobile-only p-4 border-b border-outline-variant/10">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">audio_file</span>
+          </div>
+          <span class="text-label-md font-label-md text-on-surface truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="inline-block px-2.5 py-1 rounded-full bg-primary-fixed/50 text-primary font-label-sm text-[11px] border border-primary/20 uppercase">{{ r.genre_prediksi }}</span>
+          <div class="flex items-center gap-2">
+            <div class="w-14 h-1.5 bg-surface-container rounded-full overflow-hidden">
+              <div class="h-full progress-fill" style="width: {{ r.confidence }}%;"></div>
+            </div>
+            <span class="text-[11px] text-on-surface-variant">{{ r.confidence }}%</span>
+            <span class="text-[11px] text-outline ml-1">{{ r.waktu|timesince }} lalu</span>
+          </div>
+        </div>
+      </div>
+      <!-- Desktop Row -->
+      <div class="desktop-only grid grid-cols-12 gap-2 px-6 py-4 border-b border-outline-variant/10 items-center hover:bg-surface-container-lowest/50 transition-colors group">
+        <div class="col-span-5 flex items-center gap-3 overflow-hidden">
+          <div class="w-9 h-9 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">audio_file</span>
+          </div>
+          <span class="font-medium text-on-surface truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+        </div>
+        <div class="col-span-3">
+          <span class="inline-block px-3 py-1 rounded-full bg-primary-fixed/50 text-primary font-label-sm text-label-sm border border-primary/20 uppercase">{{ r.genre_prediksi }}</span>
+        </div>
+        <div class="col-span-2 flex items-center gap-2">
+          <div class="flex-1 h-1.5 bg-surface-container rounded-full overflow-hidden">
+            <div class="h-full progress-fill" style="width: {{ r.confidence }}%;"></div>
+          </div>
+          <span class="text-label-sm font-label-sm text-on-surface-variant w-8 text-right">{{ r.confidence }}%</span>
+        </div>
+        <div class="col-span-2 text-right text-label-sm font-label-sm text-outline">{{ r.waktu|timesince }} lalu</div>
+      </div>
+      {% empty %}
+      <div class="py-12 text-center text-on-surface-variant text-body-md">
+        <span class="material-symbols-outlined text-[40px] text-outline-variant block mb-3">inbox</span>
+        Belum ada riwayat klasifikasi.
+        <br>
+        <a href="{% url 'Klasifikasi:klasifikasi' %}" class="text-primary text-label-md font-label-md hover:underline mt-2 inline-block">Upload audio pertama Anda &rarr;</a>
+      </div>
+      {% endfor %}
     </div>
 
     <!-- Active Engine Card -->

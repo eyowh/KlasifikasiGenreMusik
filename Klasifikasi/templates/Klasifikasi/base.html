@@ -187,6 +187,15 @@
       .desktop-only { display: none !important; }
     }
 
+    /* Bottom nav safe area for iOS notch */
+    .safe-bottom {
+      padding-bottom: max(env(safe-area-inset-bottom), 6px);
+    }
+    /* Extra bottom padding for pages when bottom nav is visible */
+    @media (max-width: 767px) {
+      .bottom-nav-offset { padding-bottom: 72px; }
+    }
+
     /* ══════════════════════════════════════
        FLOATING MUSIC NOTES (Global)
     ══════════════════════════════════════ */
@@ -218,7 +227,8 @@
 
   <!-- Floating music notes (global) -->
   <div class="music-particles" id="musicParticles"></div>
-  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+
+  <!-- ═══════════════ SIDEBAR (Desktop Only) ═══════════════ -->
   <aside class="h-screen w-64 fixed left-0 top-0 glass-sidebar border-r border-outline-variant/40 shadow-sm flex flex-col py-md z-50 hidden md:flex">
 
     <!-- Brand -->
@@ -308,7 +318,6 @@
       </a>
       {% endif %}
 
-
     </nav>
 
     <!-- CTA + User Footer -->
@@ -331,69 +340,92 @@
   <!-- ═══════════════ MAIN AREA ═══════════════ -->
   <div class="flex-1 flex flex-col min-h-screen ml-0 md:ml-64">
 
-    <!-- Mobile TOPBAR (Hidden on Desktop) -->
-    <header class="h-16 sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-outline-variant/30 shadow-sm flex md:hidden justify-between items-center w-full px-4">
-      <div class="flex items-center gap-4">
-        <button id="sidebarToggle" class="text-on-surface-variant hover:text-primary transition-colors">
-          <span class="material-symbols-outlined">menu</span>
-        </button>
-        <span class="font-display font-bold text-primary text-lg">Dungeon Studio</span>
+    <!-- Mobile Brand Header (no hamburger) -->
+    <header class="h-14 sticky top-0 z-40 backdrop-blur-md bg-white/90 border-b border-outline-variant/20 shadow-sm flex md:hidden justify-between items-center w-full px-4">
+      <div class="flex items-center gap-3">
+        <img src="{% static 'asset-1.png' %}" alt="Logo" class="w-8 h-8 object-contain">
+        <span class="font-display font-bold text-primary text-base">Dungeon Studio</span>
       </div>
-      <div class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-sm">
-        {{ user.first_name|first|upper|default:user.username|first|upper }}
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center font-bold text-sm">
+          {{ user.first_name|first|upper|default:user.username|first|upper }}
+        </div>
+        <a href="{% url 'Klasifikasi:logout' %}" class="w-8 h-8 flex items-center justify-center text-outline hover:text-error transition-colors" title="Logout">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+        </a>
       </div>
     </header>
 
     <!-- PAGE CONTENT -->
-    <main class="flex-1 p-gutter md:p-xl max-w-container-max mx-auto w-full">
+    <main class="flex-1 p-4 md:p-xl max-w-container-max mx-auto w-full pb-24 md:pb-10">
       {% block content %}{% endblock %}
     </main>
 
   </div>
 
-  <!-- Mobile Sidebar Overlay -->
-  <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"></div>
-  <aside id="mobileSidebar" class="fixed top-0 left-0 h-full w-64 bg-white z-50 flex flex-col py-md transform -translate-x-full transition-transform duration-300 md:hidden shadow-level-2">
-    <div class="px-6 mb-8 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary-fixed-dim flex items-center justify-center text-white shadow-level-2 flex-shrink-0">
-        <span class="material-symbols-outlined" style="font-size:20px; font-variation-settings:'FILL' 1;">graphic_eq</span>
-      </div>
-      <div>
-        <h1 class="font-display text-headline-md font-bold text-primary">Dungeon Studio</h1>
-      </div>
-    </div>
-    <nav class="flex-1 flex flex-col gap-1 px-2">
-      <a href="{% url 'Klasifikasi:home' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
-        <span class="material-symbols-outlined">dashboard</span> Dungeon Studio
+  <!-- ═══════════════ BOTTOM NAV (Mobile Only) ═══════════════ -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white/95 backdrop-blur-xl border-t border-outline-variant/30 shadow-[0_-4px_24px_rgba(0,0,0,0.06)]">
+    <div class="flex items-center justify-around px-2 py-1 safe-bottom">
+
+      <!-- Dashboard -->
+      <a href="{% url 'Klasifikasi:home' %}"
+         class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-200 min-w-0
+           {% if request.resolver_match.url_name == 'home' %}text-primary{% else %}text-on-surface-variant{% endif %}">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'home' %}1{% else %}0{% endif %};">dashboard</span>
+        <span class="text-[10px] font-semibold leading-none">Home</span>
       </a>
-      <a href="{% url 'Klasifikasi:klasifikasi' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
-        <span class="material-symbols-outlined">analytics</span> Klasifikasi Audio
+
+      <!-- Klasifikasi -->
+      <a href="{% url 'Klasifikasi:klasifikasi' %}"
+         class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-200 min-w-0
+           {% if request.resolver_match.url_name == 'klasifikasi' %}text-primary{% else %}text-on-surface-variant{% endif %}">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'klasifikasi' %}1{% else %}0{% endif %};">analytics</span>
+        <span class="text-[10px] font-semibold leading-none">Klasifikasi</span>
       </a>
-      <a href="{% url 'Klasifikasi:riwayat' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
-        <span class="material-symbols-outlined">history</span> Riwayat Klasifikasi
+
+      <!-- Riwayat -->
+      <a href="{% url 'Klasifikasi:riwayat' %}"
+         class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-200 min-w-0
+           {% if request.resolver_match.url_name == 'riwayat' %}text-primary{% else %}text-on-surface-variant{% endif %}">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'riwayat' %}1{% else %}0{% endif %};">history</span>
+        <span class="text-[10px] font-semibold leading-none">Riwayat</span>
       </a>
-      <a href="{% url 'Klasifikasi:laporan' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
-        <span class="material-symbols-outlined">description</span> Laporan Klasifikasi
+
+      <!-- Laporan -->
+      <a href="{% url 'Klasifikasi:laporan' %}"
+         class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-200 min-w-0
+           {% if request.resolver_match.url_name == 'laporan' %}text-primary{% else %}text-on-surface-variant{% endif %}">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'laporan' %}1{% else %}0{% endif %};">description</span>
+        <span class="text-[10px] font-semibold leading-none">Laporan</span>
       </a>
+
+      <!-- Kinerja (admin/pengelola) -->
       {% if user.profile.role == 'admin' or user.profile.role == 'pengelola_studio' %}
-      <a href="{% url 'Klasifikasi:kinerja' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
-        <span class="material-symbols-outlined">speed</span> Kinerja Model
+      <a href="{% url 'Klasifikasi:kinerja' %}"
+         class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-200 min-w-0
+           {% if request.resolver_match.url_name == 'kinerja' %}text-primary{% else %}text-on-surface-variant{% endif %}">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'kinerja' %}1{% else %}0{% endif %};">speed</span>
+        <span class="text-[10px] font-semibold leading-none">Kinerja</span>
       </a>
       {% endif %}
+
+      <!-- User Mgmt (admin only) -->
       {% if user.profile.role == 'admin' %}
-      <a href="{% url 'Klasifikasi:user_management' %}" class="flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container">
-        <span class="material-symbols-outlined">group</span> Manajemen Pengguna
+      <a href="{% url 'Klasifikasi:user_management' %}"
+         class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all duration-200 min-w-0
+           {% if request.resolver_match.url_name == 'user_management' %}text-primary{% else %}text-on-surface-variant{% endif %}">
+        <span class="material-symbols-outlined text-[22px]" style="font-variation-settings:'FILL' {% if request.resolver_match.url_name == 'user_management' %}1{% else %}0{% endif %};">group</span>
+        <span class="text-[10px] font-semibold leading-none">Pengguna</span>
       </a>
       {% endif %}
-    </nav>
-    <div class="px-4 pt-4 border-t border-outline-variant/30">
-      <a href="{% url 'Klasifikasi:logout' %}" class="flex items-center gap-2 px-4 py-3 text-on-surface-variant hover:text-error font-label-md text-label-md">
-        <span class="material-symbols-outlined">logout</span> Keluar
-      </a>
+
     </div>
-  </aside>
+  </nav>
+
+  <!-- (Mobile sidebar removed — navigation via bottom nav bar) -->
   <!-- ═══════════════ GLOBAL TOAST CONTAINER ═══════════════ -->
-  <div id="toastContainer" class="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 z-[200] flex flex-col gap-3"></div>
+  <!-- On mobile: 80px from bottom to clear bottom nav bar -->
+  <div id="toastContainer" class="fixed bottom-24 left-4 right-4 md:left-auto md:right-6 md:bottom-6 z-[200] flex flex-col gap-3"></div>
 
   <!-- Django Messages to Toast -->
   {% if messages %}
@@ -427,21 +459,7 @@
 
   <!-- Global JS -->
   <script>
-    // Mobile sidebar toggle
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const mobileSidebar = document.getElementById('mobileSidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-    if (sidebarToggle) {
-      sidebarToggle.addEventListener('click', () => {
-        mobileSidebar.classList.toggle('-translate-x-full');
-        sidebarOverlay.classList.toggle('hidden');
-      });
-      sidebarOverlay.addEventListener('click', () => {
-        mobileSidebar.classList.add('-translate-x-full');
-        sidebarOverlay.classList.add('hidden');
-      });
-    }
+    // (Mobile sidebar toggle removed — using bottom navigation)
 
     // ── Global Toast System ──
     function showToast(message, type = 'success') {
