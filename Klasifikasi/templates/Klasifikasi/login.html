@@ -46,7 +46,7 @@
     .btn-primary:hover { background-color:#2b1ea8; box-shadow:0 0 15px rgba(87,223,254,0.4); }
   </style>
 </head>
-<body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col items-center justify-center ambient-bg py-12 px-sm relative overflow-x-hidden">
+<body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col items-center justify-center ambient-bg py-8 px-4 sm:py-12 sm:px-sm relative overflow-x-hidden">
 
   <!-- Decorative blobs -->
   <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
@@ -57,11 +57,11 @@
   <main class="w-full max-w-md relative z-10">
     <!-- Brand -->
     <div class="text-center mb-xl">
-      <h1 class="font-display font-bold text-display-lg text-primary">Dungeon Studio</h1>
+      <h1 class="font-display font-bold text-[clamp(28px,10vw,48px)] leading-tight text-primary">Dungeon Studio</h1>
     </div>
 
     <!-- Glass Card -->
-    <div class="glass-card rounded-xl p-lg">
+    <div class="glass-card rounded-xl p-6 sm:p-lg">
 
       <!-- Error Message -->
       {% if error %}

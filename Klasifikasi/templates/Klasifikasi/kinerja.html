@@ -434,17 +434,21 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Matrix Counts -->
-      <div class="glass-panel p-6 rounded-xl flex flex-col items-center overflow-x-auto">
+      <div class="glass-panel p-6 rounded-xl flex flex-col items-center">
         <h3 class="font-display font-bold text-headline-sm text-on-background mb-1">Jumlah Prediksi</h3>
         <p class="text-[11px] text-on-surface-variant mb-8 text-center">Baris = genre asli &nbsp;|&nbsp; Kolom = genre tebakan Model / Sistem</p>
-        <div id="cmCounts" class="w-full max-w-[450px]"></div>
+        <div class="w-full overflow-x-auto">
+          <div id="cmCounts" class="w-full max-w-[450px] mx-auto" style="min-width: 300px;"></div>
+        </div>
       </div>
 
       <!-- Matrix Percentages -->
-      <div class="glass-panel p-6 rounded-xl flex flex-col items-center overflow-x-auto">
+      <div class="glass-panel p-6 rounded-xl flex flex-col items-center">
         <h3 class="font-display font-bold text-headline-sm text-on-background mb-1">Persentase Prediksi (%)</h3>
         <p class="text-[11px] text-on-surface-variant mb-8 text-center">Warna lebih gelap = persentase lebih besar. Warna gelap di diagonal berarti genre mudah dikenali.</p>
-        <div id="cmPercents" class="w-full max-w-[450px]"></div>
+        <div class="w-full overflow-x-auto">
+          <div id="cmPercents" class="w-full max-w-[450px] mx-auto" style="min-width: 300px;"></div>
+        </div>
       </div>
     </div>
 

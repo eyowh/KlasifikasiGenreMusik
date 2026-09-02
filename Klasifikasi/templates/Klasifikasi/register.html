@@ -47,7 +47,7 @@
     .field-error { color:#ba1a1a; font-size:12px; margin-top:4px; display:flex; align-items:center; gap:4px; }
   </style>
 </head>
-<body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col items-center justify-center ambient-bg py-12 px-sm relative overflow-x-hidden">
+<body class="bg-surface font-sans text-on-surface antialiased min-h-screen flex flex-col items-center justify-center ambient-bg py-8 px-4 sm:py-12 sm:px-sm relative overflow-x-hidden">
 
   <!-- Decorative blobs -->
   <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
@@ -58,11 +58,11 @@
   <main class="w-full max-w-md relative z-10">
     <!-- Brand -->
     <div class="text-center mb-xl">
-      <h2 class="font-display font-bold text-[32px] md:text-[40px] text-primary leading-tight mt-6">Dungeon Studio</h2>
+      <h2 class="font-display font-bold text-[clamp(24px,8vw,40px)] text-primary leading-tight mt-6">Dungeon Studio</h2>
     </div>
 
     <!-- Glass Card -->
-    <div class="glass-card rounded-xl p-lg" id="registerCard">
+    <div class="glass-card rounded-xl p-6 sm:p-lg" id="registerCard">
       <h2 class="font-display font-bold text-headline-md text-on-surface mb-md">Buat Akun</h2>
 
       <form method="POST" class="flex flex-col gap-md" id="registerForm">
