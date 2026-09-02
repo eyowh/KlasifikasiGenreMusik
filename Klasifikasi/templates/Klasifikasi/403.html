@@ -14,23 +14,23 @@
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-[#f9f9ff] text-[#111c2d]">
-  <div class="text-center max-w-md mx-auto p-8">
-    <div class="text-[#ba1a1a] mb-6">
-      <span class="material-symbols-outlined" style="font-size: 96px; font-variation-settings: 'FILL' 1; color: #ba1a1a;">block</span>
+  <div class="text-center w-full max-w-md mx-auto px-6 py-10 sm:p-8">
+    <div class="text-[#ba1a1a] mb-5 sm:mb-6">
+      <span class="material-symbols-outlined" style="font-size: clamp(64px, 20vw, 96px); font-variation-settings: 'FILL' 1; color: #ba1a1a;">block</span>
     </div>
-    <h1 class="font-['Plus_Jakarta_Sans'] font-extrabold text-[48px] leading-none tracking-tight text-[#3525cd] mb-4">403</h1>
-    <h2 class="font-['Plus_Jakarta_Sans'] font-bold text-2xl text-[#111c2d] mb-4">Akses Ditolak</h2>
-    <p class="text-[#464555] text-base mb-8 leading-relaxed">
+    <h1 class="font-['Plus_Jakarta_Sans'] font-extrabold text-[clamp(36px,12vw,64px)] leading-none tracking-tight text-[#3525cd] mb-3 sm:mb-4">403</h1>
+    <h2 class="font-['Plus_Jakarta_Sans'] font-bold text-xl sm:text-2xl text-[#111c2d] mb-3 sm:mb-4">Akses Ditolak</h2>
+    <p class="text-[#464555] text-sm sm:text-base mb-7 sm:mb-8 leading-relaxed">
       Anda tidak memiliki izin untuk mengakses halaman ini. Silakan hubungi administrator atau kembali ke dashboard.
     </p>
-    <div class="flex gap-4 justify-center">
+    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
       <a href="javascript:history.back()"
-         class="flex items-center gap-2 px-6 py-3 border border-[#c7c4d8] text-[#464555] rounded-lg font-semibold text-sm hover:bg-[#f0f3ff] transition-colors">
+         class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 border border-[#c7c4d8] text-[#464555] rounded-lg font-semibold text-sm hover:bg-[#f0f3ff] transition-colors">
         <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
         Kembali
       </a>
       <a href="{% url 'Klasifikasi:home' %}"
-         class="flex items-center gap-2 px-6 py-3 bg-[#3525cd] text-white rounded-lg font-semibold text-sm hover:bg-[#2b1ea8] transition-colors">
+         class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[#3525cd] text-white rounded-lg font-semibold text-sm hover:bg-[#2b1ea8] transition-colors">
         <span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>
         Dashboard
       </a>
