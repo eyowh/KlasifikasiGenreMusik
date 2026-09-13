@@ -156,5 +156,5 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://klasifikasigenremusik-production.up.railway.app",
+    "https://klasifikasigenremusik-production-da58.up.railway.app/",
 ]
