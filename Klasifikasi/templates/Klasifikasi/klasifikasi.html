@@ -37,7 +37,7 @@
         </div>
         <div class="text-center space-y-2">
           <h3 class="font-display font-bold text-[18px] md:text-headline-md text-on-surface">Seret &amp; Taruh File Audio ke Sini</h3>
-          <p class="font-sans text-body-md text-outline">Format didukung: {{ supported_formats }} (Maks. 50MB)</p>
+          <p class="font-sans text-body-md text-outline">Ukuran maksimal file: 50MB</p>
         </div>
         <span class="mt-4 bg-surface-container-lowest border border-outline-variant text-on-surface px-6 py-2 rounded-full font-label-md text-label-md hover:border-primary hover:text-primary transition-colors shadow-sm">
           Pilih File
@@ -249,34 +249,6 @@
           </div>
           {% endif %}
 
-          <!-- Tingkat keyakinan & tempo dalam bahasa sederhana -->
-          <div class="grid grid-cols-2 gap-3">
-            <div class="bg-surface-container-low rounded-xl p-4">
-              <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">🎯 Tingkat Kecocokan</p>
-              {% if confidence_level == 'tinggi' %}
-              <p class="text-label-md font-label-md text-green-600 font-bold">Sangat Yakin</p>
-              <p class="text-label-sm text-on-surface-variant">Hasil ini dapat diandalkan</p>
-              {% elif confidence_level == 'sedang' %}
-              <p class="text-label-md font-label-md text-yellow-600 font-bold">Cukup Yakin</p>
-              <p class="text-label-sm text-on-surface-variant">Mungkin mirip genre lain</p>
-              {% else %}
-              <p class="text-label-md font-label-md text-red-500 font-bold">Kurang Yakin</p>
-              <p class="text-label-sm text-on-surface-variant">Audio mungkin campuran genre</p>
-              {% endif %}
-            </div>
-            {% if feat_tempo %}
-            <div class="bg-surface-container-low rounded-xl p-4">
-              <p class="text-label-sm font-label-sm text-on-surface-variant mb-1">🥁 Kecepatan Lagu</p>
-              <p class="text-label-md font-label-md text-on-surface font-bold">{{ feat_tempo }} BPM</p>
-              <p class="text-label-sm text-on-surface-variant">
-                {% if feat_tempo < 80 %}Lambat &amp; santai
-                {% elif feat_tempo < 120 %}Sedang &amp; enak
-                {% elif feat_tempo < 160 %}Cepat &amp; energik
-                {% else %}Sangat cepat{% endif %}
-              </p>
-            </div>
-            {% endif %}
-          </div>
 
         </div>
       </div>
