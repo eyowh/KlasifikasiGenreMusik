@@ -78,6 +78,12 @@
       <h3 class="font-display font-bold text-[18px] md:text-headline-md text-on-surface">Riwayat Lagu Terakhir</h3>
       <a href="{% url 'Klasifikasi:riwayat' %}" class="text-label-sm font-label-sm text-primary hover:underline">Lihat semua</a>
     </div>
+    <!-- Desktop Header -->
+    <div class="desktop-only bg-surface-bright border-b border-outline-variant/30 grid grid-cols-12 gap-2 px-6 py-3">
+      <div class="col-span-6 text-label-md font-label-md text-outline">Nama File</div>
+      <div class="col-span-4 text-label-md font-label-md text-outline">Genre</div>
+      <div class="col-span-2 text-label-md font-label-md text-outline text-right">Waktu</div>
+    </div>
     {% for r in riwayat_saya %}
     <!-- Mobile Card -->
     <div class="mobile-only p-4 border-b border-outline-variant/10 flex items-center justify-between gap-3">
@@ -95,26 +101,19 @@
       <span class="text-[11px] text-outline flex-shrink-0">{{ r.waktu|timesince }} lalu</span>
     </div>
     <!-- Desktop Row -->
-    <div class="desktop-only flex-1 overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <tbody class="text-body-md text-on-surface">
-          <tr class="border-b border-outline-variant/10 hover:bg-surface-container-lowest/50 transition-colors group">
-            <td class="py-4 px-6 flex items-center gap-3">
-              <div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
-                <span class="material-symbols-outlined text-[20px]">audio_file</span>
-              </div>
-              <span class="font-medium text-on-surface truncate max-w-[180px]" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
-            </td>
-            <td class="py-4 px-6">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed/50 text-primary font-label-sm text-label-sm border border-primary/20 uppercase">
-                <span>{{ r.genre_icon }}</span>
-                {{ r.genre_prediksi }}
-              </span>
-            </td>
-            <td class="py-4 px-6 text-right text-label-sm font-label-sm text-outline">{{ r.waktu|timesince }} lalu</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="desktop-only grid grid-cols-12 gap-2 px-6 py-4 border-b border-outline-variant/10 items-center hover:bg-surface-container-lowest/50 transition-colors group">
+      <div class="col-span-6 flex items-center gap-3 overflow-hidden">
+        <div class="w-9 h-9 rounded-lg bg-surface-variant flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px]">audio_file</span>
+        </div>
+        <span class="font-medium text-on-surface truncate" title="{{ r.nama_file }}">{{ r.nama_file }}</span>
+      </div>
+      <div class="col-span-4">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed/50 text-primary font-label-sm text-label-sm border border-primary/20 uppercase">
+          <span>{{ r.genre_icon }}</span>{{ r.genre_prediksi }}
+        </span>
+      </div>
+      <div class="col-span-2 text-right text-label-sm font-label-sm text-outline">{{ r.waktu|timesince }} lalu</div>
     </div>
     {% empty %}
     <div class="py-12 text-center text-on-surface-variant text-body-md">
