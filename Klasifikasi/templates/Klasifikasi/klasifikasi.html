@@ -185,6 +185,83 @@
           {% if role == 'pengguna_studio' %}Tingkat Kecocokan:{% else %}Confidence:{% endif %} {{ confidence }}%
           <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
         </div>
+
+        {% if confidence_level %}
+        <!-- ── Confidence Meter (server-rendered, no JS needed) ── -->
+        <div class="mt-5 w-full max-w-[280px] flex flex-col gap-2">
+
+          <!-- Track: outer wrapper is positioned, NO overflow-hidden -->
+          <div class="relative h-3 w-full">
+            <!-- Inner track (overflow-hidden only here, for fill bar) -->
+            <div class="absolute inset-0 rounded-full bg-surface-variant overflow-hidden">
+              <!-- Fill: width set directly by Django template -->
+              <div class="h-full rounded-full"
+                   style="width: {{ confidence|default:0 }}%;
+                          animation: confFillGrow 0.9s ease-out;
+                          {% if confidence_level == 'tinggi' %}background:linear-gradient(90deg,#22c55e,#16a34a);
+                          {% elif confidence_level == 'sedang' %}background:linear-gradient(90deg,#f59e0b,#d97706);
+                          {% else %}background:linear-gradient(90deg,#ef4444,#dc2626);{% endif %}">
+              </div>
+            </div>
+            <!-- Dot: positioned OUTSIDE overflow-hidden wrapper, left = confidence% -->
+            <div class="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white"
+                 style="left: {{ confidence|default:0 }}%;
+                        animation: confDotSlide 0.9s ease-out;
+                        {% if confidence_level == 'tinggi' %}background:#16a34a;box-shadow:0 0 8px rgba(34,197,94,0.5);
+                        {% elif confidence_level == 'sedang' %}background:#d97706;box-shadow:0 0 8px rgba(245,158,11,0.5);
+                        {% else %}background:#dc2626;box-shadow:0 0 8px rgba(239,68,68,0.5);{% endif %}">
+            </div>
+          </div>
+
+          <!-- Tick labels -->
+          <div class="flex justify-between text-[10px] text-outline font-sans select-none">
+            <span>Rendah</span>
+            <span>Sedang</span>
+            <span>Tinggi</span>
+          </div>
+
+          <!-- Contextual label -->
+          <div class="mt-1 flex items-start gap-2 rounded-xl px-3 py-2.5
+            {% if confidence_level == 'tinggi' %}bg-green-50 border border-green-200
+            {% elif confidence_level == 'sedang' %}bg-amber-50 border border-amber-200
+            {% else %}bg-red-50 border border-red-200{% endif %}">
+            <span class="material-symbols-outlined text-[18px] flex-shrink-0 mt-0.5
+              {% if confidence_level == 'tinggi' %}text-green-600
+              {% elif confidence_level == 'sedang' %}text-amber-500
+              {% else %}text-red-500{% endif %}"
+              style="font-variation-settings:'FILL' 1;">
+              {% if confidence_level == 'tinggi' %}verified{% elif confidence_level == 'sedang' %}info{% else %}warning{% endif %}
+            </span>
+            <div>
+              <p class="text-label-sm font-semibold
+                {% if confidence_level == 'tinggi' %}text-green-800
+                {% elif confidence_level == 'sedang' %}text-amber-800
+                {% else %}text-red-800{% endif %}">
+                {% if confidence_level == 'tinggi' %}Model Sangat Yakin
+                {% elif confidence_level == 'sedang' %}Model Cukup Yakin
+                {% else %}Model Kurang Yakin{% endif %}
+              </p>
+              <p class="text-[11px] mt-0.5 leading-snug
+                {% if confidence_level == 'tinggi' %}text-green-700
+                {% elif confidence_level == 'sedang' %}text-amber-700
+                {% else %}text-red-700{% endif %}">
+                {% if confidence_level == 'tinggi' %}
+                  Prediksi genre ini sangat kuat.
+                {% elif confidence_level == 'sedang' %}
+                  Model ragu antara beberapa genre.
+                {% else %}
+                  Genre audio tidak jelas bagi model.
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+        <style>
+          @keyframes confFillGrow { from { width: 0% } }
+          @keyframes confDotSlide { from { left: 0% } }
+        </style>
+        {% endif %}
+
       </div>
 
       <!-- Audio file info mini -->
@@ -863,6 +940,25 @@
   })();
 
   // ════════════════════════════════════════
+  // CONFIDENCE METER ANIMATION
+  // ════════════════════════════════════════
+  window.initConfidenceMeter = function () {
+    const fill = document.getElementById('confidenceMeterFill');
+    const dot  = document.getElementById('confidenceMeterDot');
+    if (!fill || !dot) return;
+    // Baca langsung dari data attribute
+    const pct = Math.min(parseFloat(fill.dataset.confidence || 0), 100);
+    // Fill: lebar dalam persen terhadap inner track
+    // Dot: bergerak dari 7px (kiri) ke calc(100% - 7px) (kanan), proporsional terhadap pct
+    setTimeout(() => {
+      fill.style.width = pct + '%';
+      dot.style.left   = 'calc(7px + (100% - 14px) * ' + (pct / 100).toFixed(4) + ')';
+    }, 150);
+  };
+  // Jalankan saat page load (hasil server-rendered)
+  initConfidenceMeter();
+
+  // ════════════════════════════════════════
   // FORM SUBMIT (AJAX)
   // ════════════════════════════════════════
   const uploadForm = document.getElementById('uploadForm');
@@ -945,6 +1041,8 @@
               document.getElementById('resultsContainer').innerHTML = newResults.innerHTML;
               if (typeof showToast !== 'undefined') showToast('Klasifikasi berhasil!');
               document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+              // Animasikan confidence meter setelah HTML diinjek
+              if (typeof initConfidenceMeter === 'function') initConfidenceMeter();
             }
           }, 700);
         }

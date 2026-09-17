@@ -12,98 +12,219 @@
         "cv_folds": 5
     },
     "cross_validation": {
-        "fold_1": 0.7750,
+        "fold_1": 0.775,
         "fold_2": 0.7375,
         "fold_3": 0.7562,
         "fold_4": 0.7188,
-        "fold_5": 0.7500,
+        "fold_5": 0.75,
         "mean": 0.7475,
         "std": 0.0188
     },
     "overall": {
-        "accuracy": 0.7550,
-        "macro_precision": 0.7681,
-        "macro_recall": 0.7550,
-        "macro_f1": 0.7580,
-        "weighted_precision": 0.7681,
-        "weighted_recall": 0.7550,
-        "weighted_f1": 0.7580
+        "accuracy": 0.755,
+        "macro_precision": 0.7637,
+        "macro_recall": 0.755,
+        "macro_f1": 0.7558,
+        "weighted_precision": 0.7637,
+        "weighted_recall": 0.755,
+        "weighted_f1": 0.7558
     },
     "per_class": {
         "Blues": {
-            "precision": 0.8333,
-            "recall": 0.7500,
-            "f1_score": 0.7895,
+            "precision": 0.75,
+            "recall": 0.75,
+            "f1_score": 0.75,
             "support": 20
         },
         "Classical": {
             "precision": 0.9474,
-            "recall": 0.9000,
+            "recall": 0.9,
             "f1_score": 0.9231,
             "support": 20
         },
         "Country": {
-            "precision": 0.8000,
-            "recall": 0.8000,
-            "f1_score": 0.8000,
+            "precision": 0.8,
+            "recall": 0.8,
+            "f1_score": 0.8,
             "support": 20
         },
         "Disco": {
             "precision": 0.7647,
-            "recall": 0.6500,
+            "recall": 0.65,
             "f1_score": 0.7027,
             "support": 20
         },
         "Hiphop": {
-            "precision": 0.6400,
-            "recall": 0.8000,
+            "precision": 0.64,
+            "recall": 0.8,
             "f1_score": 0.7111,
             "support": 20
         },
         "Jazz": {
             "precision": 0.7273,
-            "recall": 0.8000,
+            "recall": 0.8,
             "f1_score": 0.7619,
             "support": 20
         },
         "Metal": {
-            "precision": 0.9375,
-            "recall": 0.7500,
-            "f1_score": 0.8333,
+            "precision": 0.8824,
+            "recall": 0.75,
+            "f1_score": 0.8108,
             "support": 20
         },
         "Pop": {
-            "precision": 0.8333,
-            "recall": 0.7500,
-            "f1_score": 0.7895,
+            "precision": 0.75,
+            "recall": 0.75,
+            "f1_score": 0.75,
             "support": 20
         },
         "Reggae": {
-            "precision": 0.6522,
-            "recall": 0.7500,
-            "f1_score": 0.6977,
+            "precision": 0.625,
+            "recall": 0.75,
+            "f1_score": 0.6818,
             "support": 20
         },
         "Rock": {
-            "precision": 0.5455,
-            "recall": 0.6000,
-            "f1_score": 0.5714,
+            "precision": 0.75,
+            "recall": 0.6,
+            "f1_score": 0.6667,
             "support": 20
         }
     },
     "confusion_matrix": {
-        "labels": ["Blues", "Classical", "Country", "Disco", "Hiphop", "Jazz", "Metal", "Pop", "Reggae", "Rock"],
+        "labels": [
+            "Blues",
+            "Classical",
+            "Country",
+            "Disco",
+            "Hiphop",
+            "Jazz",
+            "Metal",
+            "Pop",
+            "Reggae",
+            "Rock"
+        ],
         "matrix": [
-            [15, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-            [0, 18, 0, 0, 0, 1, 0, 0, 1, 0],
-            [0, 0, 16, 1, 1, 0, 0, 1, 1, 0],
-            [0, 0, 1, 13, 2, 1, 0, 1, 2, 0],
-            [1, 0, 0, 1, 16, 1, 0, 0, 1, 0],
-            [1, 1, 0, 0, 1, 16, 0, 0, 1, 0],
-            [1, 0, 0, 0, 0, 0, 15, 1, 0, 3],
-            [1, 0, 1, 1, 1, 0, 0, 15, 1, 0],
-            [0, 0, 0, 1, 2, 1, 0, 1, 15, 0],
-            [1, 0, 1, 0, 1, 1, 2, 0, 2, 12]
+            [
+                15,
+                0,
+                1,
+                0,
+                1,
+                1,
+                0,
+                1,
+                0,
+                1
+            ],
+            [
+                0,
+                18,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                1,
+                0
+            ],
+            [
+                0,
+                0,
+                16,
+                1,
+                1,
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            [
+                0,
+                0,
+                1,
+                13,
+                2,
+                1,
+                0,
+                1,
+                2,
+                0
+            ],
+            [
+                1,
+                0,
+                0,
+                1,
+                16,
+                1,
+                0,
+                0,
+                1,
+                0
+            ],
+            [
+                1,
+                1,
+                0,
+                0,
+                1,
+                16,
+                0,
+                0,
+                1,
+                0
+            ],
+            [
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                15,
+                1,
+                0,
+                3
+            ],
+            [
+                1,
+                0,
+                1,
+                1,
+                1,
+                0,
+                0,
+                15,
+                1,
+                0
+            ],
+            [
+                0,
+                0,
+                0,
+                1,
+                2,
+                1,
+                0,
+                1,
+                15,
+                0
+            ],
+            [
+                1,
+                0,
+                1,
+                0,
+                1,
+                1,
+                2,
+                0,
+                2,
+                12
+            ]
         ]
     }
 }

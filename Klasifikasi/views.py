@@ -1073,7 +1073,8 @@ def download_laporan_pdf(request):
     elements.append(Paragraph(f'Dicetak: {datetime.now().strftime("%d %B %Y %H:%M")}', sub_style))
     elements.append(Spacer(1, 0.5*cm))
 
-    header = ['No', 'Pengguna', 'Nama File', 'Format', 'Genre Prediksi', 'Confidence', 'Waktu Klasifikasi']
+    conf_label = 'Kecocokan' if role == 'pengguna_studio' else 'Confidence'
+    header = ['No', 'Pengguna', 'Nama File', 'Format', 'Genre Prediksi', conf_label, 'Waktu Klasifikasi']
     data = [header]
     for idx, r in enumerate(qs, 1):
         row_user = r.user.username
@@ -1162,7 +1163,8 @@ def download_laporan_excel(request):
         ws['A2'].alignment = Alignment(horizontal='center')
 
     header_row = 3
-    headers = ['No', 'Pengguna', 'Nama File', 'Format', 'Genre Prediksi', 'Confidence (%)', 'Waktu Klasifikasi']
+    conf_label = 'Kecocokan (%)' if role == 'pengguna_studio' else 'Confidence (%)'
+    headers = ['No', 'Pengguna', 'Nama File', 'Format', 'Genre Prediksi', conf_label, 'Waktu Klasifikasi']
     for col, h in enumerate(headers, 1):
         cell = ws.cell(row=header_row, column=col, value=h)
         cell.font = Font(bold=True, color='FFFFFF')
